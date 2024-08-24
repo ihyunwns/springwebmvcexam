@@ -1,0 +1,71 @@
+.main {
+    background-color: rgba(23, 23, 23, 0.6);
+    border-radius: 30px;
+    width: 700px;
+    height: 700px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.header-text {
+    width: 650px;
+    font-size: 30px;
+    color: darkgrey;
+    margin-bottom: 20px; /* main div와 텍스트 사이의 간격 */
+}
+
+
+body {
+    font-family: "Pretendard SemiBold", serif;
+    height: 100vh;
+    width: 100vw;
+    background-image: url("../image/background.jpeg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+.header-container {
+    margin-bottom: 100px;
+    font-size: 50px;
+    color: floralwhite;
+    text-align: left;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;  /* 요소들을 세로로 정렬 */
+    align-items: center;     /* 요소들을 수평 가운데 정렬 */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#floatingInput {
+    width: 400px;
+    opacity: 0.7;
+    border: 1px #cccccc solid;
+}
+
+.btn {
+    color: white;
+    border: gray 1px solid;
+    background-color: #343a40; /* 기본 배경색 */
+}
+
+
+#floatingPassword {
+    width: 400px;
+    opacity: 0.7;
+    border: 1px #cccccc solid;
+}

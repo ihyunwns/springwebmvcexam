@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+       xmlns:beans="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <annotation-driven/>
+    <default-servlet-handler/> <!-- default servlet 으로 정적 리소스 위임 -->
+
+    <context:component-scan base-package="com.hyunwns.demoweb" />
+
+    <!-- 탬플릿 파일의 위치, 형식, 및 기타속성 정의 및 관리 - 템플릿 파일을 어떻게 찾고 처리할 지 결정 -->
+    <beans:bean id="templateResolver"
+          class="org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver">
+        <beans:property name="prefix" value="/WEB-INF/templates/" />
+        <beans:property name="suffix" value=".html" />
+        <beans:property name="templateMode" value="HTML" />
+        <beans:property name="characterEncoding" value="UTF-8" />
+        <beans:property name="cacheable" value="true"/>
+    </beans:bean>
+
+    <!-- 템플릿을 실제로 처리하는 엔진, templateResolver 에서 제공된 템플릿을 가져와서 데이터를 채워넣고, 최종 HTML을 생성하는 역할 -->
+    <beans:bean id="templateEngine"
+          class="org.thymeleaf.spring6.SpringTemplateEngine">
+        <beans:property name="templateResolver" ref="templateResolver" />
+    </beans:bean>
+
+    <!-- Spring MVC에서 뷰를 결정할 때 사용하는 View Resolver,
+         컨트롤러가 반환한 뷰 이름을 받아서, 어떤 탬플릿을 사용할지 결정하고 SpringTemplateEngine을 통해 렌더링 수행
+    -->
+    <beans:bean class="org.thymeleaf.spring6.view.ThymeleafViewResolver">
+        <beans:property name="templateEngine" ref="templateEngine" />
+        <beans:property name="characterEncoding" value="UTF-8" />
+<!--        <beans:property name="viewNames" value="thymeleaf/*" />  -->
+    </beans:bean>
+
+    <beans:bean id="jspResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <beans:property name="prefix" value="/WEB-INF/"/>
+        <beans:property name="suffix" value=".jsp"/>
+        <beans:property name="viewNames" value="jsp/*" /> <!--특정 디렉토리로 시작하는 뷰 이름만 Engine 에게 넘겨줌 -->
+        <beans:property name="order" value="1"/>
+    </beans:bean>
+
+
+</beans:beans>

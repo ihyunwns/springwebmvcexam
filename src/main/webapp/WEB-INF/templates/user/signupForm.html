@@ -1,0 +1,79 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head th:replace="fragments/header :: header">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+
+</head>
+<link href="../../../static/css/registerForm.css" rel="stylesheet"/>
+<body>
+    <a href="/" class="move-home">HOME < </a>
+    <div class="container">
+        <div class="header-text">
+            회 원 가 입
+        </div>
+        <div class="form-container">
+            <form th:action="@{/signup}" th:object="${signupRequest}" method="post">
+                <table class="form-table">
+                    <tr class="form-group">
+                        <td class="form_d">아이디</td>
+                        <td>
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="floatingInput" placeholder="" th:field="*{id}">
+                                <label for="floatingInput">아이디</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="form-group">
+                        <td class="form_d">닉네임</td>
+                        <td>
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="floatingNickname" placeholder="" th:field="*{nickname}">
+                                <label for="floatingNickname">닉네임</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="form-group">
+                        <th class="form_d">비밀번호</th>
+                        <td>
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="floatingPassword" placeholder="" th:field="*{password}">
+                                <label for="floatingPassword">비밀번호</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="form-group">
+                        <th class="form_d">비밀번호 확인</th>
+                        <td>
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="floatingPasswordConfirm" placeholder="">
+                                <label for="floatingPasswordConfirm">비밀번호 확인</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="form-group">
+                        <th class="form_d">나이</th>
+                        <td>
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="floatingAge" placeholder="" th:field="*{age}">
+                                <label for="floatingAge">나이</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="form-group">
+                        <th class="form_d" colspan="2">
+                            <div class="ar">
+                                <button type="submit" class="btn btn-outline-dark"> 회원가입</button>
+                            </div>
+                        </th>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+    </div>
+
+
+</body>
+</html>

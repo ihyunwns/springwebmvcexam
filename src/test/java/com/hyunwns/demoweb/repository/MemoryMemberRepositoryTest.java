@@ -10,12 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import java.util.concurrent.atomic.AtomicLong;
 
 class MemoryMemberRepositoryTest {
 
     MemberService memberService;
-    static String path = "C:\\Users\\ihyun\\Desktop\\demoweb\\src\\main\\webapp\\WEB-INF\\spring\\appServlet\\servlet-context.xml";
+    static String path = "C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\webapp\\WEB-INF\\spring\\appServlet\\servlet-context.xml";
 
     @BeforeEach
     void setUp() {

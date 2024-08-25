@@ -21,7 +21,7 @@ public class MemberServiceImpl implements MemberService {
     public void join(Member member) {
         validateDuplicateMember(member); // 중복 회원 검사
         memberRepository.save(member);
-    }
+}
 
     @Override
     public Member findMember(String memberId) {
@@ -30,6 +30,20 @@ public class MemberServiceImpl implements MemberService {
             throw new IllegalStateException("Not found member with id " + memberId);
         }
         return findMember;
+    }
+
+    @Override
+    public boolean isLogin(String memberId, String password) {
+        Member findMember;
+        try {
+             findMember = findMember(memberId);
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        // password 검증
+        String password_auth = ( password.hashCode() + findMember.getAge() ) + memberId;
+        return findMember.getPassword().equals(password_auth);
     }
 
     private void validateDuplicateMember(Member member) {

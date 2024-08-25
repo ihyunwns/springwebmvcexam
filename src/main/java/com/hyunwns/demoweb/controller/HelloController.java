@@ -24,20 +24,14 @@ public class HelloController {
     public String login(@ModelAttribute("loginRequest") LoginForm loginForm, Model model) {
 
         String id = loginForm.getId();
-        Member member = memberService.findMember(id); // < 예외 던져서 thymeleaf 에 던져줘야함
-        int age = member.getAge();
-        String password = (loginForm.getPassword().hashCode() + age) + id;
+        String password = loginForm.getPassword();
 
-        System.out.println(id);
-        System.out.println(password);
-
-        if (password.equals(member.getPassword())) {
+        if (memberService.isLogin(id, password)) {
             System.out.println("Same password");
             return "redirect:/hello"; //view 에다가 넘겨주는게 아닌 URL 요청
         }
 
         model.addAttribute("loginErr", "PE");
-
         return "home";
     }
 
@@ -54,11 +48,13 @@ public class HelloController {
         String nickname = signUpDTO.getNickname();
         int age = signUpDTO.getAge();
         String password = ( signUpDTO.getPassword().hashCode() + age ) + id;
+        // 컨트롤러에서 인코딩해서 넘겨준다? 아니면 문자열 받고 서비스 단에서 인코딩한다? 아니면 프론트 쪽에서 인코딩한다?
 
         Member member = new Member(id, nickname, password, age);
         memberService.join(member);
 
         return "redirect:/";
+
     }
 
 }

@@ -13,7 +13,7 @@
             <div class="header-container">Spring MVC Exam</div>
             <div class="form-container">
                 <div th:if="${loginErr} == 'PE'" class="alert alert-danger alert-dismissable text-left" id="pwdErr">
-                    Invalid password.
+                    잘못된 입력입니다.
                 </div>
                 <form role="form" th:action="@{/login}" th:object="${loginRequest}" method="post">
                     <div class="form-floating mb-3">

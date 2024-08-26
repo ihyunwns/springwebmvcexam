@@ -1,6 +1,7 @@
 package com.hyunwns.demoweb.repository;
 
 import com.hyunwns.demoweb.domain.Member;
+import com.hyunwns.demoweb.dto.SignUpDTO;
 import com.hyunwns.demoweb.service.MemberService;
 import com.hyunwns.demoweb.service.MemberServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -15,11 +16,13 @@ class MemoryMemberRepositoryTest {
 
     MemberService memberService;
     static String path = "C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\webapp\\WEB-INF\\spring\\appServlet\\servlet-context.xml";
+    SignUpDTO member;
 
     @BeforeEach
     void setUp() {
         ApplicationContext ac = new FileSystemXmlApplicationContext(path);
         memberService = ac.getBean(MemberServiceImpl.class);
+        member = new SignUpDTO();
     }
 
     @Test

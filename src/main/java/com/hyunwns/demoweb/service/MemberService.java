@@ -1,6 +1,7 @@
 package com.hyunwns.demoweb.service;
 
 import com.hyunwns.demoweb.domain.Member;
+import com.hyunwns.demoweb.dto.SignUpDTO;
 
 public interface MemberService {
 

@@ -1,8 +1,10 @@
 package com.hyunwns.demoweb.controller;
 
 import com.hyunwns.demoweb.domain.Member;
+import com.hyunwns.demoweb.dto.SignUpDTO;
 import com.hyunwns.demoweb.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequiredArgsConstructor
-public class HelloController {
+public class SignUpController {
 
     private final MemberService memberService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @GetMapping("/hello")
     public String hello() {
@@ -44,17 +47,17 @@ public class HelloController {
     @PostMapping("/signup")
     public String signUp(@ModelAttribute("signupRequest") SignUpDTO signUpDTO) {
 
+        // 컨트롤러에서 인코딩해서 넘겨준다? 아니면 문자열 받고 서비스 단에서 인코딩한다? 아니면 프론트 쪽에서 인코딩한다?
         String id = signUpDTO.getId();
+        String password = bCryptPasswordEncoder.encode(signUpDTO.getPassword());
+        System.out.println(password);
         String nickname = signUpDTO.getNickname();
         int age = signUpDTO.getAge();
-        String password = ( signUpDTO.getPassword().hashCode() + age ) + id;
-        // 컨트롤러에서 인코딩해서 넘겨준다? 아니면 문자열 받고 서비스 단에서 인코딩한다? 아니면 프론트 쪽에서 인코딩한다?
 
-        Member member = new Member(id, nickname, password, age);
+        Member member = new Member(id, password, nickname, age);
         memberService.join(member);
 
         return "redirect:/";
 
     }
-
 }

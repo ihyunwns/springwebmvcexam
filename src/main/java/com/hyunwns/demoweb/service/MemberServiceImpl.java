@@ -1,8 +1,10 @@
 package com.hyunwns.demoweb.service;
 
 import com.hyunwns.demoweb.domain.Member;
+import com.hyunwns.demoweb.dto.SignUpDTO;
 import com.hyunwns.demoweb.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +21,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void join(Member member) {
-        validateDuplicateMember(member); // 중복 회원 검사
+
+        validateDuplicateMember(member);// 중복 회원 검사
+        member.setRole("ROLE_USER");
+
         memberRepository.save(member);
 }
 

@@ -14,11 +14,17 @@ public class Member {
     private final String password;
     private final int age;
 
+    private String role;
+
     public Member(String id, String nickname, String password, int age) {
         this.id = id;
         this.nickname = nickname;
         this.password = password;
         this.age = age;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
 }

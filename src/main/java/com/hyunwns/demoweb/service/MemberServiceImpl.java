@@ -37,19 +37,6 @@ public class MemberServiceImpl implements MemberService {
         return findMember;
     }
 
-    @Override
-    public boolean isLogin(String memberId, String password) {
-        Member findMember;
-        try {
-             findMember = findMember(memberId);
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-        // password 검증
-        String password_auth = ( password.hashCode() + findMember.getAge() ) + memberId;
-        return findMember.getPassword().equals(password_auth);
-    }
 
     private void validateDuplicateMember(Member member) {
         List<Member> members = memberRepository.findById(member.getId());

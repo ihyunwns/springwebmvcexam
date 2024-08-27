@@ -27,4 +27,14 @@ public class Member {
         this.role = role;
     }
 
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id='" + id + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", password='" + password + '\'' +
+                ", age=" + age +
+                ", role='" + role + '\'' +
+                '}';
+    }
 }

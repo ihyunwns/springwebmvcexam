@@ -15,6 +15,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 class MemoryMemberRepositoryTest {
 
     MemberService memberService;
+    MemberRepository memberRepository;
     static String path = "C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\webapp\\WEB-INF\\spring\\appServlet\\servlet-context.xml";
     SignUpDTO member;
 
@@ -22,6 +23,7 @@ class MemoryMemberRepositoryTest {
     void setUp() {
         ApplicationContext ac = new FileSystemXmlApplicationContext(path);
         memberService = ac.getBean(MemberServiceImpl.class);
+        memberRepository = ac.getBean(MemberRepository.class);
         member = new SignUpDTO();
     }
 
@@ -35,6 +37,23 @@ class MemoryMemberRepositoryTest {
         //then
         Member findMember = memberService.findMember("ihyunwns");
         Assertions.assertEquals(findMember, member);
+    }
+
+    @Test
+    @DisplayName("MemberRepository FindOne 작동 확인 ")
+    public void findOne() throws Exception{
+        //given
+        Member member = new Member("ihyunwns", "임현준", "1234", 25);
+        memberService.join(member);
+
+        //when
+        Member findMember = memberRepository.findOne("ihyunwns");
+
+        //then
+        System.out.println(findMember.getId());
+
+        Assertions.assertEquals(findMember, member);
+
     }
 
     @Test

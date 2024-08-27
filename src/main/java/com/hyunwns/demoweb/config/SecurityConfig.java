@@ -7,12 +7,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfig{
 
     // Spring Security 버전 5.7.0-M2 이후 부터는 WebSecurityConfigurerAdapter가 Deprecated 됨
@@ -48,11 +48,24 @@ public class SecurityConfig{
                 )
 //                .httpBasic(form -> form.configure(http))
                 .formLogin(form -> form.loginPage("/") // 기본 로그인 페이지를 "/" 경로로 지정, 잘못된 URL 입력 시 로그인 페이지로 보냄
+                        .defaultSuccessUrl("/main")
                         .loginProcessingUrl("/login") // form 태그에서 로그인 할 정보를 특정 URL로 POST 할 텐데 해당 경로를 가지고 Spring Security 가 로그인 처리를 진행함
-                        .permitAll());
+                                                      // processingURL에 경로를 지정하게 되면 로그인을 담당하는 UsernamePasswordAuthenticaionFilter가 어떤 주소에 동작할 지 set 해주는 메서드
+                        .permitAll())
+
+                .sessionManagement(session -> session
+                        .maximumSessions(1) //CustomUserDetails 를 만든 경우 hashcode, equals 메서드를 구현해줘야 한다.
+                        .maxSessionsPreventsLogin(false)
+                );
+
+        http.sessionManagement(auth -> auth.sessionFixation().changeSessionId()); // 로그인 시 동일한 세션에 대한 id 변경
+
+        //세션 ID 변경: 이 옵션을 사용하면 사용자가 로그인하거나 중요한 작업(예: 권한 변경)을 수행할 때, 세션 ID만 변경됩니다. 이 과정에서 기존 세션에 저장된 속성과 데이터는 유지됩니다.
+        //기존 세션 데이터 유지: changeSessionId()는 기존 세션 데이터를 새로운 세션 ID로 그대로 옮겨서 유지합니다. 세션 데이터가 사라지지 않고, 사용자에게는 로그아웃 없이 연속적인 사용 환경이 제공됩니다.
+
 
         // csrf 방지 동작이 작동하면 CSRF 토큰을 보내주어야 로그인이 되는데 개발 환경에서는 꺼주도록 한다.
-        http.csrf(AbstractHttpConfigurer::disable);
+//        http.csrf(AbstractHttpConfigurer::disable);
 
 
                 // 기본은 withDefault(), 스프링이 제공하는 로그인 페이지

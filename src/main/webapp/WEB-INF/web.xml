@@ -19,7 +19,7 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <!-- 모든 요청이긴 구체적 매핑이 없어 처리되지 못한 것이 Dispatcher Servlet 으로 오게 된다. -->
+    <!-- 모든 요청이긴 하나 구체적 매핑이 없어 처리되지 못한 것이 Dispatcher Servlet 으로 오게 된다. -->
     <!-- css, js 파일 같이 정적 리소스들이 dispatcher servlet 으로 오지 않는 이유는 -->
     <!-- 톰캣이 실행될 때 Servlet Container 에 자동으로 default servlet 이 올라가는데 -> servlet context 확인해보자 -->
     <!-- 이 서블릿은 정적 리소스에 대한 처리를 우선적으로 해주기 때문에 Dispatcher Servlet 으로 오지 않게 된다. -->

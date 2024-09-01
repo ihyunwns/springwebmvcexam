@@ -38,7 +38,6 @@ public class SignUpController {
     @PostMapping("/signup")
     public String signUp(@ModelAttribute("signupRequest") SignUpDTO signUpDTO) {
 
-        // 컨트롤러에서 인코딩해서 넘겨준다? 아니면 문자열 받고 서비스 단에서 인코딩한다? 아니면 프론트 쪽에서 인코딩한다?
         String id = signUpDTO.getId();
         String password = bCryptPasswordEncoder.encode(signUpDTO.getPassword());
         System.out.println(password);

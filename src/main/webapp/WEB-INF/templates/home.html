@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="eng">
-<head th:replace="fragments/header :: header">
-    <title>HOME</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<head th:replace="~{fragments/header :: header}">
 </head>
-
 <link href="../../static/css/home.css" rel="stylesheet"/>
 <body>
     <div class="container" >
@@ -12,16 +9,19 @@
         <div class="main" >
             <div class="header-container">Spring MVC Exam</div>
             <div class="form-container">
-                <div th:if="${loginErr} == 'PE'" class="alert alert-danger alert-dismissable text-left" id="pwdErr">
-                    잘못된 입력입니다.
+                <div id="errorDiv" th:if="${errorMsg != null}"  class="alert alert-danger alert-dismissable text-left">
+                    <div th:switch="${errorMsg}">
+                        <div th:case="'BE'">비밀번호를 잘못 입력했습니다.</div>
+                        <div th:case="'UNFE'">존재하지 않는 아이디입니다.</div>
+                    </div>
                 </div>
-                <form role="form" th:action="@{/login}" th:object="${loginRequest}" method="post">
+                <form role="form" id="loginForm" th:action="@{/login}" method="post">
                     <div class="form-floating mb-3">
-                        <input type="text" name="username" class="form-control" id="username" placeholder="">
+                        <input type="text" name="username" class="form-control" id="username" placeholder="" th:value="${username}" required>
                         <label for="username">아이디</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="password" name="password" class="form-control" id="password" placeholder="">
+                        <input type="password" name="password" class="form-control" id="password" placeholder="" required>
                         <label for="password">비밀번호</label>
                     </div>
                     <div>
@@ -36,4 +36,5 @@
         <div style="color: #f0f0f0" th:replace="fragments/footer :: footer"></div>
     </div>
 </body>
+<script src="../../static/js/home.js"></script>
 </html>

@@ -4,6 +4,7 @@ import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.repository.MemberRepository;
 import com.hyunwns.demoweb.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
+@Qualifier("customUserDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
     // Spring Security 를 통해 인증을 진행하는 방법은 사용자가 Login 페이지를 통해 아이디, 비밀번호를 POST 요청 시, 데이터베이스에 저장된
     // 회원 정보를 조회 후 비밀번호를 검증하고 서버세션 저장소에 해당 아이디에 대한 세션을 저장한다.
@@ -31,11 +33,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         Member member = memberRepository.findOne(userId);
 
-        if(member != null) {
-            return new CustomUserDetails(member);
+        if (member == null) {
+            throw new UsernameNotFoundException("User with ID " + userId + " was not found.");
         }
 
-        return null;
+        return new CustomUserDetails(member);
 
     }
 }

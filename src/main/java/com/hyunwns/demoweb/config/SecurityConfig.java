@@ -1,30 +1,78 @@
 package com.hyunwns.demoweb.config;
 
+import com.hyunwns.demoweb.repository.MemberRepository;
+import com.hyunwns.demoweb.repository.MemoryMemberRepository;
+import com.hyunwns.demoweb.security.CustomAuthenticationFailureHandler;
+import com.hyunwns.demoweb.security.CustomSessionExpiredStrategy;
+import com.hyunwns.demoweb.service.CustomUserDetailsService;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.session.SessionInformationExpiredStrategy;
+
 
 @Configuration
 @EnableWebSecurity(debug = true)
-public class SecurityConfig{
+public class SecurityConfig implements ApplicationContextAware {
 
-    // Spring Security 버전 5.7.0-M2 이후 부터는 WebSecurityConfigurerAdapter가 Deprecated 됨
-    // 기존에 security 예외 url을 설정하던 antMatchers 는 아예 삭제되었다.
-    // 빈으로 등록해서 사용할 것으로 권장됨
+//    @Bean @Primary
+//    public MemberRepository memberRepository() {
+//        return new MemoryMemberRepository();
+//    }
+//
+//    @Bean @Primary
+//    UserDetailsService userDetailsService() {
+//        return new CustomUserDetailsService(memberRepository());
+//    }
 
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        UserDetailsService userDetailsService = applicationContext.getBean(CustomUserDetailsService.class);
+
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setHideUserNotFoundExceptions(false);
+        return provider;
+    }
 
     // 특정 요청은 필터를 거치지 않게 하는 방법, 필터를 거치게 하는 것보다 자원을 덜 잡아먹기 때문에 정적파일에 대해서 이렇게 설정해주면 효율적이다.
     // 내부에 필터가 한개도 없는 필터체인을 거치게 됨
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers("/static/**");
+    }
+
+    @Bean SessionInformationExpiredStrategy customSessionExpiredStrategy() {
+        return new CustomSessionExpiredStrategy();
+    }
+
+    @Bean
+    AuthenticationFailureHandler customAuthenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler();
     }
 
 
@@ -46,16 +94,19 @@ public class SecurityConfig{
                         //.requestMatchers("/static/**").permitAll() // 필터 체인을 거치지 않게 설정해줬음
                         .anyRequest().authenticated()
                 )
-//                .httpBasic(form -> form.configure(http))
+//                .httpBasic(form -> form.configure(http)) 내부 사설망에서 더 엄격한 보안을 위해서 주로 사용된다고 한다.
+
                 .formLogin(form -> form.loginPage("/") // 기본 로그인 페이지를 "/" 경로로 지정, 잘못된 URL 입력 시 로그인 페이지로 보냄
                         .defaultSuccessUrl("/main")
                         .loginProcessingUrl("/login") // form 태그에서 로그인 할 정보를 특정 URL로 POST 할 텐데 해당 경로를 가지고 Spring Security 가 로그인 처리를 진행함
                                                       // processingURL에 경로를 지정하게 되면 로그인을 담당하는 UsernamePasswordAuthenticaionFilter가 어떤 주소에 동작할 지 set 해주는 메서드
+                        .failureHandler(customAuthenticationFailureHandler())
                         .permitAll())
 
                 .sessionManagement(session -> session
                         .maximumSessions(1) //CustomUserDetails 를 만든 경우 hashcode, equals 메서드를 구현해줘야 한다.
                         .maxSessionsPreventsLogin(false)
+                        .expiredSessionStrategy(customSessionExpiredStrategy())
                 );
 
         http.sessionManagement(auth -> auth.sessionFixation().changeSessionId()); // 로그인 시 동일한 세션에 대한 id 변경
@@ -64,8 +115,9 @@ public class SecurityConfig{
         //기존 세션 데이터 유지: changeSessionId()는 기존 세션 데이터를 새로운 세션 ID로 그대로 옮겨서 유지합니다. 세션 데이터가 사라지지 않고, 사용자에게는 로그아웃 없이 연속적인 사용 환경이 제공됩니다.
 
 
-        // csrf 방지 동작이 작동하면 CSRF 토큰을 보내주어야 로그인이 되는데 개발 환경에서는 꺼주도록 한다.
-//        http.csrf(AbstractHttpConfigurer::disable);
+        // csrf 방지 동작이 작동하면 CSRF 토큰을 보내주어야 로그인이 되는데 개발 환경에서는 disable 한다.
+        // 토큰을 가지고 (ex.JWT) 서버 로그인을 하는 경우 csrf 비활성화 해도 된다.
+        //http.csrf(AbstractHttpConfigurer::disable);
 
 
                 // 기본은 withDefault(), 스프링이 제공하는 로그인 페이지

@@ -4,6 +4,7 @@ import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.dto.SignUpDTO;
 import com.hyunwns.demoweb.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
     public Member findMember(String memberId) {
         Member findMember = memberRepository.findOne(memberId);
         if(findMember == null) {
-            throw new IllegalStateException("Not found member with id " + memberId);
+            throw new UsernameNotFoundException("Not found member with id " + memberId);
         }
         return findMember;
     }

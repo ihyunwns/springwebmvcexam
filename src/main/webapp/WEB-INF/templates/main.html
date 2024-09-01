@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="eng">
-<head th:replace="fragments/header :: header">
-    <title>HOME</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<head th:replace="~{fragments/header :: header}">
+
 </head>
 
 <link href="../../static/css/home.css" rel="stylesheet"/>
@@ -11,4 +10,5 @@
     <div th:text="${nickname}"></div>
     <div th:text="${role}"></div>
 </body>
+
 </html>

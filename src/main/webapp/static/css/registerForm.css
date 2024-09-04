@@ -26,7 +26,7 @@ body {
     width: 600px;
     border-radius: 30px 30px 0 0;
     height: 100px;
-    color: antiquewhite;
+    color: white;
     text-align: center;
     align-content: center;
     background-color: rgba(23, 23, 23, 0.6);
@@ -38,10 +38,15 @@ body {
     height: 100%;
     display: flex;
     flex-direction: row;
+    margin-left: 20px;
+    margin-top: 20px;
+    margin-right: 30px;
 }
+
 
 .form-table {
     height: 100%;
+    width: 100%;
 }
 
 .form-group {
@@ -55,12 +60,7 @@ body {
     width: 150px;
     text-align: right;
     color: #cccccc;
-}
-
-.form-container {
-    margin-left: 20px;
-    margin-top: 20px;
-
+    white-space: nowrap;
 }
 
 .form-floating label {
@@ -69,11 +69,13 @@ body {
 
 .form-floating {
     margin-left: 20px;
+    margin-right: 0;
+
 }
 
 #floatingInput {
-    width: 400px;
-    margin-right: 20px;
+    width: 300px;
+    margin-right: 0;
     opacity: 0.7;
     border: 1px #cccccc solid;
 }
@@ -82,8 +84,14 @@ body {
     font-size: 15px;
 }
 
+
+#floatingInput:disabled {
+    background-color: darkgray;
+}
+
+
 #floatingPassword {
-    width: 400px;
+    width: 300px;
     margin-right: 20px;
     opacity: 0.7;
     border: 1px #cccccc solid;
@@ -94,7 +102,7 @@ body {
 }
 
 #floatingPasswordConfirm {
-    width: 400px;
+    width: 300px;
     margin-right: 20px;
     opacity: 0.7;
     border: 1px #cccccc solid;
@@ -105,7 +113,7 @@ body {
 }
 
 #floatingAge {
-    width: 400px;
+    width: 300px;
     margin-right: 20px;
     opacity: 0.7;
     border: 1px #cccccc solid;
@@ -116,7 +124,7 @@ body {
 }
 
 #floatingNickname {
-    width: 400px;
+    width: 300px;
     margin-right: 20px;
     opacity: 0.7;
     border: 1px #cccccc solid;
@@ -149,5 +157,31 @@ body {
     color: goldenrod;
 }
 
+#checkID {
+    width: auto;
+    white-space: nowrap;
+    margin-left: 0;
+}
 
+#checkID.checked:disabled{
+    background-color: mediumseagreen;
+    border: 1px solid #666666;
+    color: black;
+}
+
+#floatingNickname.pass{
+    border: mediumseagreen 2px solid;
+}
+
+#floatingPassword.pass {
+    border: mediumseagreen 2px solid;
+}
+
+#floatingPasswordConfirm.pass {
+    border: mediumseagreen 2px solid;
+}
+
+#floatingAge.pass {
+    border: mediumseagreen 2px solid;
+}
 

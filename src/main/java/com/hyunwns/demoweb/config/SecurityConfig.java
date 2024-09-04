@@ -91,6 +91,7 @@ public class SecurityConfig implements ApplicationContextAware {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/signup").permitAll()
+                        .requestMatchers("/checkID").permitAll()
                         //.requestMatchers("/static/**").permitAll() // 필터 체인을 거치지 않게 설정해줬음
                         .anyRequest().authenticated()
                 )

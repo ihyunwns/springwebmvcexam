@@ -38,6 +38,11 @@ public class MemberServiceImpl implements MemberService {
         return findMember;
     }
 
+    @Override
+    public boolean isMemberExist(String memberId) {
+        Member findMember = memberRepository.findOne(memberId);
+        return findMember != null;
+    }
 
     private void validateDuplicateMember(Member member) {
         List<Member> members = memberRepository.findById(member.getId());

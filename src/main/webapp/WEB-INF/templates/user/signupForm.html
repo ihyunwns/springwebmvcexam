@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Document</title>
-
 </head>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <link href="../../../static/css/registerForm.css" rel="stylesheet"/>
 <body>
     <a href="/" class="move-home">HOME < </a>
@@ -14,22 +14,23 @@
             회 원 가 입
         </div>
         <div class="form-container">
-            <form th:action="@{/signup}" th:object="${signupRequest}" method="post">
+            <form id="signupForm" th:action="@{/signup}" th:object="${signupRequest}" method="post">
                 <table class="form-table">
                     <tr class="form-group">
                         <td class="form_d">아이디</td>
-                        <td>
+                        <td class="test">
                             <div class="form-floating">
-                                <input type="text" class="form-control" id="floatingInput" placeholder="" th:field="*{id}">
+                                <input type="text" class="form-control" maxlength="10" id="floatingInput" placeholder="" th:field="*{id}" required>
                                 <label for="floatingInput">아이디</label>
                             </div>
                         </td>
+                        <td><button class="btn btn-outline-dark" type="button" id="checkID" disabled>아이디 확인</button></td>
                     </tr>
                     <tr class="form-group">
                         <td class="form_d">닉네임</td>
                         <td>
                             <div class="form-floating">
-                                <input type="text" class="form-control" id="floatingNickname" placeholder="" th:field="*{nickname}">
+                                <input type="text" class="form-control" minlength="2" maxlength="8" id="floatingNickname" placeholder="" th:field="*{nickname}" required>
                                 <label for="floatingNickname">닉네임</label>
                             </div>
                         </td>
@@ -38,7 +39,7 @@
                         <th class="form_d">비밀번호</th>
                         <td>
                             <div class="form-floating">
-                                <input type="password" class="form-control" id="floatingPassword" placeholder="" th:field="*{password}">
+                                <input type="password" class="form-control" id="floatingPassword" minlength="8" maxlength="16" placeholder="" th:field="*{password}" required>
                                 <label for="floatingPassword">비밀번호</label>
                             </div>
                         </td>
@@ -48,7 +49,7 @@
                         <!-- 비밀번호 확인 로직 적용해야 함 ! -->
                         <td>
                             <div class="form-floating">
-                                <input type="password" class="form-control" id="floatingPasswordConfirm" placeholder="">
+                                <input type="password" class="form-control" id="floatingPasswordConfirm" placeholder="" required>
                                 <label for="floatingPasswordConfirm">비밀번호 확인</label>
                             </div>
                         </td>
@@ -57,24 +58,23 @@
                         <th class="form_d">나이</th>
                         <td>
                             <div class="form-floating">
-                                <input type="number" class="form-control" id="floatingAge" placeholder="" th:field="*{age}">
+                                <input type="number" class="form-control" id="floatingAge" placeholder="" th:field="*{age}" required>
                                 <label for="floatingAge">나이</label>
                             </div>
                         </td>
                     </tr>
                     <tr class="form-group">
-                        <th class="form_d" colspan="2">
+                        <th class="form_d" colspan="3">
                             <div class="ar">
-                                <button type="submit" class="btn btn-outline-dark"> 회원가입</button>
+                                <button type="submit" id="submitBtn" class="btn btn-outline-dark"> 회원가입</button>
                             </div>
                         </th>
                     </tr>
                 </table>
             </form>
         </div>
-
     </div>
-
-
 </body>
 </html>
+<script src="../../../static/js/signup.js"></script>
+

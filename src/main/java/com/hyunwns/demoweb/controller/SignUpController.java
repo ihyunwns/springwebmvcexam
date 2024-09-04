@@ -2,9 +2,9 @@ package com.hyunwns.demoweb.controller;
 
 import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.dto.SignUpDTO;
-import com.hyunwns.demoweb.repository.MemberRepository;
 import com.hyunwns.demoweb.service.InputVerificationService;
 import com.hyunwns.demoweb.service.MemberService;
+import jakarta.servlet.ServletException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,31 +39,30 @@ public class SignUpController {
     }
 
     @PostMapping("/signup")
-    public String signUp(@ModelAttribute("signupRequest") SignUpDTO signUpDTO) {
+    public String signUp(@ModelAttribute("signupRequest") SignUpDTO signUpDTO, Model model) throws ServletException, IOException {
+        SignUpDTO afterVerification;
+        try {
+            afterVerification = inputVerificationService.verification(signUpDTO);
 
+            String id = afterVerification.getId();
+            String password = afterVerification.getPassword();
+            String nickname = afterVerification.getNickname();
+            int age = signUpDTO.getAge();
 
-        String id = signUpDTO.getId().toLowerCase();
-        if (memberService.isMemberExist(id)) {
-            System.out.println("동일 멤버 발견 가입 불가");
+            String bCryptPassword = bCryptPasswordEncoder.encode(password);
+            Member member = new Member(id, nickname, bCryptPassword, age);
+            memberService.join(member);
+
+            return "redirect:/";
+
+        } catch (RuntimeException e) {
+            // 모델에 담아서 signupFail에 넘겨줌
+            model.addAttribute("error", e.getMessage());
+
+            return "/info/signupFail";
         }
 
-        if (!inputVerificationService.IdVerification(id)) {
-            System.out.println("아이디 정규식 에러");
-        }
 
-        String nickname = signUpDTO.getNickname();
-        if(!inputVerificationService.NicknameVerification(nickname)) {
-            System.out.println("닉네임 검증 에러");
-        }
-
-        String password = bCryptPasswordEncoder.encode(signUpDTO.getPassword());
-
-        int age = signUpDTO.getAge();
-
-        Member member = new Member(id, nickname, password, age);
-        memberService.join(member);
-
-        return "redirect:/";
 
     }
 

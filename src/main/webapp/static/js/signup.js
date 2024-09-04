@@ -168,6 +168,8 @@ const signupForm = document.getElementById('signupForm');
             event.preventDefault();
             alert('다시 한번 입력을 확인해주세요!');
         } else {
-            alert('회원가입이 완료되었습니다!');
+            fetch('/signup')
+                .then(res => res.json())
+                .then(console.log('a'));
         }
 });

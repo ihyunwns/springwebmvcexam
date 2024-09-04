@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
@@ -43,7 +44,7 @@ class InputVerificationServiceTest {
 
         //given
 
-        String input = "ㅋ";
+        String input = "안";
         char index = input.charAt(0);
 
         if (index >= 0xAC00) {
@@ -55,8 +56,13 @@ class InputVerificationServiceTest {
             System.out.println(initialConsonants[f]);
             System.out.println(medialConsonants[s]);
             System.out.println(finalConsonants[t]);
+
+            Assertions.assertEquals("ㅇ", initialConsonants[f]);
+            Assertions.assertEquals("ㅏ", medialConsonants[s]);
+            Assertions.assertEquals("ㄴ", finalConsonants[t]);
+
         } else {
-            System.out.println(index);
+            Assertions.assertEquals('ㄴ', index);
         }
 
 
@@ -83,10 +89,50 @@ class InputVerificationServiceTest {
             }
         }
 
+    }
 
-        //when
+    @Test
+    public void 비밀번호_검증() throws Exception{
+        
+        //given
+        char[] specialChar = {33, 64, 35, 36, 37, 94, 126, 38, 42};
+        String input = "123456";
 
-        //then
+        int specialCount = 0;
+        int numberCount = 0;
+        for(char uniChar : input.toCharArray()){
+            // 영어 / 숫자가 아닌데
+            int count = 0;
+            if (!((uniChar >= 97 && uniChar <= 122) || (uniChar >= 65 && uniChar <= 90) || (uniChar >= 48 && uniChar <= 57))) {
+                // 특정 특수문자가 아닌 경우
+                for (char c : specialChar) {
+                    if (uniChar == c) {
+                        specialCount++;
+                        break;
+                    }
+                    count++;
+                }
+                //끝까지 발견을 못한 경우
+                if (count == 9) {
+                    System.out.println("검증 실패");
+                    return;
+                }
+            } else {
+                if (Character.isDigit(uniChar)) {
+                    numberCount++;
+                }
+            }
+        }
+
+        if (specialCount >= 1) {
+            if (numberCount >= 2) {
+                System.out.println("검증 성공");
+                return;
+            }
+        }
+
+        System.out.println("검증 실패");
+
     }
 
 }

@@ -47,7 +47,7 @@ check.addEventListener('click', function (event) {
 const nick_form = document.getElementById('floatingNickname');
 const nicknameCharPattern = /[ ~!@#$%";'^,&*()_+|</>=>`?:{[\}]/g;
 const completeKorean = /[가-힣]/g;
-const incompleteKorean = /[ㄱ-ㅎㅏ-ㅣ]/g;
+const incompleteKorean = /[ㄱ-ㅎㅏ-ㅣ]/;
 
 nick_form.addEventListener('keyup', function (event) {
     const value = nick_form.value;
@@ -68,10 +68,13 @@ nick_form.addEventListener('keyup', function (event) {
 
 nick_form.addEventListener('focusout', function (event) {
     const value = nick_form.value;
+
     if (value.length < 2 || value.length > 8 || incompleteKorean.test(value)) {
+        console.log('remove');
         nick_form.classList.remove('pass');
         passNick = false;
     } else if (value.length > 1 && value.length < 9 || completeKorean.test(value)){
+        console.log('add')
         nick_form.classList.add('pass');
         passNick = true;
     }

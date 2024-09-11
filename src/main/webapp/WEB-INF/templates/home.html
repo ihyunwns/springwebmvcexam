@@ -4,6 +4,15 @@
 </head>
 <link href="../../static/css/home.css" rel="stylesheet"/>
 <body>
+    <div th:if="${message}" th:text="${message}" id="flashMessage" style="display:none;"></div>
+    <script>
+        setTimeout(() => {
+            const message = document.getElementById('flashMessage').textContent;
+            if (message) {
+                alert(message);
+            }
+        }, 100);
+    </script>
     <div class="container" >
         <div class="header-text">메인 화면</div>
         <div class="main" >

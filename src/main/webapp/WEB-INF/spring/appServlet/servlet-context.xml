@@ -17,7 +17,7 @@
         <beans:property name="suffix" value=".html" />
         <beans:property name="templateMode" value="HTML" />
         <beans:property name="characterEncoding" value="UTF-8" />
-        <beans:property name="cacheable" value="true"/>
+        <beans:property name="cacheable" value="false"/>
     </beans:bean>
 
     <!-- 템플릿을 실제로 처리하는 엔진, templateResolver 에서 제공된 템플릿을 가져와서 데이터를 채워넣고, 최종 HTML을 생성하는 역할 -->
@@ -32,6 +32,7 @@
     <beans:bean class="org.thymeleaf.spring6.view.ThymeleafViewResolver">
         <beans:property name="templateEngine" ref="templateEngine" />
         <beans:property name="characterEncoding" value="UTF-8" />
+        <beans:property name="cache" value="false"/>
 <!--        <beans:property name="viewNames" value="thymeleaf/*" />  -->
     </beans:bean>
 

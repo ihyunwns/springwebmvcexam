@@ -1,7 +1,5 @@
 package com.hyunwns.demoweb.config;
 
-import com.hyunwns.demoweb.repository.MemberRepository;
-import com.hyunwns.demoweb.repository.MemoryMemberRepository;
 import com.hyunwns.demoweb.security.CustomAuthenticationFailureHandler;
 import com.hyunwns.demoweb.security.CustomSessionExpiredStrategy;
 import com.hyunwns.demoweb.service.CustomUserDetailsService;
@@ -19,9 +17,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;

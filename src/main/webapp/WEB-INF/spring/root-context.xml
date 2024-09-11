@@ -9,4 +9,5 @@
        http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- ROOT CONTEXT 전역 설정, 공통으로 사용할 부분 -->
+
 </beans>

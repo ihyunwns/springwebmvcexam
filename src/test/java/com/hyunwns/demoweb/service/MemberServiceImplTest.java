@@ -6,13 +6,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MemberServiceImplTest {
 
     MemberService memberService;
-    static String path = "C:\\Users\\ihyun\\Desktop\\demoweb\\src\\main\\webapp\\WEB-INF\\spring\\appServlet\\servlet-context.xml";
+    static String path = "C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\webapp\\WEB-INF\\spring\\appServlet\\servlet-context.xml";
 
     @BeforeEach
     void setUp() {
@@ -30,7 +31,7 @@ class MemberServiceImplTest {
         memberService.join(member);
 
         //then
-        Assertions.assertThrows(IllegalStateException.class, () -> memberService.findMember("test"));
+        Assertions.assertThrows(UsernameNotFoundException.class, () -> memberService.findMember("test"));
     }
 
 }

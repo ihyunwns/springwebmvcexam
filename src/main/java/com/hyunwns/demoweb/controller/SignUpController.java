@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class SignUpController {
     }
 
     @PostMapping("/signup")
-    public String signUp(@ModelAttribute("signupRequest") SignUpDTO signUpDTO, Model model) throws ServletException, IOException {
+    public String signUp(@ModelAttribute("signupRequest") SignUpDTO signUpDTO, Model model, RedirectAttributes redirectAttributes) throws ServletException, IOException {
         SignUpDTO afterVerification;
         try {
             afterVerification = inputVerificationService.verification(signUpDTO);
@@ -53,16 +54,17 @@ public class SignUpController {
             Member member = new Member(id, nickname, bCryptPassword, age);
             memberService.join(member);
 
+            redirectAttributes.addFlashAttribute("message", "회원가입이 완료되었습니다.");
+
             return "redirect:/";
 
         } catch (RuntimeException e) {
             // 모델에 담아서 signupFail에 넘겨줌
+            log.debug(e.getMessage());
             model.addAttribute("error", e.getMessage());
 
             return "/info/signupFail";
         }
-
-
 
     }
 

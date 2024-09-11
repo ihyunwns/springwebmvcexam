@@ -1,14 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head th:replace="~{fragments/header :: header}">
 </head>
+<link href="../../../static/css/home.css" rel="stylesheet"/>
 <body>
-    <div th:if="${error}">
-        <p th:text="${error}"></p>
+<div class="container" >
+    <div class="header-text">메인 화면</div>
+    <div class="main" >
+        <div class="header-container">Spring MVC Exam</div>
+        <div class="form-container">
+            <div th:if="${error}">
+                <p style="font-size:30px; color: yellow" th:text="${error}">a</p>
+            </div>
+            <a href="/signup"> 다시시도 </a>
+        </div>
     </div>
-
-    <a href="/signup"> 다시시도 </a>
+    <br>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
 </body>
 </html>

@@ -32,6 +32,7 @@ public class MainController {
         GrantedAuthority authority = authorities.iterator().next();
         String role = authority.getAuthority();
 
+
         model.addAttribute("id", id);
         model.addAttribute("nickname", member.getNickname());
         model.addAttribute("role", role);

@@ -23,7 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
 
-
     // "/login" 경로로 POST 요청이 오면 스프링 시큐리티 내부적으로 UsernamePasswordAuthenticationFilter 가 동작을 하게되고
     // 이때 AuthenticationProvider(인터페이스) > DaoAuthenticationProvider(구현체) 에 의해 CustomUserDetailsService 의 loadUserByUsername 을 호출하여 DB에 있는 유저를 조회하게 됩니다.
     @Override

@@ -70,11 +70,9 @@ nick_form.addEventListener('focusout', function (event) {
     const value = nick_form.value;
 
     if (value.length < 2 || value.length > 8 || incompleteKorean.test(value)) {
-        console.log('remove');
         nick_form.classList.remove('pass');
         passNick = false;
     } else if (value.length > 1 && value.length < 9 || completeKorean.test(value)){
-        console.log('add')
         nick_form.classList.add('pass');
         passNick = true;
     }
@@ -170,9 +168,5 @@ const signupForm = document.getElementById('signupForm');
         if (!passID || !passNick || !passPW || !passPWC || !passAge) {
             event.preventDefault();
             alert('다시 한번 입력을 확인해주세요!');
-        } else {
-            fetch('/signup')
-                .then(res => res.json())
-                .then(console.log('a'));
         }
 });

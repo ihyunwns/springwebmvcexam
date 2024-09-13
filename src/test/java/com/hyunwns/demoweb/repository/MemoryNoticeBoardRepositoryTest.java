@@ -19,13 +19,16 @@ class MemoryNoticeBoardRepositoryTest {
         String[] content = {"안녕하세요", "테스트입니다."};
 
 
-        Post post = new Post(1L, member, "테스트", content);
+        Post post = new Post(member, "테스트", content);
+        Post post2 = new Post(member, "테스트2", content);
 
         //when
         repository.save(post);
+        repository.save(post2);
 
+        String title = repository.find(2L).getTitle();
         //then
-        Assertions.assertEquals(1, repository.size());
+        Assertions.assertEquals("테스트2", title);
 
     }
 
@@ -36,7 +39,7 @@ class MemoryNoticeBoardRepositoryTest {
         Member member = new Member("test", "테스트", "test", 25);
 
         String[] content = {"안녕하세요", "테스트입니다."};
-        Post post = new Post(1L, member, "테스트", content);
+        Post post = new Post(member, "테스트", content);
 
         //when
         repository.save(post);

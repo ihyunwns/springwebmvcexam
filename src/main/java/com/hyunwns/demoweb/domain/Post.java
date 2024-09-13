@@ -3,6 +3,7 @@ package com.hyunwns.demoweb.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,8 +11,9 @@ import java.util.List;
 @Getter @Setter
 public class Post {
 
-    private final Long id;
+    private Long id;
     private final Member author;
+    private final LocalDateTime published;
 
     private String title;
     private String[] content;
@@ -19,12 +21,13 @@ public class Post {
 
     private List<Comment> comments;
 
-    public Post(Long id, Member author, String title, String[] content) {
-        this.id = id;
+    public Post(Member author, String title, String[] content) {
+
         this.author = author;
         this.title = title;
         this.content = content;
 
+        published = LocalDateTime.now();
         isDeleted = false;
         comments = new ArrayList<>();
     }

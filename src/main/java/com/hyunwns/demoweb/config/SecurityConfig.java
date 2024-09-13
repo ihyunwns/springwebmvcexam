@@ -32,6 +32,7 @@ import org.springframework.security.web.session.SessionInformationExpiredStrateg
 @EnableWebSecurity(debug = true)
 public class SecurityConfig implements ApplicationContextAware {
 
+
 //    @Bean @Primary
 //    public MemberRepository memberRepository() {
 //        return new MemoryMemberRepository();

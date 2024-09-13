@@ -5,8 +5,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    width: auto;
+    min-height: 100vh;
+    width: 100%;
 }
 
 .form-container {
@@ -14,8 +14,9 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 150vh;
-    height: 800px;
+    width:80%; /* 화면 크기에 맞게 조정 */
+    max-width: 80%; /* 최대 너비 제한 */
+    height: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -41,14 +42,8 @@ textarea {
 
 textarea {
     resize: none;
-    min-height: 500px;
+    min-height: 500px; /* 최소 높이 설정 */
 }
-
-
-textarea #content {
-    height: 1000px;
-}
-
 
 .submit-btn {
     width: 100%;
@@ -63,4 +58,9 @@ textarea #content {
 
 .submit-btn:hover {
     background-color: #218838;
+}
+
+.alert {
+    width: 100%; /* 에러 메시지 너비를 폼에 맞춤 */
+    margin-top: 10px;
 }

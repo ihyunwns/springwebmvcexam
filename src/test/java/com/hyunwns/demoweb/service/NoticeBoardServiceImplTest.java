@@ -29,7 +29,7 @@ class NoticeBoardServiceImplTest {
     @Test
     public void 게시물_게시() throws Exception {
         //given
-        String[] content = {"안녕하세요", "테스트입니다"};
+        String content = "안녕하세요 테스트입니다.";
         Member member = new Member("test", "테스트", "test", 25);
 
         Post post = new Post(member, "테스트", content);

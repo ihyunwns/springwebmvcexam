@@ -17,6 +17,10 @@
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+        <multipart-config>
+            <max-file-size>5242880</max-file-size>
+            <max-request-size>5242880</max-request-size>
+        </multipart-config>
     </servlet>
 
     <!-- 모든 요청이긴 하나 구체적 매핑이 없어 처리되지 못한 것이 Dispatcher Servlet 으로 오게 된다. -->
@@ -35,16 +39,31 @@
         <session-timeout>30</session-timeout>
     </session-config>
 
+
     <filter>
         <filter-name>encodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
     </filter>
-
-    <!-- 모든 요청에 대해서 필터 처리 -->
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
+    <filter>
+        <display-name>springMultipartFilter</display-name>
+        <filter-name>springMultipartFilter</filter-name>
+        <filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springMultipartFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 </web-app>

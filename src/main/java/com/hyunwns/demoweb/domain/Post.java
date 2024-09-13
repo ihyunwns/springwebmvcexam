@@ -3,6 +3,7 @@ package com.hyunwns.demoweb.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,12 +17,14 @@ public class Post {
     private final LocalDateTime published;
 
     private String title;
-    private String[] content;
+    private String content;
     private boolean isDeleted;
+
+    private File thumbnail;
 
     private List<Comment> comments;
 
-    public Post(Member author, String title, String[] content) {
+    public Post(Member author, String title, String content) {
 
         this.author = author;
         this.title = title;
@@ -30,6 +33,7 @@ public class Post {
         published = LocalDateTime.now();
         isDeleted = false;
         comments = new ArrayList<>();
+
     }
 
 }

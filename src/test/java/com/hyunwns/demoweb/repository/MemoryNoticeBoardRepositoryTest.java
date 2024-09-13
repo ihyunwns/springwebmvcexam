@@ -16,7 +16,7 @@ class MemoryNoticeBoardRepositoryTest {
         MemoryNoticeBoardRepository repository = new MemoryNoticeBoardRepository();
         Member member = new Member("test", "테스트", "test", 25);
 
-        String[] content = {"안녕하세요", "테스트입니다."};
+        String content = "안녕하세요 테스트입니다.";
 
 
         Post post = new Post(member, "테스트", content);
@@ -38,7 +38,7 @@ class MemoryNoticeBoardRepositoryTest {
         NoticeBoardRepository repository = new MemoryNoticeBoardRepository();
         Member member = new Member("test", "테스트", "test", 25);
 
-        String[] content = {"안녕하세요", "테스트입니다."};
+        String content = "안녕하세요 테스트입니다.";
         Post post = new Post(member, "테스트", content);
 
         //when

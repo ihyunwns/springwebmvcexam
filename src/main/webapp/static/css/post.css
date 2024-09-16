@@ -91,6 +91,19 @@
 
 .pagination a:hover {
     background-color: #ddd;
+    cursor: pointer;
+}
+
+.pagination a.active {
+    color: #666666;
+    text-decoration: underline;
+}
+
+.pagination a.disabled {
+    pointer-events: none; /* 클릭 비활성화 */
+    color: gray;          /* 색상 변경 */
+    cursor: default;      /* 커서 변경 */
+    text-decoration: none;
 }
 
 .write-btn {

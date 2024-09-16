@@ -38,11 +38,7 @@ public class MainController {
         securityUtils.addAttributeUserInfo(model);
         Page page = noticeBoardService.findPost(postSearch);
 
-        List<Post> findPost = page.getPosts();
-        System.out.println(page.getCurrent_page());
-        System.out.println(page.getLast_page());
-
-        model.addAttribute("posts", findPost);
+        model.addAttribute("page", page);
 
         return "main";
     }

@@ -80,6 +80,7 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
                     .posts(pagingPosts)
                     .currentPage(current_page)
                     .lastPage(last_page)
+                    .pageList(getPageList(current_page, last_page))
                     .build();
 
         } else {
@@ -101,6 +102,7 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
                     .posts(pagingPosts)
                     .currentPage(current_page)
                     .lastPage(last_page)
+                    .pageList(getPageList(current_page, last_page))
                     .build();
         }
     }
@@ -127,6 +129,19 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
         } else {
             return c;
         }
+    }
+
+    private List<Integer> getPageList(int currentPage, int lastPage) {
+        List<Integer> pageList = new ArrayList<>();
+
+        int start = ((currentPage - 1) / 9) * 9 + 1;
+        for (int i = 0; i < 9; i++) {
+            if (start > lastPage) {
+                break;
+            }
+            pageList.add(start++);
+        }
+        return pageList;
     }
 
 }

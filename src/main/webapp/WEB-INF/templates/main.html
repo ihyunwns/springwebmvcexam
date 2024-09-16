@@ -10,7 +10,8 @@
     <div th:replace="~{fragments/navigation :: bar}"></div>
 
     <div class="container">
-        <div th:each="post : ${posts}" class="card" th:onclick=" 'move_details('+${post.id}+')' ">
+        <div th:each="post : ${page.posts}" class="card"
+             th:onclick=" 'move_details('+${post.id}+')' ">
             <script>
                 function move_details(id) {
                     window.location.href = "/details/" + id;
@@ -30,33 +31,55 @@
         <!-- 검색창 -->
         <div class="search-bar">
             <form th:action="@{/main}" th:object="${postSearch}" method="get" >
-                <input th:field="*{search}" type="text" maxlength="100" placeholder="검색">
+                <input id="search" th:field="*{search}" type="text" maxlength="100" placeholder="검색">
                 <input th:field="*{page}" type="hidden">
                 <button type="submit">검색</button>
             </form>
         </div>
         <!-- 페이지네이션 -->
         <div class="pagination">
-            <a href="#">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">4</a>
-            <a href="#">5</a>
-            <a href="#">6</a>
-            <a href="#">7</a>
-            <a href="#">8</a>
-            <a href="#">9</a>
-            <a href="#">></a>
-            <a href="#">>></a>
+            <a th:each="pageNum : ${page.pageList}"
+               th:text="${pageNum}"
+               th:onclick="'searchWithPage('+${pageNum}+')'"
+               th:classappend="${page.current_page == pageNum} ? 'active' : ''"
+            />
+
+            <a th:classappend="${page.current_page >= page.last_page} ? 'disabled' : ''"
+               th:onclick="'searchWithPage('+ ${page.current_page+1} +')'" >></a>
+
+            <a th:classappend="${page.current_page >= page.last_page} ? 'disabled' : ''"
+               th:onclick="'searchWithPage('+ ${page.last_page} +')'">>></a>
         </div>
 
         <!-- 글쓰기 버튼 -->
         <button class="write-btn" onclick="location.href='post'">글쓰기</button>
     </div>
-
-
-
-
 </body>
+<script>
+    function searchWithPage(page) {
 
+        var form = document.createElement("form");
+        form.setAttribute("method", "get");
+        form.setAttribute("action", "/main");
+
+        var value = document.getElementById("search").value;
+
+        var searchInput = document.createElement("input");
+        searchInput.setAttribute("type", "hidden");
+        searchInput.setAttribute("name", "search");
+        searchInput.setAttribute("value", value);
+
+        form.appendChild(searchInput);
+
+        // page 파라미터
+        var pageInput = document.createElement("input");
+        pageInput.setAttribute("type", "hidden");
+        pageInput.setAttribute("name", "page");
+        pageInput.setAttribute("value", page);
+        form.appendChild(pageInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
 </html>

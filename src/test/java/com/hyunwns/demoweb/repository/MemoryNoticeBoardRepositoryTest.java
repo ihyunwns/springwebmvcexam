@@ -91,4 +91,24 @@ class MemoryNoticeBoardRepositoryTest {
 
         //then
     }
+
+    @Test
+    public void 페이지_리스트() throws Exception{
+        //given
+        int current = 10;
+
+        int last = 9;
+
+        //when
+        int start = ((current - 1) / 9) * 9 + 1;
+        System.out.println("start " + start);
+
+        for (int i = 0; i < 9; i++) {
+            if (start > last) {
+                break;
+            }
+            System.out.println(start++);
+
+        }
+    }
 }

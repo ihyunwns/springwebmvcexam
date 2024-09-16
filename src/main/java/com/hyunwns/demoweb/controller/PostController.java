@@ -48,6 +48,24 @@ public class PostController {
     private final NoticeBoardService noticeBoardService;
     private final MemberService memberService;
 
+    @GetMapping(value = "/details/{postId}")
+    public String details(@PathVariable("postId") Long postId, Model model) {
+        securityUtils.addAttributeUserInfo(model);
+
+        Post post = noticeBoardService.findPost(postId);
+
+        model.addAttribute("content", post.getContent());
+        model.addAttribute("title", post.getTitle());
+        model.addAttribute("author", post.getAuthor());
+
+        String date = post.getPublished().toString().split("\\.")[0];
+        String replace = date.replace("T", " ");
+
+        model.addAttribute("published", replace);
+
+        return "board/boardForm";
+    }
+
     @GetMapping("/display/{filename}")
     public ResponseEntity<Resource> display(@PathVariable("filename") String filename) {
         try {

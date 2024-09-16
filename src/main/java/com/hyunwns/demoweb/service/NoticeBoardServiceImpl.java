@@ -33,4 +33,8 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
         return noticeBoardRepository.findAll(postSearch);
     }
 
+    @Override
+    public Post findPost(Long id) {
+        return noticeBoardRepository.find(id);
+    }
 }

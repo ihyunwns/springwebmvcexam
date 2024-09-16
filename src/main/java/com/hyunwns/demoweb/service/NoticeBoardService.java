@@ -15,5 +15,6 @@ public interface NoticeBoardService {
     //검색하기
     List<Post> findPost(PostSearch postSearch);
 
+    Post findPost(Long id);
 
 }

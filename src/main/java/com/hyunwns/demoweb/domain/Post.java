@@ -3,6 +3,7 @@ package com.hyunwns.demoweb.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +21,8 @@ public class Post {
     private String content;
     private boolean isDeleted;
 
-    private File thumbnail;
+    private String thumbnailURL;
+    private String thumbnailName;
 
     private List<Comment> comments;
 

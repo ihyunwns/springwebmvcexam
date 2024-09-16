@@ -30,7 +30,7 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
 
     @Override
     public List<Post> findPost(PostSearch postSearch) {
-        return List.of();
+        return noticeBoardRepository.findAll(postSearch);
     }
 
 }

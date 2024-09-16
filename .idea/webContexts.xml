@@ -5,6 +5,7 @@
       <map>
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/templates/board/postForm.html" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/templates/board" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/templates/home.html" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/templates" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/templates/main.html" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/templates" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/templates/user/signupForm.html" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/templates/user" />
       </map>
     </option>

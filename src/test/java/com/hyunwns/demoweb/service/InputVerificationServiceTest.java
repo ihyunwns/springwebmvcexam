@@ -135,5 +135,19 @@ class InputVerificationServiceTest {
 
     }
 
+    @Test
+    public void 글자_포함() throws Exception{
+        //given
+        String text = "테스트";
+        char c = 'ㅌ';
+        //when
+        if (text.contains("ㅌ")) {
+            System.out.println("contain");
+        }
+
+
+        //then
+    }
+
 }
 

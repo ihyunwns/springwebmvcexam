@@ -41,35 +41,25 @@
 <!-- 개발 이후 삭제 위에 -->
 
 <div class="container">
-    <div class="card">
-        <div class="thumbnail">썸네일</div>
-        <div class="info">
-            <span class="subject">제목</span>
-            <span class="author">작성자</span>
+    <div th:each="post : ${posts}" class="card">
+        <div class="thumbnail">
+            <img th:src="@{'/display/' + ${post.thumbnailName}}" alt="썸네일"/>
         </div>
-    </div>
-
-    <div class="card">
-        <div class="thumbnail">썸네일</div>
         <div class="info">
-            <span class="subject">제목</span>
-            <span class="author">작성자</span>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="thumbnail">썸네일</div>
-        <div class="info">
-            <span class="subject">제목</span>
-            <span class="author">작성자</span>
+            <span th:text="${post.title}" class="subject">제목</span>
+            <span th:text="${post.author.id}" class="author">작성자</span>
         </div>
     </div>
 
     <!-- 검색창 -->
     <div class="search-bar">
-        <input type="text" placeholder="검색">
-        <button>검색</button>
+        <form th:action="@{/main}" th:object="${postSearch}" method="get" >
+                <input th:field="*{search}" type="text" maxlength="100" placeholder="검색">
+                <input th:field="*{page}" type="hidden">
+                <button type="submit">검색</button>
+        </form>
     </div>
+
 
     <!-- 페이지네이션 -->
     <div class="pagination">

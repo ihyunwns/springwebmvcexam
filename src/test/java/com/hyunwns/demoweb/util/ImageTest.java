@@ -1,14 +1,15 @@
 package com.hyunwns.demoweb.util;
 
+import jakarta.servlet.ServletContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class ImageTest {
 
@@ -20,7 +21,7 @@ public class ImageTest {
 
         //Form으로 넘어온 이미지 파일을 받아서
         //given
-        String imagePath = "C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\resources\\thumbnail\\test.png";
+        String imagePath = "C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\resources\\output\\test.png";
         BufferedImage image = null;
 
         File imgFile = new File(imagePath);
@@ -35,8 +36,11 @@ public class ImageTest {
         try{
             BufferedImage bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
             bufferedImage.createGraphics().drawImage(image, 0, 0, WIDTH, HEIGHT, null);
+            File file = new File("resources/thumbnail/" + fileName);
 
-            ImageIO.write(bufferedImage, "png", new File("C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\resources\\output\\" + fileName));
+            System.out.println(file.toURI());
+
+            ImageIO.write(bufferedImage, "png", file);
             System.out.println("이미지가 성공적으로 저장되었습니다.");
         }catch (Exception e){
             System.out.println("에러 발생");

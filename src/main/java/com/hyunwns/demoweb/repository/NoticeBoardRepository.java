@@ -19,6 +19,6 @@ public interface NoticeBoardRepository {
     // void update(Post post);
 
     //검색하기
-    List<Post> findAll(PostSearch postSearch);
+    Page findAll(PostSearch postSearch);
 
 }

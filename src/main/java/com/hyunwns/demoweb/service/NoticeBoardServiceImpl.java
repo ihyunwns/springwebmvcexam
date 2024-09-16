@@ -2,6 +2,7 @@ package com.hyunwns.demoweb.service;
 
 import com.hyunwns.demoweb.domain.Post;
 import com.hyunwns.demoweb.repository.NoticeBoardRepository;
+import com.hyunwns.demoweb.repository.Page;
 import com.hyunwns.demoweb.repository.PostSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
     }
 
     @Override
-    public List<Post> findPost(PostSearch postSearch) {
+    public Page findPost(PostSearch postSearch) {
         return noticeBoardRepository.findAll(postSearch);
     }
 

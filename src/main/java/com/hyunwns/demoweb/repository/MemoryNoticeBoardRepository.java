@@ -1,15 +1,12 @@
 package com.hyunwns.demoweb.repository;
 
-import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.servlet.support.JstlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
@@ -37,9 +34,9 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
     }
 
     @Override
-    public List<Post> findAll(PostSearch postSearch) {
+    public Page findAll(PostSearch postSearch) {
         String searchString = postSearch.getSearch();
-        if (!(searchString == null)) {
+        if ( searchString != null && !searchString.isEmpty() ) {
 
             List<Post> posts = new ArrayList<>();
 
@@ -64,9 +61,47 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
                     }
                 }
             }
-            return posts;
+
+            int count_posts = posts.size();
+
+            int current_page = postSearch.getPage();
+            int currentPage_post = (current_page - 1) * 9;
+            List<Post> pagingPosts = new ArrayList<>();
+            for (int i = 0; i < 9; i++) {
+                if(currentPage_post+i > count_posts-1) {
+                    break;
+                }
+                pagingPosts.add( posts.get(currentPage_post + i) );
+            }
+
+            int last_page = ((count_posts -1) /9) + 1;
+
+            return new Page.PageBuilder()
+                    .posts(pagingPosts)
+                    .currentPage(current_page)
+                    .lastPage(last_page)
+                    .build();
+
         } else {
-            return new ArrayList<>(store.values());
+            int count_posts = store.size();
+            int current_page = postSearch.getPage();
+            long currentPage_post = ((current_page - 1) * 9L + 1);
+            int last_page = ((count_posts -1) /9) + 1;
+
+            List<Post> pagingPosts = new ArrayList<>();
+
+            for (int i = 0; i < 9; i++) {
+                if(currentPage_post+i > count_posts) {
+                    break;
+                }
+                pagingPosts.add(store.get(currentPage_post + i));
+            }
+
+            return new Page.PageBuilder()
+                    .posts(pagingPosts)
+                    .currentPage(current_page)
+                    .lastPage(last_page)
+                    .build();
         }
     }
 

@@ -2,6 +2,7 @@ package com.hyunwns.demoweb.controller;
 
 import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
+import com.hyunwns.demoweb.repository.Page;
 import com.hyunwns.demoweb.repository.PostSearch;
 import com.hyunwns.demoweb.service.MemberService;
 import com.hyunwns.demoweb.service.NoticeBoardService;
@@ -35,7 +36,11 @@ public class MainController {
     public String mainPage(@ModelAttribute("postSearch") PostSearch postSearch, Model model) {
 
         securityUtils.addAttributeUserInfo(model);
-        List<Post> findPost = noticeBoardService.findPost(postSearch);
+        Page page = noticeBoardService.findPost(postSearch);
+
+        List<Post> findPost = page.getPosts();
+        System.out.println(page.getCurrent_page());
+        System.out.println(page.getLast_page());
 
         model.addAttribute("posts", findPost);
 

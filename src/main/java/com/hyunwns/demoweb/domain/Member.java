@@ -14,6 +14,7 @@ public class Member {
     private final String password;
     private final int age;
 
+    @Setter
     private String role;
 
     public Member(String id, String nickname, String password, int age) {
@@ -23,9 +24,6 @@ public class Member {
         this.age = age;
     }
 
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     @Override
     public String toString() {

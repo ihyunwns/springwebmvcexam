@@ -13,6 +13,7 @@ public class PostForm {
 
     private String title;
     private String content;
+    private Long postId;
 //    private String author;
 
 }

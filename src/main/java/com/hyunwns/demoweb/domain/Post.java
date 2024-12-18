@@ -3,11 +3,8 @@ package com.hyunwns.demoweb.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter @Setter
@@ -36,6 +33,10 @@ public class Post {
         isDeleted = false;
         comments = new ArrayList<>();
 
+    }
+
+    public boolean getIsDeleted() {
+        return isDeleted;
     }
 
 }

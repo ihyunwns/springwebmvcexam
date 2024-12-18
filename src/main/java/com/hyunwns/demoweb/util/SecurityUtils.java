@@ -4,11 +4,9 @@ import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
@@ -21,7 +19,7 @@ public class SecurityUtils {
 
     private final MemberService memberService;
 
-    public void addAttributeUserInfo(Model model) {
+    public Member addAttributeUserInfo(Model model) {
         if(SecurityContextHolder.getContext().getAuthentication() == null) {
             log.debug("Not Found UserDetails in SecurityContextHolder");
             throw new RuntimeException("유저 정보를 찾지 못했습니다");
@@ -38,6 +36,8 @@ public class SecurityUtils {
         model.addAttribute("id", id);
         model.addAttribute("nickname", member.getNickname());
         model.addAttribute("role", role);
+
+        return member;
 
     }
 }

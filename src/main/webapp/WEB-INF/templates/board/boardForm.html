@@ -17,6 +17,14 @@
             <h2 class="title" th:text="${title}"></h2>
             <p class="info" th:text="'작성일자:' + ${published}">작성일자: xxxx-xx-xx</p>
             <p class="info" th:text="'작성자: ' + ${author.id}" >작성자: 홍길동</p>
+            <div class="btn-section" th:if="${POST_OWNER}">
+                <form th:action="@{'/details/'+${postId}+'/edit'}" method="get" class="inline-form">
+                    <button class="edit-btn" type="submit">수정하기</button>
+                </form>
+                <form th:action="@{'/details/'+${postId}+'/delete'}" method="get" class="inline-form">
+                    <button class="delete-btn" type="submit">삭제하기</button>
+                </form>
+            </div>
             <hr>
             <div class="content">
                 <pre th:text="${content}" style="font-family: Pretendard SemiBold, serif;"></pre>

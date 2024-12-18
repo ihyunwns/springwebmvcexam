@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head th:replace="fragments/header :: header">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Document</title>
+</head>
+<link href="../../../static/css/main.css" rel="stylesheet"/>
+<link href="../../../static/css/postForm.css" rel="stylesheet"/>
+<body>
+<div th:replace="~{fragments/navigation :: bar}"></div>
+
+<div class="body-main">
+  <div class="form-container">
+    <form id="postForm" th:action="@{/edit}" th:object="${postRequest}" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="title">제목</label>
+        <input type="text" id="title" maxlength="12" th:field="*{title}" th:value="${title}" placeholder="제목을 입력하세요" required>
+      </div>
+
+      <div class="form-group">
+        <label for="file">현재 썸네일</label>
+        <img th:src="@{'/display/' + ${imageName} }" alt="Uploaded Image" style="margin-bottom: 5px"/>
+        <input type="file" id="file" th:field="*{imgFile}">
+      </div>
+
+      <div class="form-group">
+        <label for="content"></label>
+        <textarea id="content" th:field="*{content}" rows="10" placeholder="내용을 입력하세요"></textarea>
+      </div>
+
+      <div class="form-group alert alert-danger" th:if="${#fields.hasErrors('imgFile')}">
+        <p th:errors="*{imgFile}"></p>
+      </div>
+
+      <input type="hidden" th:field="*{postId}"/>
+
+      <div class="form-group">
+        <button type="submit" class="submit-btn">수정하기</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

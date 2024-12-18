@@ -36,12 +36,21 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
     @Override
     public Page findAll(PostSearch postSearch) {
         String searchString = postSearch.getSearch();
+
+        List<Post> postList = new ArrayList<>();
+        for (Post post : store.values()) {
+            if ( !post.getIsDeleted() ){
+                  postList.add(post);
+            }
+        }
+
         if ( searchString != null && !searchString.isEmpty() ) {
+            searchString = searchString.toLowerCase();
 
             List<Post> posts = new ArrayList<>();
 
-            for(Post post : store.values()) {
-                String title = post.getTitle();
+            for(Post post : postList) {
+                String title = post.getTitle().toLowerCase();
 
                 StringBuilder text = new StringBuilder();
                 StringBuilder initialText = new StringBuilder();
@@ -52,10 +61,10 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
                     } else { initialText.append(c); }
                     text.append(c);
 
-                    if (text.toString().equals(searchString)) {
+                    if (text.toString().contains(searchString)) {
                         posts.add(post);
                         break;
-                    } else if(initialText.toString().equals(searchString)) {
+                    } else if(initialText.toString().contains(searchString)) {
                         posts.add(post);
                         break;
                     }
@@ -84,18 +93,19 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
                     .build();
 
         } else {
-            int count_posts = store.size();
+            int count_posts = postList.size();
             int current_page = postSearch.getPage();
-            long currentPage_post = ((current_page - 1) * 9L + 1);
+            int currentPage_post = ((current_page - 1) * 9);
             int last_page = ((count_posts -1) /9) + 1;
+
 
             List<Post> pagingPosts = new ArrayList<>();
 
             for (int i = 0; i < 9; i++) {
-                if(currentPage_post+i > count_posts) {
+                if(currentPage_post+i >= count_posts) {
                     break;
                 }
-                pagingPosts.add(store.get(currentPage_post + i));
+                pagingPosts.add(postList.get(currentPage_post + i));
             }
 
             return new Page.PageBuilder()
@@ -105,11 +115,6 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
                     .pageList(getPageList(current_page, last_page))
                     .build();
         }
-    }
-
-
-    public int size() {
-        return store.size();
     }
 
     private boolean isKorean(char t) {

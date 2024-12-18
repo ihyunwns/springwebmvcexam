@@ -99,3 +99,18 @@ body {
     font-size: 14px;
     color: #333;
 }
+
+.btn-section {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+    border: none;
+    background: none;
+    color: #666666;
+    cursor: pointer;
+    font-size: 10px;
+}

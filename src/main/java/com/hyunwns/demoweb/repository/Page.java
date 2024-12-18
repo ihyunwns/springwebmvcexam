@@ -51,6 +51,4 @@ public class Page {
             return new Page(this);  // Page 객체 생성
         }
     }
-
-
 }

@@ -12,9 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,9 +35,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Controller
@@ -48,15 +52,91 @@ public class PostController {
     private final NoticeBoardService noticeBoardService;
     private final MemberService memberService;
 
+    @GetMapping(value = "/details/{postId}/delete")
+    public String delete(@PathVariable("postId") Long postId, Model model) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Post post = noticeBoardService.findPost(postId);
+
+        String id = auth.getName();
+        Member member = memberService.findMember(id);
+        if (member != post.getAuthor()) {
+            return "redirect:/main";
+        }
+
+        noticeBoardService.delete(postId);
+        return "redirect:/main";
+    }
+
+    @GetMapping(value = "/details/{postId}/edit")
+    public String edit(@PathVariable("postId") Long postId, Model model) {
+        Member member = securityUtils.addAttributeUserInfo(model);
+        Post post = noticeBoardService.findPost(postId);
+
+        if (member != post.getAuthor()) {
+            return "redirect:/main";
+        }
+
+        PostForm postForm = new PostForm();
+        postForm.setPostId(postId); postForm.setTitle(post.getTitle()); postForm.setContent(post.getContent());
+
+        // 객체 바인딩
+        model.addAttribute("postRequest", postForm);
+        model.addAttribute("imageName", post.getThumbnailName());
+
+        return "board/editForm";
+    }
+
+    @PostMapping("edit")
+    public String edit(@ModelAttribute("postRequest") PostForm postRequest, Model model, BindingResult bindingResult){
+        try {
+            MultipartFile imgFile = postRequest.getImgFile();
+
+            if (!imgFile.isEmpty() && !isImageFile(imgFile)) {
+                model.addAttribute("title", postRequest.getTitle());
+                model.addAttribute("content", postRequest.getContent());
+                bindingResult.addError(new FieldError("postRequest", "imgFile", "잘못된 파일 형식입니다. 이미지 파일을 등록해주세요."));
+
+                model.addAttribute("imageName", noticeBoardService.findPost(postRequest.getPostId()).getThumbnailName());
+                return "board/editForm";
+            }
+
+            Post post = noticeBoardService.findPost(postRequest.getPostId());
+
+            String title = postRequest.getTitle(); String content = postRequest.getContent();
+            post.setTitle(title); post.setContent(content);
+
+            if (!imgFile.isEmpty()) {
+                String filename = UUID.randomUUID() + "-" + post.getTitle();
+                String name = postRequest.getImgFile().getOriginalFilename();
+                String extension = name.substring(name.lastIndexOf(".") + 1); // 확장자 추출
+
+                post.setThumbnailName(filename + "." + extension);
+                post.setThumbnailURL(uploadThumbnail(postRequest.getImgFile(), filename, extension));
+            }
+
+            noticeBoardService.post(post);
+
+            return "redirect:/main";
+        } catch (IOException e) {
+            bindingResult.addError(new FieldError("postRequest", "imgFile", "이미지 업로드 중 오류가 발생했습니다."));
+            return "board/postForm";
+        }
+    }
+
     @GetMapping(value = "/details/{postId}")
     public String details(@PathVariable("postId") Long postId, Model model) {
-        securityUtils.addAttributeUserInfo(model);
+        Member member = securityUtils.addAttributeUserInfo(model);
 
         Post post = noticeBoardService.findPost(postId);
+        if (member == post.getAuthor()) {
+            model.addAttribute("POST_OWNER", "true");
+        }
 
         model.addAttribute("content", post.getContent());
         model.addAttribute("title", post.getTitle());
         model.addAttribute("author", post.getAuthor());
+        model.addAttribute("postId", postId);
 
         String date = post.getPublished().toString().split("\\.")[0];
         String replace = date.replace("T", " ");
@@ -74,9 +154,12 @@ public class PostController {
             Resource resource = new UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {
+                ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+                        .filename(resource.getFilename(), StandardCharsets.UTF_8)
+                        .build();
                 // 이미지 파일을 브라우저에 보여줌
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                         .body(resource);
             } else {
                 return ResponseEntity.notFound().build();

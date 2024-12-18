@@ -26,5 +26,12 @@ public class DataInitializer implements InitializingBean {
         Member member = new Member("tester", "tester", encode, 25);
         memberService.join(member);
 
+        Member member2 = new Member("tester2", "tester2", encode, 25);
+        memberService.join(member2);
+
+//        for (int i = 0; i < 1000; i++) {
+//            noticeBoardService.post(new Post(member, "TEST"+i, "HI"));
+//        }
+
     }
 }

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-@Qualifier("userDetailsS")
 public class MemoryMemberRepository implements MemberRepository {
 
     private static Map<String, Member> members = new ConcurrentHashMap<>();

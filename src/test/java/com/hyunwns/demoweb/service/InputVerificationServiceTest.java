@@ -72,7 +72,7 @@ class InputVerificationServiceTest {
     @Test
     public void 한글_감지() throws Exception{
         //given
-        String text = "aㄴ안@aㅁ2";
+        String text = "Aㄴ안@aㅁ2";
 
         char unicode = 0x3133; // 0xAC00: 가   0xD7A3: 힣
                                 // 0x1100: ㄱ 0x11FF: ㄴㄴ

@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.repository;
 
+import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
 
 import java.util.List;
@@ -20,5 +21,8 @@ public interface NoticeBoardRepository {
 
     //검색하기
     Page findAll(PostSearch postSearch);
+
+    // 멤버의 포스트 가져오기
+    List<Post> findByMember(Member member);
 
 }

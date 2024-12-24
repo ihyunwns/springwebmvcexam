@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.service;
 
+import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
 import com.hyunwns.demoweb.repository.Page;
 import com.hyunwns.demoweb.repository.PostSearch;
@@ -17,5 +18,8 @@ public interface NoticeBoardService {
     Page findPost(PostSearch postSearch);
 
     Post findPost(Long id);
+
+    //특정 멤버의 게시물 조회
+    List<Post> findPostByMember(Member member);
 
 }

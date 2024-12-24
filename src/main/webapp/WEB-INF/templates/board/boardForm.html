@@ -34,8 +34,51 @@
         <div class="comments-section">
             <span>댓글</span>
             <div class="comment-input">
-                <input type="text" placeholder="댓글을 입력하세요">
-                <button class="comment-submit" type="submit">></button>
+                <label>
+                    <input type="text" id="comment_content" maxlength="100" placeholder="댓글을 입력하세요">
+                </label>
+                <button class="comment-submit" id="comment_btn" type="submit">></button>
+                <script th:inline="javascript">
+                    let loadComment = function loadComment() {
+                        var postId = /*[[${postId}]]*/ "";
+                        fetch(`/comment/${postId}/load`)
+                            .then(response => response.json())
+                            .then(data => {
+                                data.forEach(comment => {
+                                    console.log(`Commenter: ${comment.commenterId} Content: ${comment.content}`)
+                                })
+                            })
+                    };
+
+                    window.onload = loadComment;
+
+                    document.getElementById("comment_btn").addEventListener("click", function () {
+                        const content = document.getElementById("comment_content").value;
+                        const commenterId = /*[[${id}]]*/ "";
+                        const postId = /*[[${postId}]]*/ "";
+
+                        fetch("/comment", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                commenterId: commenterId,
+                                content: content,
+                                postId: postId
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert("댓글이 등록되었습니다.")
+                                loadComment();
+                            } else {
+                                alert("댓글 등록 중 오류가 발생했습니다.");
+                            }
+                        });
+                    });
+                </script>
             </div>
 
             <div class="comment">

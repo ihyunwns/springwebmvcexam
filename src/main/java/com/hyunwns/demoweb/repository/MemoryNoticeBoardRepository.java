@@ -1,6 +1,10 @@
 package com.hyunwns.demoweb.repository;
 
+import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
+import com.hyunwns.demoweb.service.MemberService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
+@RequiredArgsConstructor
 public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
 
     private static Map<Long, Post> store = new ConcurrentHashMap<>();
@@ -20,6 +25,9 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
             post.setId(nextId++);
         }
         store.put(post.getId(), post);
+
+        Member author = post.getAuthor();
+        author.addPosts(post);
     }
 
     @Override
@@ -31,6 +39,11 @@ public class MemoryNoticeBoardRepository implements NoticeBoardRepository {
     public void delete(Long id) {
         Post post = store.get(id);
         post.setDeleted(true);
+    }
+
+    @Override
+    public List<Post> findByMember(Member member) {
+        return member.getPosts();
     }
 
     @Override

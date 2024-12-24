@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.service;
 
+import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
 import com.hyunwns.demoweb.repository.NoticeBoardRepository;
 import com.hyunwns.demoweb.repository.Page;
@@ -37,5 +38,10 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
     @Override
     public Post findPost(Long id) {
         return noticeBoardRepository.find(id);
+    }
+
+    @Override
+    public List<Post> findPostByMember(Member member) {
+        return noticeBoardRepository.findByMember(member);
     }
 }

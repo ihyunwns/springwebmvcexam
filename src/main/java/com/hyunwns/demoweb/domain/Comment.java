@@ -8,20 +8,29 @@ import java.util.List;
 @Getter @Setter
 public class Comment {
 
+    private Long id;
+
     /* 댓글
     *    ㄴ 답글
     *    ㄴ 태그 답글 ( 답글의 답글 )
     * */
 
-    // 작성자
-    Member Commenter;
-    // 댓글의 게시글
-    Post post;
+    private final Member Commenter;
+    private final Post post;
+    private final Comment parent;
 
-    // 루트 게시글인 경우 null
-    Comment parent;
+    private List<Comment> children;
 
-    // 댓글의 자식 댓글
-    List<Comment> children;
+    private String content;
+
+    public Comment(Member commenter, Post post, Comment parent, String content) {
+        Commenter = commenter;
+        this.post = post;
+        this.parent = parent;
+        this.content = content;
+    }
+
+    // 답글인 경우 태그하고 있는 답글?
+    // Comment tagComment;
 
 }

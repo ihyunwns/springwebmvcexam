@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.controller;
 
+import com.hyunwns.demoweb.domain.Comment;
 import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
 import com.hyunwns.demoweb.dto.PostForm;
@@ -138,6 +139,7 @@ public class PostController {
         model.addAttribute("author", post.getAuthor());
         model.addAttribute("postId", postId);
 
+
         String date = post.getPublished().toString().split("\\.")[0];
         String replace = date.replace("T", " ");
 
@@ -213,6 +215,7 @@ public class PostController {
             noticeBoardService.post(post);
 
             return "redirect:/main";
+
         } catch (IOException e) {
             bindingResult.addError(new FieldError("postRequest", "imgFile", "이미지 업로드 중 오류가 발생했습니다."));
             return "board/postForm";

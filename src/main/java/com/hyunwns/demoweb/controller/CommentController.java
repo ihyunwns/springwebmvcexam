@@ -109,16 +109,28 @@ public class CommentController {
     }
 
     // 브라우저에서 임의로 댓글을 삭제할 수 있으므로 댓글 삭제자가 해당 포스터의 소유자인지 확인해야함
-    // 그럼 요청자의 id도 같이 가져와야함, TODO
+    // 이런식으로 컨트롤러단에서 검증을 거치는 건 프로젝트 규모가 커질수록 재사용성이 떨어진다.
+
+    // 따라서 이런 검증 로직을 캡슐화해서 넘겨준 에러를 컨트롤러단에서는 캐치해서 ResponseEntity 반환하는 방법
+    // edit 단은 그렇게 해보자 !
     @GetMapping("/comment/{commentID}/delete")
-    public void delete(@PathVariable("commentID") Long commentID) {
+    public ResponseEntity<?> delete(@PathVariable("commentID") Long commentID) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+        Member requester = memberService.findMember(name);
 
         Comment comment = commentService.getCommentById(commentID);
 
+        Member commenter = comment.getCommenter();
+
+        if (!requester.getId().equals(commenter.getId())) {
+             return ResponseEntity.badRequest().build();
+        }
+
         commentService.delete(comment);
 
-
-        System.out.println(commentID + " is deleted. ");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/comment/{commentID}/edit")

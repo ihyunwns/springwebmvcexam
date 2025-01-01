@@ -28,9 +28,15 @@ public class MemoryCommentRepository implements CommentRepository {
         post.addComment(comment);
     }
 
+    // DELETE 할 때, 멤버 및 포스터의 댓글 목록에서도 제거 해주어야함
+    // 멤버 댓글 리스트에 넣는 로직 넣었는지는 기억이 잘 안나긴하는데 아마 안넣었을 걸?
+    // 근데 POST의 댓글 리스트에서는 제거 해주어야함
+
     @Override
     public void delete(Comment comment) {
         Long id = comment.getId();
+        comment.getPost().getComments().remove(comment);
+
         comments.remove(id);
     }
 

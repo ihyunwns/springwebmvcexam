@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="eng">
-<head th:replace="~{fragments/header :: header}">
+<head th:insert="~{fragments/header :: header}">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Title</title>
 </head>
 <link href="../../../static/css/main.css" rel="stylesheet"/>
@@ -34,58 +36,201 @@
         <div class="comments-section">
             <span>댓글</span>
             <div class="comment-input">
-                <label>
-                    <input type="text" id="comment_content" maxlength="100" placeholder="댓글을 입력하세요">
-                </label>
-                <button class="comment-submit" id="comment_btn" type="submit">></button>
-                <script th:inline="javascript">
-                    let loadComment = function loadComment() {
-                        var postId = /*[[${postId}]]*/ "";
-                        fetch(`/comment/${postId}/load`)
-                            .then(response => response.json())
-                            .then(data => {
-                                data.forEach(comment => {
-                                    console.log(`Commenter: ${comment.commenterId} Content: ${comment.content}`)
-                                })
-                            })
-                    };
-
-                    window.onload = loadComment;
-
-                    document.getElementById("comment_btn").addEventListener("click", function () {
-                        const content = document.getElementById("comment_content").value;
-                        const commenterId = /*[[${id}]]*/ "";
-                        const postId = /*[[${postId}]]*/ "";
-
-                        fetch("/comment", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                commenterId: commenterId,
-                                content: content,
-                                postId: postId
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert("댓글이 등록되었습니다.")
-                                loadComment();
-                            } else {
-                                alert("댓글 등록 중 오류가 발생했습니다.");
-                            }
-                        });
-                    });
-                </script>
+                <form id="comment_form" action="#">
+                    <label>
+                        <input type="text" id="comment_content" maxlength="100" placeholder="댓글을 입력하세요">
+                    </label>
+                    <button class="comment-submit" id="comment_btn" type="submit">></button>
+                </form>
             </div>
+            <hr>
 
-            <div class="comment">
-                <p class="comment-id">ID: user123</p>
-                <p class="comment-content">내용: 댓글 내용입니다.</p>
+            <div id="comment-list">
+                <p class="comment-id">user123</p>
+                <p class="comment-content">댓글 내용입니다.</p>
             </div>
         </div>
     </div>
 </body>
 </html>
+<script th:inline="javascript">
+    let loadComment = function loadComment() {
+        var postId = /*[[${postId}]]*/ "";
+        fetch(`/comment/${postId}/load`)
+            .then(response => response.json())
+            .then(data => {
+                const commentList = document.getElementById("comment-list");
+                commentList.innerHTML = "";
+
+                data.forEach(comment => {
+
+                    const commentDiv = document.createElement("div");
+                    commentDiv.className = "comment";
+                    commentDiv.style.position = "relative";
+
+                    /* 아이콘 ID 부분 */
+                    const commentUserDiv = document.createElement("div");
+                    commentUserDiv.className = "comment-user";
+
+                    const commentUserIcon = document.createElement("img");
+                    commentUserIcon.className = "comment-icon";
+                    commentUserIcon.src = `/icon/${comment.commenterId}`;
+
+                    const commentIdP = document.createElement("p");
+                    commentIdP.className = "comment-id";
+                    commentIdP.textContent = comment.commenterId;
+
+                    commentUserDiv.appendChild(commentUserIcon);
+                    commentUserDiv.appendChild(commentIdP);
+
+                    /*  ------------------------------------------  */
+
+                    /*                  댓글 내용                     */
+                    const commentContentDiv = document.createElement("div");
+                    commentContentDiv.className = "comment-content";
+
+                    const commentContentP = document.createElement("span");
+                    commentContentP.className = "comment-content-p"
+                    commentContentP.textContent = comment.content;
+
+                    const moreDiv = document.createElement("div");
+                    moreDiv.className = "comment-more-container";
+
+                    const commentPlus = document.createElement("span");
+                    commentPlus.className = "comment-more"
+                    commentPlus.textContent = "⋯";
+
+                    const menuBox = document.createElement("div");
+                    menuBox.className = "comment-menu";
+                    /*  ------------------------------------------  */
+
+
+                    // 현재 로그인한 유저 ID
+                    const id = /*[[${id}]]*/ "";
+                    // 메뉴 항목 추가 함수
+                    function createMenuItem(label, onClick) {
+                        const item = document.createElement("div");
+                        item.className = "comment-menu-item";
+                        item.textContent = label;
+                        item.addEventListener("click", (event) => {
+                            // 메뉴 클릭 시 자동 닫음
+                            menuBox.style.display = "none";
+                            // 실제 동작
+                            onClick(event);
+                        });
+                        return item;
+                    }
+
+                    // 본인 댓글인 경우: "삭제", "수정"
+                    if (comment.commenterId === id) {
+                        menuBox.appendChild(createMenuItem("삭제", () => {
+                            console.log("삭제 clicked for commentId: ", comment.commenterId, "댓글 id: ", comment.id);
+                            fetch(`/comment/${comment.id}/delete`, {method: 'GET'})
+                                .then(response => {
+                                    if (response.ok) {
+                                        loadComment();
+                                    } else {
+                                        console.error('실패:', response.status);
+                                    }
+                                })
+                                .catch(err => console.error('에러', err));
+                        }));
+                        menuBox.appendChild(createMenuItem("수정", () => {
+                            console.log("수정 clicked for commentId:", comment.commenterId, "댓글 id: ", comment.id);
+                            fetch(`/comment/${comment.id}/edit`, { method: 'GET' })
+                                .then(response => {
+                                    if (response.ok) {
+                                        loadComment();
+                                    } else {
+                                        console.error('실패:', response.status);
+                                    }
+                                })
+                                .catch(err => console.error('에러', err));
+                        }));
+                    }
+                    // 모두에게 공통: "답글"
+                    menuBox.appendChild(createMenuItem("답글", () => {
+                        console.log("답글 clicked for commentId:", comment.commenterId, "댓글 id: ", comment.id);
+                        // TODO: 대댓글 로직
+                    }));
+
+                    commentPlus.addEventListener("click", (event) => {
+                        // 클릭 이벤트가 document까지 전달되어 전역에서 메뉴가 닫히지 않도록 버블링 방지
+                        event.stopPropagation();
+
+                        const isOpen = (menuBox.style.display === "block");
+                        closeAllDropdowns();
+
+                        if (isOpen) {
+                            menuBox.style.display = "none";
+                        } else {
+                            menuBox.style.display = "block";
+                        }
+
+                    });
+
+                    moreDiv.appendChild(commentPlus);
+                    moreDiv.appendChild(menuBox);
+
+                    commentContentDiv.appendChild(commentContentP);
+                    commentContentDiv.appendChild(moreDiv);
+
+                    commentDiv.appendChild(commentUserDiv);
+                    commentDiv.appendChild(commentContentDiv);
+
+                    commentList.appendChild(commentDiv);
+                })
+            })
+    };
+
+    window.onload = loadComment;
+
+    document.getElementById("comment_form").addEventListener("submit", function (event) {
+        event.preventDefault(); // 컨트롤러로 form 데이터로 전송되는 것을 방지
+
+        const content = document.getElementById("comment_content").value;
+        const commenterId = /*[[${id}]]*/ "";
+        const postId = /*[[${postId}]]*/ "";
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+        // form 태그에서 할 수도 있지만 그냥 해봤음
+        fetch("/comment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                [csrfHeader]: csrfToken // CSRF 헤더 추가
+            },
+            body: JSON.stringify({
+                commenterId: commenterId,
+                content: content,
+                postId: postId
+            })
+        })
+        .then( response => {
+            if (response.ok){
+                document.getElementById("comment_content").value = "";
+                loadComment();
+            } else{
+                console.error("댓글 작성 실패", response.status);
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener("click", (event) => {
+        // event.target comment-more-container 안에 있는지 확인
+        const insideDropdownArea = event.target.closest(".comment-more-container");
+
+        if (!insideDropdownArea) {
+            closeAllDropdowns();
+        }
+    });
+    function closeAllDropdowns() {
+        const allMenus = document.querySelectorAll(".comment-menu");
+        allMenus.forEach(menu => {
+            menu.style.display = "none";
+        });
+    }
+</script>

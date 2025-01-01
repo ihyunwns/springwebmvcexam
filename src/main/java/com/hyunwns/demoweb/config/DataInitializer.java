@@ -1,9 +1,11 @@
 package com.hyunwns.demoweb.config;
 
+import com.hyunwns.demoweb.domain.Comment;
 import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
 import com.hyunwns.demoweb.repository.MemberRepository;
 import com.hyunwns.demoweb.repository.NoticeBoardRepository;
+import com.hyunwns.demoweb.service.CommentService;
 import com.hyunwns.demoweb.service.MemberService;
 import com.hyunwns.demoweb.service.NoticeBoardService;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,6 +20,7 @@ public class DataInitializer implements InitializingBean {
     @Autowired private MemberService memberService;
     @Autowired private NoticeBoardService noticeBoardService;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired private CommentService commentService;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -30,7 +33,9 @@ public class DataInitializer implements InitializingBean {
         memberService.join(member2);
 
 //        for (int i = 0; i < 1000; i++) {
-//            noticeBoardService.post(new Post(member, "TEST"+i, "HI"));
+//            Post post = new Post(member, "TEST" + i, "HI");
+//            noticeBoardService.post(post);
+//            commentService.write(new Comment(member, post, null, "HELLO"));
 //        }
 
     }

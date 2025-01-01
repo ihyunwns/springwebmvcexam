@@ -52,36 +52,48 @@ body {
     line-height: 1.5;
 }
 
-.comments-section {
-    margin-top: 30px;
-}
 
-.comment-input {
-    display: flex;
-    margin-bottom: 20px;
-}
-
-.comment-input input {
-    margin-top: 5px;
-    width: 85%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+/* 댓글 섹션 제목 (예: “댓글”) */
+.comments-section > span {
+    display: inline-block;
+    font-weight: bold;
     font-size: 16px;
+    margin-bottom: 1px;
 }
 
-.comment-input button {
-    width: 3%;
-    background-color: #5cb85c;
-    margin-left: 10px;
-    color: white;
+
+/* 입력 폼 자체 (form 태그) */
+.comment-input form {
+    display: flex;         /* 가로로 배치해서 인풋 옆에 버튼이 오도록 */
+    align-items: center;
+    gap: 8px;              /* 인풋과 버튼 사이 간격 */
+}
+
+/* 인풋 스타일 */
+#comment_content {
+    width: 300px;          /* 인풋 너비 (원하는 대로 조절) */
+    padding: 8px 12px;     /* 안쪽 여백 */
+    border: 1px solid #ccc;
+    border-radius: 4px;    /* 모서리를 살짝 둥글게 */
+    font-size: 14px;
+}
+
+/* 버튼 스타일 */
+.comment-submit {
+    width: 40px;           /* 버튼 너비 */
+    height: 40px;          /* 버튼 높이 */
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    border-radius: 4px;    /* 모서리를 살짝 둥글게 */
+    background-color: #0095f6; /* 원하는 색상으로 변경 */
+    color: #fff;           /* 버튼 텍스트 색상 */
+    font-size: 16px;
+    cursor: pointer;       /* 마우스 오버 시 커서 변경 */
+    transition: background-color 0.3s;
 }
 
-.comment-input button:hover {
-    background-color: #218838;
+/* 버튼 호버 시 스타일 */
+.comment-submit:hover {
+    background-color: #007acc;
 }
 
 .comment {
@@ -90,14 +102,25 @@ body {
     border-bottom: 1px solid #ddd;
 }
 
-.comment-id {
-    font-weight: bold;
+.comment-content {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 
-.comment-content {
+.comment-content-p {
     margin-top: 5px;
     font-size: 14px;
     color: #333;
+}
+
+.comment-more {
+    margin-top: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #666;
 }
 
 .btn-section {
@@ -113,4 +136,69 @@ body {
     color: #666666;
     cursor: pointer;
     font-size: 10px;
+}
+
+.comment-user {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.comment-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.comment-id {
+    margin: 0;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+/* "더 보기" 버튼 */
+.comment-more-container {
+    position: relative; /* 메뉴의 position:absolute 기준 */
+    display: inline-block;
+}
+
+.comment-more {
+    cursor: pointer;
+    font-size: 20px;
+    padding: 4px;
+    user-select: none;
+}
+
+/* 실제 메뉴 박스 */
+.comment-menu {
+    position: absolute;
+
+    bottom: 100%;
+    left: 110%;
+
+    width: 80px;
+
+    /* 메뉴 너비, 원하는 대로 조절 */
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: none; /* 기본은 감춰 둠 */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* 살짝 그림자 */
+    z-index: 999; /* 다른 요소 위로 */
+}
+
+/* 메뉴 아이템 */
+.comment-menu-item {
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+.comment-menu-item:last-child {
+    border-bottom: none;
+}
+.comment-menu-item:hover {
+    background-color: #f4f4f4;
 }

@@ -3,7 +3,7 @@ package com.hyunwns.demoweb.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
+@Getter @Setter
 public class CommentDTO {
     // 순환 참조를 해결하기 위한 DTO 객체
     // DTO 에서는 필요한 데이터를 작게 쪼개어 보내는 것이 좋다.
@@ -14,13 +14,11 @@ public class CommentDTO {
 
     // 이를 위해 MemberDTO 객체도 따로 만들어서 MemberDTO 객체를 보내는 것도 방법일 것 같은데 ?
 
-    private final String commenterId;
-    private final String content;
-    private final Long postId;
+    private String commenterId;
+    private String content;
+    private Long postId;
 
-    public CommentDTO(String commenterId, String content, Long postId) {
-        this.commenterId = commenterId;
-        this.content = content;
-        this.postId = postId;
-    }
+    // 삭제를 위해 CommentID도 필요할 듯
+    private Long id;
+
 }

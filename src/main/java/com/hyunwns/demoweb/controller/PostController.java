@@ -159,7 +159,7 @@ public class PostController {
                 ContentDisposition contentDisposition = ContentDisposition.builder("inline")
                         .filename(resource.getFilename(), StandardCharsets.UTF_8)
                         .build();
-                // 이미지 파일을 브라우저에 보여줌
+
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                         .body(resource);

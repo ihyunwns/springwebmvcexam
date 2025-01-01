@@ -19,6 +19,8 @@ public class Member {
     private List<Post> posts;
     private List<Comment> comments;
 
+    private String iconURL;
+
     @Setter
     private String role;
 

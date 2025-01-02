@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head th:replace="~{fragments/header :: header}">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<link href="../../static/css/main.css" rel="stylesheet"/>
+<link href="../../static/css/post.css" rel="stylesheet"/>
+<body>
+    <div th:replace="~{fragments/navigation :: bar}"></div>
+
+    <div class="container">
+        <div th:each="post : ${page.posts}" class="card"
+             th:onclick=" 'move_details('+${post.id}+')' ">
+            <script>
+                function move_details(id) {
+                    window.location.href = "/details/" + id;
+                }
+            </script>
+            <div class="thumbnail">
+                <img th:src="@{'/display/' + ${post.thumbnailName}}" alt="썸네일"/>
+            </div>
+            <div class="info">
+                <span th:text="${post.title}" class="subject">제목</span>
+                <span th:text="${post.author.id}" class="author">작성자</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 검색창 -->
+        <div class="search-bar">
+            <form th:action="@{/main}" th:object="${postSearch}" method="get" >
+                <input id="search" th:field="*{search}" type="text" maxlength="100" placeholder="검색">
+                <input th:field="*{page}" type="hidden">
+                <button type="submit">검색</button>
+            </form>
+        </div>
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+            <a th:each="pageNum : ${page.pageList}"
+               th:text="${pageNum}"
+               th:onclick="'searchWithPage('+${pageNum}+')'"
+               th:classappend="${page.current_page == pageNum} ? 'active' : ''"
+            />
+
+            <a th:classappend="${page.current_page >= page.last_page} ? 'disabled' : ''"
+               th:onclick="'searchWithPage('+ ${page.current_page+1} +')'" >></a>
+
+            <a th:classappend="${page.current_page >= page.last_page} ? 'disabled' : ''"
+               th:onclick="'searchWithPage('+ ${page.last_page} +')'">>></a>
+        </div>
+
+        <!-- 글쓰기 버튼 -->
+        <button class="write-btn" onclick="location.href='post'">글쓰기</button>
+    </div>
+</body>
+<script>
+    function searchWithPage(page) {
+
+        var form = document.createElement("form");
+        form.setAttribute("method", "get");
+        form.setAttribute("action", "/main");
+
+        var value = document.getElementById("search").value;
+
+        var searchInput = document.createElement("input");
+        searchInput.setAttribute("type", "hidden");
+        searchInput.setAttribute("name", "search");
+        searchInput.setAttribute("value", value);
+
+        form.appendChild(searchInput);
+
+        // page 파라미터
+        var pageInput = document.createElement("input");
+        pageInput.setAttribute("type", "hidden");
+        pageInput.setAttribute("name", "page");
+        pageInput.setAttribute("value", page);
+        form.appendChild(pageInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+</html>

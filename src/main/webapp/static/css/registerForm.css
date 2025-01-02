@@ -1,0 +1,187 @@
+.container {
+    height: 800px;
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 30px;
+    background-color: rgba(23, 23, 23, 0.6);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+    font-family: "Pretendard SemiBold", serif;
+    background-image: url("../image/background.jpeg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.header-text {
+    font-size: 30px;
+    width: 600px;
+    border-radius: 30px 30px 0 0;
+    height: 100px;
+    color: white;
+    text-align: center;
+    align-content: center;
+    background-color: rgba(23, 23, 23, 0.6);
+
+}
+
+.form-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    margin-left: 20px;
+    margin-top: 20px;
+    margin-right: 30px;
+}
+
+
+.form-table {
+    height: 100%;
+    width: 100%;
+}
+
+.form-group {
+    width: 100px;
+    font-size: 20px;
+    text-align: right;
+}
+
+.form_d {
+    height: 30px;
+    width: 150px;
+    text-align: right;
+    color: #cccccc;
+    white-space: nowrap;
+}
+
+.form-floating label {
+    color: #666666;
+}
+
+.form-floating {
+    margin-left: 20px;
+    margin-right: 0;
+
+}
+
+#floatingInput {
+    width: 300px;
+    margin-right: 0;
+    opacity: 0.7;
+    border: 1px #cccccc solid;
+}
+
+#floatingInput ~label {
+    font-size: 15px;
+}
+
+
+#floatingInput:disabled {
+    background-color: darkgray;
+}
+
+
+#floatingPassword {
+    width: 300px;
+    margin-right: 20px;
+    opacity: 0.7;
+    border: 1px #cccccc solid;
+}
+
+#floatingPassword ~label {
+    font-size: 15px;
+}
+
+#floatingPasswordConfirm {
+    width: 300px;
+    margin-right: 20px;
+    opacity: 0.7;
+    border: 1px #cccccc solid;
+}
+
+#floatingPasswordConfirm ~label {
+    font-size: 15px;
+}
+
+#floatingAge {
+    width: 300px;
+    margin-right: 20px;
+    opacity: 0.7;
+    border: 1px #cccccc solid;
+}
+
+#floatingAge ~label {
+    font-size: 15px;
+}
+
+#floatingNickname {
+    width: 300px;
+    margin-right: 20px;
+    opacity: 0.7;
+    border: 1px #cccccc solid;
+}
+
+#floatingNickname ~label {
+    font-size: 15px;
+}
+
+.btn {
+    color: white;
+    border: gray 1px solid;
+    width: 300px;
+}
+
+.btn:hover {
+    background-color: goldenrod; /* 포커싱 시 배경색 */
+    color: black; /* 포커싱 시 텍스트 색상 */
+}
+
+.ar {
+    text-align: center;
+}
+
+.move-home {
+    width: 550px;
+    font-size: 30px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: goldenrod;
+}
+
+#checkID {
+    width: auto;
+    white-space: nowrap;
+    margin-left: 0;
+}
+
+#checkID.checked:disabled{
+    background-color: mediumseagreen;
+    border: 1px solid #666666;
+    color: black;
+}
+
+#floatingNickname.pass{
+    border: mediumseagreen 2px solid;
+}
+
+#floatingPassword.pass {
+    border: mediumseagreen 2px solid;
+}
+
+#floatingPasswordConfirm.pass {
+    border: mediumseagreen 2px solid;
+}
+
+#floatingAge.pass {
+    border: mediumseagreen 2px solid;
+}
+

@@ -1,0 +1,245 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+.container {
+    margin-top: 20px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 150vh;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.back-button {
+    display: block;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.post {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.info {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.content {
+    margin-top: 20px;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+
+/* 댓글 섹션 제목 (예: “댓글”) */
+.comments-section > span {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 1px;
+}
+
+
+/* 입력 폼 자체 (form 태그) */
+.comment-input form {
+    display: flex;         /* 가로로 배치해서 인풋 옆에 버튼이 오도록 */
+    align-items: center;
+    gap: 8px;              /* 인풋과 버튼 사이 간격 */
+}
+
+/* 인풋 스타일 */
+#comment_content {
+    width: 300px;          /* 인풋 너비 (원하는 대로 조절) */
+    padding: 8px 12px;     /* 안쪽 여백 */
+    border: 1px solid #ccc;
+    border-radius: 4px;    /* 모서리를 살짝 둥글게 */
+    font-size: 14px;
+}
+
+/* 버튼 스타일 */
+.comment-submit {
+    width: 40px;           /* 버튼 너비 */
+    height: 40px;          /* 버튼 높이 */
+    border: none;
+    border-radius: 4px;    /* 모서리를 살짝 둥글게 */
+    background-color: #0095f6; /* 원하는 색상으로 변경 */
+    color: #fff;           /* 버튼 텍스트 색상 */
+    font-size: 16px;
+    cursor: pointer;       /* 마우스 오버 시 커서 변경 */
+    transition: background-color 0.3s;
+}
+
+/* 버튼 호버 시 스타일 */
+.comment-submit:hover {
+    background-color: #007acc;
+}
+
+.comment {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.comment-content {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.comment-content-p {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.comment-more {
+    margin-top: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #666;
+}
+
+.btn-section {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+    border: none;
+    background: none;
+    color: #666666;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.comment-user {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.comment-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.comment-id {
+    margin: 0;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+/* "더 보기" 버튼 */
+.comment-more-container {
+    position: relative; /* 메뉴의 position:absolute 기준 */
+    display: inline-block;
+}
+
+.comment-more {
+    cursor: pointer;
+    font-size: 20px;
+    padding: 4px;
+    user-select: none;
+}
+
+/* 실제 메뉴 박스 */
+.comment-menu {
+    position: absolute;
+
+    bottom: 100%;
+    left: 110%;
+
+    width: 80px;
+
+    /* 메뉴 너비, 원하는 대로 조절 */
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: none; /* 기본은 감춰 둠 */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* 살짝 그림자 */
+    z-index: 999; /* 다른 요소 위로 */
+}
+
+/* 메뉴 아이템 */
+.comment-menu-item {
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+.comment-menu-item:last-child {
+    border-bottom: none;
+}
+.comment-menu-item:hover {
+    background-color: #f4f4f4;
+}
+
+.comment-editForm {
+    margin-top: 8px;          /* 폼 자체 위쪽 여백 */
+    display: flex;            /* 가로 레이아웃 */
+    gap: 8px;                 /* 요소 간 간격 */
+    align-items: center;      /* 수직 가운데 정렬 */
+}
+
+/* 텍스트 입력 필드 */
+.comment-editForm > input,
+.comment-editForm > input:not([type="button"]):not([type="submit"]):not([type="reset"]) {
+    /* type="text" 외에도 textarea 등 다른 입력이 있을 수 있으면 범위를 넓힐 수 있음 */
+    padding: 6px 10px;        /* 안쪽 여백 */
+    border: 1px solid #ccc;   /* 테두리 색상 */
+    border-radius: 4px;       /* 둥근 모서리 */
+    font-size: 14px;          /* 글자 크기 */
+    color: #666;              /* 텍스트 색상 */
+    outline: none;            /* 기본 포커스 테두리 제거(브라우저별) */
+    transition: border-color 0.2s; /* 포커스 시 부드러운 변화 */
+}
+
+.comment-editForm > input:focus {
+    border-color: #007acc;    /* 포커스 시 테두리 강조 */
+}
+
+/* 버튼 */
+.comment-editForm > button {
+    padding: 6px 14px;        /* 안쪽 여백 (기존 width, height 대신) */
+    border: none;             /* 기본 테두리 제거 */
+    border-radius: 4px;
+    background-color: #007acc; /* 원하는 색상 */
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;           /* 마우스 오버 시 손가락 아이콘 */
+    transition: background-color 0.2s; /* 호버 시 부드러운 변화 */
+
+}
+
+.comment-editForm > button:hover {
+    background-color: #005fa3; /* 호버 시 조금 더 어두운 색상 */
+}

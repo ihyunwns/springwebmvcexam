@@ -14,6 +14,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -64,7 +65,15 @@ public class CommentController {
 
         List<CommentDTO> commentDTO = new ArrayList<>();
         for (Comment comment : commentService.getCommentsByPost(post)) {
+            if (comment.getParent() != null) {
+                continue;
+            }
+
             CommentDTO dto = new CommentDTO();
+            if (!comment.getChildren().isEmpty()) {
+                dto.setChildExist(comment.getChildren().size());
+            }
+
             dto.setCommenterId(comment.getCommenter().getId());
             dto.setContent(comment.getContent());
             dto.setPostId(postId);
@@ -87,7 +96,7 @@ public class CommentController {
 //        Path path = Paths.get("파일경로" + iconURL);
 
         try {
-            Path path = Paths.get("C:\\Users\\user\\IdeaProjects\\springwebmvcexam-master\\src\\main\\resources\\userIcon\\test.png");
+            Path path = Paths.get("C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\resources\\userIcon\\test.png");
             Resource resource = new UrlResource(path.toUri());
 
             if (resource.exists() || resource.isReadable()) {
@@ -153,15 +162,62 @@ public class CommentController {
     public ResponseEntity<?> edit(@RequestBody CommentDTO commentDTO) {
 
         Long id = commentDTO.getId();
-        Comment comment = commentService.getCommentById(id);
 
-        commentService.edit(id, commentDTO.getContent());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+        Member member = memberService.findMember(name);
 
+        try{
+            commentService.edit(id, commentDTO.getContent(), member);
+        }catch (AccessDeniedException e){
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "You don't have permission to edit this comment");
+
+            return ResponseEntity.badRequest().body(response);
+        }
         return ResponseEntity.ok().build();
 
     }
 
+    @PostMapping("/comment/reply")
+    public ResponseEntity<?> reply(@RequestBody CommentDTO commentDTO) {
+
+        Member member = thisMember();
+
+        Post post = noticeBoardService.findPost(commentDTO.getPostId());
+        Comment parent = commentService.getCommentById(commentDTO.getId());
+
+        Comment comment = new Comment(member, post, parent, commentDTO.getContent());
+        commentService.write(comment);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/comment/{commentId}/replies")
+    public List<CommentDTO> replyLoad(@PathVariable("commentId") Long commentId, CommentDTO commentDTO) {
+
+        List<CommentDTO> comments = new ArrayList<>();
+
+        // 자식 댓글 가져오기
+        Comment comment = commentService.getCommentById(commentId);
+        List<Comment> children = comment.getChildren();
+
+        for(Comment child : children) {
+            CommentDTO dto = new CommentDTO();
+
+            dto.setId(child.getId());
+            dto.setContent(child.getContent());
+            dto.setPostId(child.getPost().getId());
+            dto.setCommenterId(child.getCommenter().getId());
+
+            comments.add(dto);
+        }
+
+        return comments;
+    }
+
     private CommentDTO setCommentDTO(Comment comment) {
+
         CommentDTO dto = new CommentDTO();
         dto.setCommenterId(comment.getCommenter().getId());
         dto.setContent(comment.getContent());
@@ -169,6 +225,14 @@ public class CommentController {
         dto.setId(comment.getId());
 
         return dto;
+    }
+
+    private Member thisMember() {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+
+        return memberService.findMember(name);
     }
 
 }

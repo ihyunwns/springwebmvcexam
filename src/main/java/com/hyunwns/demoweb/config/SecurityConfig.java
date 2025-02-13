@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 
 
@@ -121,7 +122,10 @@ public class SecurityConfig implements ApplicationContextAware {
 
         // csrf 방지 동작이 작동하면 CSRF 토큰을 보내주어야 로그인이 되는데 개발 환경에서는 disable 한다.
         // 토큰을 가지고 (ex.JWT) 서버 로그인을 하는 경우 csrf 비활성화 해도 된다.
-        //http.csrf().disable();
+
+        // csrf 토큰을 브라우저 쿠키에 저장하는 방법
+        // 자바스크립트로도 csrf 토큰에 접근 가능하도록 하는 기능
+        http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
 
 
                 // 기본은 withDefault(), 스프링이 제공하는 로그인 페이지

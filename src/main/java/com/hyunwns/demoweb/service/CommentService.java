@@ -11,7 +11,7 @@ public interface CommentService {
     // 댓글 작성
     void write(Comment comment);
 
-    void edit(Long id, String content);
+    void edit(Long id, String content, Member requester);
 
     // 댓글 삭제
     void delete(Comment comment);

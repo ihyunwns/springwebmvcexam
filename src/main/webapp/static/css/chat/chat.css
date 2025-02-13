@@ -1,0 +1,100 @@
+/* 전체 채팅 컨테이너 스타일 */
+#chat-container {
+    width: 500px; /* 채팅창 크기 확대 */
+    max-width: 90%;
+    margin: 30px auto;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 메시지 목록 */
+#messages {
+    height: 400px; /* 채팅창 크기 증가 */
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-bottom: 1px solid #ddd; /* 입력창과 분리 */
+}
+
+/* 입력창 컨테이너 */
+#input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 10px;
+}
+
+/* 메시지 입력창 */
+#message-input {
+    margin-top: 5px;
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 16px;
+}
+
+/* 전송 버튼 */
+#send-btn {
+    margin-top: 5px;
+    padding: 12px 18px;
+    border: none;
+    background: darkslategray;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+}
+
+#send-btn:hover {
+    background: #343a40;
+}
+
+/* 보낸 메시지 (오른쪽 정렬) */
+.sendMessage {
+    align-self: flex-end;
+    background: darkslategray;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 14px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+/* 받은 메시지 (왼쪽 정렬) */
+.receivedMessage {
+    align-self: flex-start;
+    background: #e5e5ea;
+    color: black;
+    padding: 10px 14px;
+    border-radius: 14px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+/* 공통 메시지 스타일 */
+.sendMessage, .receivedMessage {
+    display: inline-block;
+    margin: 6px;
+}
+
+/* 스크롤바 커스텀 */
+#messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#messages::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 3px;
+}
+
+#messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}

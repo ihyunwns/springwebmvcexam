@@ -28,9 +28,14 @@ public class DataInitializer implements InitializingBean {
         String encode = bCryptPasswordEncoder.encode("1234");
         Member member = new Member("tester", "tester", encode, 25);
         memberService.join(member);
+        member.setRole("ROLE_ADMIN");
 
         Member member2 = new Member("tester2", "tester2", encode, 25);
         memberService.join(member2);
+
+        Post post = new Post(member, "TEST", "HI");
+        noticeBoardService.post(post);
+        commentService.write(new Comment(member, post, null, "HELLO"));
 
 //        for (int i = 0; i < 1000; i++) {
 //            Post post = new Post(member, "TEST" + i, "HI");

@@ -1,23 +1,18 @@
 package com.hyunwns.demoweb.controller;
 
-import com.hyunwns.demoweb.domain.Comment;
 import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
 import com.hyunwns.demoweb.dto.PostForm;
-import com.hyunwns.demoweb.repository.PostSearch;
 import com.hyunwns.demoweb.service.MemberService;
 import com.hyunwns.demoweb.service.NoticeBoardService;
 import com.hyunwns.demoweb.util.SecurityUtils;
-import jakarta.servlet.ServletContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,15 +34,13 @@ import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
 public class PostController {
 
-    private static final String uploadDIR = "C:\\Users\\user\\IdeaProjects\\springwebmvcexam-master\\src\\main\\resources\\thumbnail\\";
+    private static final String uploadDIR = "C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\resources\\thumbnail\\";
 
     private final SecurityUtils securityUtils;
     private final NoticeBoardService noticeBoardService;

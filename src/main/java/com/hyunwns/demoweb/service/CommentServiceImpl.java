@@ -5,6 +5,9 @@ import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Post;
 import com.hyunwns.demoweb.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +23,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void edit(Long id, String content) {
+    public void edit(Long id, String content, Member requester){
+
+        validateCommentOwner(id, requester);
+
         Comment comment = commentRepository.findById(id);
         comment.setContent(content);
     }
@@ -54,6 +60,17 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment getCommentById(Long id) {
         return commentRepository.findById(id);
+    }
+
+    private void validateCommentOwner(Long commentId, Member requester) {
+
+        Comment comment = getCommentById(commentId);
+        String commenter = comment.getCommenter().getId();
+
+        if (!commenter.equals(requester.getId())) {
+            throw new AccessDeniedException("You don't access a this comment");
+        }
+
     }
 
 }

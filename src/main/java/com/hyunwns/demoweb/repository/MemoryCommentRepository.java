@@ -24,8 +24,14 @@ public class MemoryCommentRepository implements CommentRepository {
         }
         comments.put(comment.getId(), comment);
 
+        // 하위 댓글일 경우 부모 댓글의 자식 리스트에 해당 댓글 추가
+        if (comment.getParent() != null) {
+            comment.getParent().getChildren().add(comment);
+        }
+
         Post post = comment.getPost();
         post.addComment(comment);
+
     }
 
     // DELETE 할 때, 멤버 및 포스터의 댓글 목록에서도 제거 해주어야함
@@ -37,7 +43,13 @@ public class MemoryCommentRepository implements CommentRepository {
         Long id = comment.getId();
         comment.getPost().getComments().remove(comment);
 
+        // 부모 댓글이 있을 때 부모 댓글에서도 제거 해줘야함
+        if (comment.getParent() != null) {
+            comment.getParent().getChildren().remove(comment);
+        }
+
         comments.remove(id);
+
     }
 
     // 모든 댓글 객체 가져오기

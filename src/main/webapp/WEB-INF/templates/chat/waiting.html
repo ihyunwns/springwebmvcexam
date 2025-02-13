@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head th:replace="~{fragments/header :: header}">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+</head>
+<link href="../../../static/css/main.css" rel="stylesheet"/>
+<link href="../../../static/css/chat/chat.css" rel="stylesheet"/>
+
+<body>
+    <div th:replace="~{fragments/navigation :: bar}"></div>
+
+    <div id="chat-container">
+        <div id="messages"></div>
+        <label for="message-input"></label>
+        <input type="text" id="message-input" placeholder="메시지를 입력하세요">
+        <button id="send-btn">전송</button>
+    </div>
+
+</body>
+<div id="user-info" th:attr="data-id=${id}"></div>
+<script src="../../../static/js/chat/chat.js"></script>
+</html>

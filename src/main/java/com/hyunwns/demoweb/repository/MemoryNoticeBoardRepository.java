@@ -1,10 +1,10 @@
 package com.hyunwns.demoweb.repository;
 
 import com.hyunwns.demoweb.domain.Member;
+import com.hyunwns.demoweb.domain.Page;
 import com.hyunwns.demoweb.domain.Post;
-import com.hyunwns.demoweb.service.MemberService;
+import com.hyunwns.demoweb.domain.PostSearch;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

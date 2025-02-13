@@ -1,6 +1,5 @@
-package com.hyunwns.demoweb.repository;
+package com.hyunwns.demoweb.domain;
 
-import com.hyunwns.demoweb.domain.Post;
 import lombok.Getter;
 
 import java.util.List;

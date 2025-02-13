@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter
@@ -29,6 +30,10 @@ public class Comment {
         this.post = post;
         this.parent = parent;
         this.content = content;
+
+        if (parent == null) {
+            children = new ArrayList<>();
+        }
     }
 
     // 답글인 경우 태그하고 있는 답글?

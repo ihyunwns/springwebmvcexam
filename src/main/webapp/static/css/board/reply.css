@@ -1,0 +1,209 @@
+/* 댓글 전체 컨테이너 */
+.reply {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 5px;
+    position: relative;
+    transition: background 0.3s ease;
+}
+
+/* 유저 정보 영역 */
+.reply-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+/* 프로필 아이콘 */
+.reply-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* 댓글 작성자 ID */
+.reply-id {
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+/* 댓글 내용 영역 */
+.reply-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding-right: 10px;
+}
+
+/* 댓글 텍스트 */
+.reply-content-p {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* 더보기 버튼 컨테이너 */
+.reply-more-container {
+    position: relative;
+}
+
+/* ⋯ 아이콘 스타일 */
+.reply-more {
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.reply-more:hover {
+    color: #007bff;
+}
+
+/* 메뉴 박스 (수정, 삭제 버튼) */
+.reply-menu {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    background: #fff;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    display: none;
+    flex-direction: column;
+    min-width: 80px;
+    z-index: 10;
+}
+
+/* 개별 메뉴 아이템 */
+.reply-menu-item {
+    padding: 8px;
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-align: center;
+}
+
+.reply-menu-item:hover {
+    background: #f0f0f0;
+}
+
+/* 댓글 수정 입력 폼 */
+.reply-editForm {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.reply-editForm input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.reply-editForm button {
+    padding: 5px 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.reply-editForm button:hover {
+    background: #0056b3;
+}
+
+
+.comment-replyForm {
+    margin-top: 8px;          /* 폼 자체 위쪽 여백 */
+    display: flex;            /* 가로 레이아웃 */
+    gap: 8px;                 /* 요소 간 간격 */
+    align-items: center;      /* 수직 가운데 정렬 */
+}
+
+/* 텍스트 입력 필드 */
+.comment-replyForm > input,
+.comment-replyForm > input:not([type="button"]):not([type="submit"]):not([type="reset"]) {
+    /* type="text" 외에도 textarea 등 다른 입력이 있을 수 있으면 범위를 넓힐 수 있음 */
+    padding: 6px 10px;        /* 안쪽 여백 */
+    border: 1px solid #ccc;   /* 테두리 색상 */
+    border-radius: 4px;       /* 둥근 모서리 */
+    font-size: 12px;          /* 글자 크기 */
+    color: #666;              /* 텍스트 색상 */
+    outline: none;            /* 기본 포커스 테두리 제거(브라우저별) */
+    transition: border-color 0.2s; /* 포커스 시 부드러운 변화 */
+}
+
+.comment-replyForm > input:focus {
+    border-color: #007acc;    /* 포커스 시 테두리 강조 */
+}
+
+/* 버튼 */
+.comment-replyForm > button {
+    padding: 6px 14px;        /* 안쪽 여백 (기존 width, height 대신) */
+    border: none;             /* 기본 테두리 제거 */
+    border-radius: 4px;
+    background-color: #007acc; /* 원하는 색상 */
+    color: #fff;
+    font-size: 10px;
+    cursor: pointer;           /* 마우스 오버 시 손가락 아이콘 */
+    transition: background-color 0.2s; /* 호버 시 부드러운 변화 */
+
+}
+
+.comment-replyForm > button:hover {
+    background-color: #005fa3; /* 호버 시 조금 더 어두운 색상 */
+}
+
+
+.comment-replyPlus > .comment-replyMoreBtn{
+    font-size: 12px;
+    color: #666666;
+    cursor: pointer;
+}
+
+.comment-replyPlus {
+    margin-top: 5px;
+    padding-left: 20px; /* 들여쓰기 */
+    border-left: 2px solid #ddd; /* 왼쪽에 얇은 구분선 */
+}
+
+.comment-replyPlus > .comment-replyList {
+    background-color: #f9f9f9; /* 연한 배경색 */
+    padding: 10px; /* 내부 여백 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    margin-top: 5px; /* 위쪽 여백 */
+}
+
+.comment-replyMoreBtn {
+    font-size: 12px;
+    color: #007bff;
+    cursor: pointer;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+.comment-replyMoreBtn:hover {
+    text-decoration: underline;
+}
+
+.comment-replyItem {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.comment-replyItem:last-child {
+    border-bottom: none;
+}

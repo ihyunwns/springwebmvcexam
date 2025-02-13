@@ -1,4 +1,4 @@
-package com.hyunwns.demoweb.repository;
+package com.hyunwns.demoweb.domain;
 
 import lombok.Getter;
 import lombok.Setter;

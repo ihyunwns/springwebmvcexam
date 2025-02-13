@@ -8,7 +8,10 @@
     <title>Title</title>
 </head>
 <link href="../../../static/css/main.css" rel="stylesheet"/>
-<link href="../../../static/css/boardForm.css" rel="stylesheet"/>
+<link href="../../../static/css/board/boardForm.css" rel="stylesheet"/>
+<link href="../../../static/css/board/reply.css" rel="stylesheet"/>
+
+<script src="../../../static/js/reply-info.js"></script>
 <body>
     <div th:replace="~{fragments/navigation :: bar}"></div>
 
@@ -54,8 +57,10 @@
 </body>
 </html>
 <script th:inline="javascript">
+
+    const postId = /*[[${postId}]]*/ "";
+    const id = /*[[${id}]]*/ "";
     let loadComment = function loadComment() {
-        var postId = /*[[${postId}]]*/ "";
         fetch(`/comment/${postId}/load`)
             .then(response => response.json())
             .then(data => {
@@ -104,9 +109,6 @@
                     menuBox.className = "comment-menu";
                     /*  ------------------------------------------  */
 
-
-                    // 현재 로그인한 유저 ID
-                    const id = /*[[${id}]]*/ "";
                     // 메뉴 항목 추가 함수
                     function createMenuItem(label, onClick) {
                         const item = document.createElement("div");
@@ -137,8 +139,7 @@
                         menuBox.appendChild(createMenuItem("수정", () => {
 
                             // 이렇게 하면 특정 요소안에 있는 클래스들을 구분할 수 있게 됨
-                            const isExitsEditForm = commentDiv.querySelector(".comment-editForm");
-                            if (isExitsEditForm) {
+                            if (blockDuplicateForm("edit", commentDiv)) {
                                 return;
                             }
 
@@ -198,8 +199,52 @@
                     }
                     // 모두에게 공통: "답글"
                     menuBox.appendChild(createMenuItem("답글", () => {
-                        console.log("답글 clicked for commentId:", comment.commenterId, "댓글 id: ", comment.id);
-                        // TODO: 대댓글 로직
+
+                        if ( blockDuplicateForm("reply", commentDiv) ) {
+                            return;
+                        }
+
+                        const replyForm = document.createElement("form");
+                        replyForm.className = "comment-replyForm";
+
+                        const replyContent = document.createElement("input");
+                        const replyBtn = document.createElement("button");
+                        replyBtn.textContent = '>';
+
+                        replyForm.appendChild(replyContent);
+                        replyForm.appendChild(replyBtn);
+
+                        commentDiv.appendChild(replyForm);
+
+                        replyForm.addEventListener('submit', (event) => {
+                            event.preventDefault();
+
+                            const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+                            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+                            fetch('/comment/reply', {
+                                method: 'POST',
+                                headers:
+                                    {
+                                        "Content-Type": "application/json",
+                                        [csrfHeader]: csrfToken // CSRF 헤더 추가
+                                    },
+                                body: JSON.stringify({
+                                    content: replyContent.value,
+                                    id: comment.id,
+                                    postId: comment.postId,
+                                    commenterId: comment.commenterId
+                                })
+                            })
+                                .then( response => {
+                                    if (response.ok){
+                                        loadComment();
+                                    } else{
+                                        console.error("답글 작성 실패", response.status);
+                                    }
+                                })
+                                .catch(error => console.error("댓글 수정 실패", error));
+                        })
                     }));
 
                     commentPlus.addEventListener("click", (event) => {
@@ -226,6 +271,53 @@
                     commentDiv.appendChild(commentUserDiv);
                     commentDiv.appendChild(commentContentDiv);
 
+                    const isExistChildren = comment.childExist;
+                    if (isExistChildren) {
+                        const replyPlus = document.createElement("div");
+                        replyPlus.className = "comment-replyPlus";
+
+                        const moreBtn = document.createElement("div");
+                        moreBtn.className = "comment-replyMoreBtn";
+                        moreBtn.textContent = "답글 " + isExistChildren + "개";
+
+                        const replyList = document.createElement("div");
+                        replyList.className = "comment-replyList";
+                        replyList.style.display = "none";
+
+                        replyPlus.appendChild(moreBtn); replyPlus.appendChild(replyList);
+                        commentDiv.appendChild(replyPlus);
+
+                        let isLoaded = false;
+
+                        moreBtn.addEventListener("click", () => {
+
+                            if (isLoaded) {
+                                //이미 불러온 경우
+                                if (replyList.style.display === "none") {
+                                    replyList.style.display = "block";
+                                    moreBtn.textContent = "답글 숨기기";
+                                } else {
+                                    replyList.style.display = "none";
+                                    moreBtn.textContent = "답글 " + isExistChildren + "개";
+                                }
+                            } else {
+                                 fetch(`/comment/${comment.id}/replies`, {method: "GET"})
+                                .then(response => response.json())
+                                .then(data => {
+                                        data.forEach(replyComment => {
+
+                                            let div = reply_info(replyComment);
+                                            replyList.appendChild(div);
+
+                                            moreBtn.textContent = "답글 숨기기";
+                                            replyList.style.display = "block";
+                                            isLoaded = true;
+                                        })
+                                    })
+                                .catch(error => console.error("답글 불러오기 실패", error));
+                            }
+                        })
+                    }
                     commentList.appendChild(commentDiv);
                 })
             })
@@ -237,8 +329,6 @@
         event.preventDefault(); // 컨트롤러로 form 데이터로 전송되는 것을 방지
 
         const content = document.getElementById("comment_content").value;
-        const commenterId = /*[[${id}]]*/ "";
-        const postId = /*[[${postId}]]*/ "";
 
         const csrfToken = document.querySelector('meta[name="_csrf"]').content;
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
@@ -251,7 +341,7 @@
                 [csrfHeader]: csrfToken // CSRF 헤더 추가
             },
             body: JSON.stringify({
-                commenterId: commenterId,
+                commenterId: id,
                 content: content,
                 postId: postId
             })
@@ -280,5 +370,28 @@
         allMenus.forEach(menu => {
             menu.style.display = "none";
         });
+    }
+
+    function blockDuplicateForm(label, commentDiv) {
+
+        const isExitsEditForm = commentDiv.querySelector(".comment-editForm");
+        const isExitsReplyForm = commentDiv.querySelector(".comment-replyForm");
+
+        if (label === "edit") {
+            if (isExitsEditForm) {
+                return true;
+            }
+            if (isExitsReplyForm) {
+                isExitsReplyForm.remove();
+            }
+
+        } else {
+            if (isExitsReplyForm) {
+                return true;
+            }
+            if (isExitsEditForm) {
+                isExitsEditForm.remove();
+            }
+        }
     }
 </script>

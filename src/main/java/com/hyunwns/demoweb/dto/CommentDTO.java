@@ -21,4 +21,8 @@ public class CommentDTO {
     // 삭제를 위해 CommentID도 필요할 듯
     private Long id;
 
+    // 하위 댓글 여부만 넘겨 줘서 더보기 버튼을 클릭했을 때 하위 댓글 로드하는 방식으로
+    private int childExist = 0;
+
+
 }

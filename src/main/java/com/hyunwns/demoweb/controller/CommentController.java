@@ -194,7 +194,7 @@ public class CommentController {
     }
 
     @GetMapping("/comment/{commentId}/replies")
-    public List<CommentDTO> replyLoad(@PathVariable("commentId") Long commentId, CommentDTO commentDTO) {
+    public List<CommentDTO> replyLoad(@PathVariable("commentId") Long commentId) {
 
         List<CommentDTO> comments = new ArrayList<>();
 

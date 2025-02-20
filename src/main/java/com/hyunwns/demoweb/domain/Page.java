@@ -7,10 +7,10 @@ import java.util.List;
 @Getter
 public class Page {
 
-    private List<Post> posts;
-    private int current_page;
-    private int last_page;
-    private List<Integer> pageList;
+    private final List<Post> posts;
+    private final int current_page;
+    private final int last_page;
+    private final List<Integer> pageList;
 
     private Page(PageBuilder builder) {
         this.posts = builder.posts;

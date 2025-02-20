@@ -27,28 +27,30 @@
         </div>
     </div>
 
-    <div class="container">
+    <div class="control-bar">
         <!-- 검색창 -->
-        <div class="search-bar">
-            <form th:action="@{/main}" th:object="${postSearch}" method="get" >
-                <input id="search" th:field="*{search}" type="text" maxlength="100" placeholder="검색">
-                <input th:field="*{page}" type="hidden">
-                <button type="submit">검색</button>
-            </form>
-        </div>
-        <!-- 페이지네이션 -->
-        <div class="pagination">
-            <a th:each="pageNum : ${page.pageList}"
-               th:text="${pageNum}"
-               th:onclick="'searchWithPage('+${pageNum}+')'"
-               th:classappend="${page.current_page == pageNum} ? 'active' : ''"
-            />
+        <div class="left-container">
+            <div class="search-bar">
+                <form th:action="@{/main}" th:object="${postSearch}" method="get" >
+                    <input id="search" th:field="*{search}" type="text" maxlength="100" placeholder="검색">
+                    <input th:field="*{page}" type="hidden">
+                    <button type="submit">검색</button>
+                </form>
+            </div>
+             <!-- 페이지네이션 -->
+            <div class="pagination">
+                <a th:each="pageNum : ${page.pageList}"
+                   th:text="${pageNum}"
+                   th:onclick="'searchWithPage('+${pageNum}+')'"
+                   th:classappend="${page.current_page == pageNum} ? 'active' : ''"
+                />
 
-            <a th:classappend="${page.current_page >= page.last_page} ? 'disabled' : ''"
-               th:onclick="'searchWithPage('+ ${page.current_page+1} +')'" >></a>
+                <a th:classappend="${page.current_page >= page.last_page} ? 'disabled' : ''"
+                   th:onclick="'searchWithPage('+ ${page.current_page+1} +')'" >></a>
 
-            <a th:classappend="${page.current_page >= page.last_page} ? 'disabled' : ''"
-               th:onclick="'searchWithPage('+ ${page.last_page} +')'">>></a>
+                <a th:classappend="${page.current_page >= page.last_page} ? 'disabled' : ''"
+                   th:onclick="'searchWithPage('+ ${page.last_page} +')'">>></a>
+            </div>
         </div>
 
         <!-- 글쓰기 버튼 -->

@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.repository;
 
+import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.chat.ChatRoom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,17 +17,23 @@ public class MemoryChatRoomRepository implements ChatRoomRepository {
     private static final Logger logger = LoggerFactory.getLogger(MemoryChatRoomRepository.class);
 
     @Override
-    public ChatRoom saveRoom(ChatRoom room) {
+    public void saveRoom(ChatRoom room, Member member) {
+
+        member.addChatRoom(room);
         rooms.put(room.getRoomId(), room);
 
         logger.info("saved room {} - {}", room.getRoomId(), this );
 
-        return room;
     }
 
     @Override
-    public void deleteRoom(UUID roomId) {
+    public void deleteRoom(UUID roomId, Member member) {
+
+        ChatRoom chatRoom = rooms.get(roomId);
         rooms.remove(roomId);
+        member.removeChatRoom(chatRoom);
+
+        logger.info("deleted room {} - {}", roomId, this );
     }
 
     @Override
@@ -38,4 +45,5 @@ public class MemoryChatRoomRepository implements ChatRoomRepository {
     public ChatRoom getRoom(UUID roomId) {
         return rooms.get(roomId);
     }
+
 }

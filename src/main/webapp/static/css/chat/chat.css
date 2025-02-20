@@ -8,11 +8,12 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    height: 800px;
 }
 
 /* 채팅 메시지 영역 */
 #messages {
-    height: 350px;
+    height: 90%;
     overflow-y: auto;
     padding: 15px;
     background: white;
@@ -41,8 +42,8 @@
 #chat-input-container {
     display: flex;
     flex-direction: row;
-    gap: 8px;
     margin-top: 10px;
+    height: 5%;
 }
 
 #message-input {
@@ -51,6 +52,7 @@
     border: 1px solid #ced4da;
     border-radius: 5px;
     font-size: 16px;
+    margin-right: 8px;
 }
 
 #send-btn {
@@ -61,6 +63,17 @@
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
+    align-items: center;
+    justify-items: center;
+
+}
+
+#send-form {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 #send-btn:hover {
@@ -150,4 +163,12 @@
     font-size: 14px;
     color: #495057;
     text-align: center;
+}
+
+#room-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
 }

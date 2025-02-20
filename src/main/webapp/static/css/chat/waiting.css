@@ -45,6 +45,19 @@
     background: #218838;
 }
 
+.delete-btn {
+    background: palevioletred;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: indianred;
+}
+
 /* 방 만들기 버튼 */
 .create-room-btn {
     margin-top: 20px;
@@ -106,4 +119,11 @@
 .modal-content button.cancel-btn {
     background-color: #F44336;
     color:white;
+}
+
+.room-info {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 30px;
 }

@@ -47,6 +47,7 @@ public class ChatHandler implements WebSocketHandler {
         broadcastMessage(resJson, room);
 
         room.addUsers(username, session);
+
     }
 
     @Override

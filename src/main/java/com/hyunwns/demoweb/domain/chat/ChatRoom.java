@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.domain.chat;
 
+import com.hyunwns.demoweb.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
@@ -15,6 +16,8 @@ public class ChatRoom {
 
     private final UUID roomId;
 
+    private final Member owner;
+
     @Setter
     private String roomTitle;
 
@@ -24,9 +27,10 @@ public class ChatRoom {
     /* 채팅방 대화 내용 */
     private final List<ChatMessage> chatMessages = new ArrayList<>();
 
-    public ChatRoom(String roomTitle) {
+    public ChatRoom(String roomTitle, Member owner) {
         this.roomId = UUID.randomUUID();
         this.roomTitle = roomTitle;
+        this.owner = owner;
     }
 
     public void addUsers(String username, WebSocketSession session) {

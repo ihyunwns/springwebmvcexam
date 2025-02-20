@@ -1,6 +1,6 @@
 const messagesDiv = document.getElementById("messages");
 const messageInput = document.getElementById("message-input");
-const sendBtn = document.getElementById("send-btn");
+const sendForm = document.getElementById("send-form");
 
 const uuid = document.getElementById("room-uuid").value;
 
@@ -33,7 +33,9 @@ ws.onmessage = (event) => {
 
 
 // 전송 버튼 눌렀을 때
-sendBtn.addEventListener("click", () => {
+sendForm.addEventListener("submit", (event) => {
+    event.preventDefault()
+
     if (messageInput.value.trim()) {
         ws.send(messageInput.value);
 

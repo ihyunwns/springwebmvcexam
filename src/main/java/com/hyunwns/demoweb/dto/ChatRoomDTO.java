@@ -1,6 +1,7 @@
 package com.hyunwns.demoweb.dto;
 
 
+import com.hyunwns.demoweb.domain.Member;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,11 +17,9 @@ public class ChatRoomDTO {
 
     private UUID uuid;
 
-    @Override
-    public String toString() {
-        return "ChatRoomDTO{" +
-                "title='" + title + '\'' +
-                ", uuid=" + uuid +
-                '}';
-    }
+    private Member member;
+
+    private int count;
+
+    private boolean isOwner = false;
 }

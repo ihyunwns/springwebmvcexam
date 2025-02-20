@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.domain;
 
+import com.hyunwns.demoweb.domain.chat.ChatRoom;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -21,6 +22,8 @@ public class Member {
 
     private String iconURL;
 
+    private final List<ChatRoom> chatRooms;
+
     @Setter
     private String role;
 
@@ -31,6 +34,7 @@ public class Member {
         this.age = age;
         this.posts = new ArrayList<>();
         this.comments = new ArrayList<>();
+        this.chatRooms = new ArrayList<>();
     }
 
     public void addPosts(Post post) {
@@ -39,6 +43,8 @@ public class Member {
     public void addComments(Comment comment) {
         comments.add(comment);
     }
+    public void addChatRoom(ChatRoom chatRoom) { chatRooms.add(chatRoom); }
+    public void removeChatRoom(ChatRoom chatRoom) { chatRooms.remove(chatRoom); }
 
     @Override
     public String toString() {

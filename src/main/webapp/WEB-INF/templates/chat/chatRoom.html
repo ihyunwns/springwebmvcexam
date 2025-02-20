@@ -12,11 +12,16 @@
     <input id="room-uuid" type="hidden" th:value="${chatRoomDTO.uuid}"/>
 
     <div id="chat-container">
-        <div id="room-title" th:text="|방 제목:${chatRoomDTO.title}|" style="margin-bottom:10px">title</div>
+        <div id="room-info">
+            <div id="room-title" th:text="|방 제목:${chatRoomDTO.title}|">방 제목</div>
+            <div id="room-owner" th:text="|소유자:${chatRoomDTO.member.id}|">소유자</div>
+        </div>
         <div id="messages"></div>
         <div id="chat-input-container">
-            <label for="message-input"></label><input type="text" id="message-input" placeholder="메시지를 입력하세요">
-            <button id="send-btn">전송</button>
+            <form id="send-form" action="#">
+                <label for="message-input"></label><input type="text" id="message-input" placeholder="메시지를 입력하세요">
+                <button id="send-btn" type="submit">전송</button>
+            </form>
         </div>
     </div>
 

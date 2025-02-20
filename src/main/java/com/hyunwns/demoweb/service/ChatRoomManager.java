@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.service;
 
+import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.chat.ChatRoom;
 import com.hyunwns.demoweb.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +15,20 @@ public class ChatRoomManager {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    public void createRoom(String title) {
+    public void createRoom(String title, Member owner) {
+        ChatRoom chatRoom = new ChatRoom(title, owner);
+        chatRoomRepository.saveRoom(chatRoom, owner);
+    }
 
-        ChatRoom chatRoom = new ChatRoom(title);
-        chatRoomRepository.saveRoom(chatRoom);
+    public void deleteRoom(UUID roomId, Member member) {
+
+        ChatRoom room = chatRoomRepository.getRoom(roomId);
+
+        if (room.getOwner() == member) {
+            chatRoomRepository.deleteRoom(roomId, member);
+        } else {
+            throw new IllegalArgumentException("Room does not belong to the member");
+        }
     }
 
     public Map<UUID, ChatRoom> getRoomList() {
@@ -27,6 +38,7 @@ public class ChatRoomManager {
     public ChatRoom getRoom(UUID id) {
         return chatRoomRepository.getRoom(id);
     }
+
 
 
 }

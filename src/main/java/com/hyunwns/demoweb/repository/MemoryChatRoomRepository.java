@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Repository
 public class MemoryChatRoomRepository implements ChatRoomRepository {
 
-    private static Map<UUID, ChatRoom> rooms = new ConcurrentHashMap<>();
+    private static final Map<UUID, ChatRoom> rooms = new ConcurrentHashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(MemoryChatRoomRepository.class);
 
     @Override

@@ -2,8 +2,8 @@ package com.hyunwns.demoweb.repository;
 
 import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.Page;
-import com.hyunwns.demoweb.domain.Post;
-import com.hyunwns.demoweb.domain.PostSearch;
+import com.hyunwns.demoweb.domain.post.Post;
+import com.hyunwns.demoweb.dto.post.PostSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

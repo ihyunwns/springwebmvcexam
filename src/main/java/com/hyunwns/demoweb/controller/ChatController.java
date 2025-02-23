@@ -78,6 +78,7 @@ public class ChatController {
         return "redirect:/waiting";
     }
 
+    // TODO: 페이징 기능 구현
     @GetMapping("/chat/list")
     public ResponseEntity<?> list() {
 

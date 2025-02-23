@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.handler;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.hyunwns.demoweb.domain.chat.ChatCode;
 import com.hyunwns.demoweb.domain.chat.ChatMessage;
 import com.hyunwns.demoweb.domain.chat.ChatRoom;
@@ -7,24 +8,26 @@ import com.hyunwns.demoweb.service.ChatRoomManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.*;
 
-@Service
+@Component
 public class ChatHandler implements WebSocketHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatHandler.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    //private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     private final ChatRoomManager chatRoomManager;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public ChatHandler(ChatRoomManager chatRoomManager) {
+    public ChatHandler(ChatRoomManager chatRoomManager, ObjectMapper objectMapper) {
         this.chatRoomManager = chatRoomManager;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -41,7 +44,8 @@ public class ChatHandler implements WebSocketHandler {
         }
 
         logger.info("{} connected, {} ", session.getId(), username);
-        String resJson = objectMapper.writeValueAsString(new ChatMessage(username, "", ChatCode.ENTER.getCode()));
+
+        String resJson = objectMapper.writeValueAsString(new ChatMessage(username, "", ChatCode.ENTER.getCode(), null));
 
         session.sendMessage(new TextMessage(resJson));
         broadcastMessage(resJson, room);
@@ -55,11 +59,17 @@ public class ChatHandler implements WebSocketHandler {
         String username = getUsername(session);
         ChatRoom room = chatRoomManager.getRoom(getUUID(session));
 
-        String jsonResponse = objectMapper.writeValueAsString(new ChatMessage(username, message.getPayload().toString(), ChatCode.MESSAGE.getCode())) ;
+        // Map.class 로 변환될 때 내부적으로 Map<Object, Object> 로 처리되기 때문에 타입안정성 X
+        Map<String, Object> messageMap = objectMapper.readValue(message.getPayload().toString(), new TypeReference<>() {});
+        String textMessage = messageMap.get("message").toString();
+        // JSON 객체를 지정한 타입으로 변환
+        // TypeReference로 제네릭 타입도 변환 가능
+        List<String> images = objectMapper.convertValue(messageMap.get("image"), new TypeReference<>() {});
+
+        String jsonResponse = objectMapper.writeValueAsString(new ChatMessage(username, textMessage, ChatCode.MESSAGE.getCode(), images)) ;
 
         logger.info("{} received message: {}", session.getId(), message.getPayload());
         sendMessageOtherSession(jsonResponse, session, room);
-
     }
 
     @Override
@@ -90,7 +100,7 @@ public class ChatHandler implements WebSocketHandler {
         // Session을 먼저 제거한 후 broadcast 해야함
         room.removeUsers(username);
 
-        String resJson = objectMapper.writeValueAsString(new ChatMessage(username, "", ChatCode.EXIT.getCode()));
+        String resJson = objectMapper.writeValueAsString(new ChatMessage(username, "", ChatCode.EXIT.getCode(), null));
 
         broadcastMessage(resJson, room);
 

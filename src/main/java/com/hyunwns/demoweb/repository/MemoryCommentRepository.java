@@ -1,12 +1,11 @@
 package com.hyunwns.demoweb.repository;
 
-import com.hyunwns.demoweb.domain.Comment;
+import com.hyunwns.demoweb.domain.post.Comment;
 import com.hyunwns.demoweb.domain.Member;
-import com.hyunwns.demoweb.domain.Post;
+import com.hyunwns.demoweb.domain.post.Post;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

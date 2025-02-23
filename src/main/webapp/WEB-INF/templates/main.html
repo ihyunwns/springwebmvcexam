@@ -10,7 +10,7 @@
     <div th:replace="~{fragments/navigation :: bar}"></div>
 
     <div class="container">
-        <div th:each="post : ${page.posts}" class="card"
+        <div th:each="post : ${page.objects}" class="card"
              th:onclick=" 'move_details('+${post.id}+')' ">
             <script>
                 function move_details(id) {

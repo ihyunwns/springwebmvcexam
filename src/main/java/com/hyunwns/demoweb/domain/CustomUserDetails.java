@@ -1,7 +1,5 @@
-package com.hyunwns.demoweb.dto;
+package com.hyunwns.demoweb.domain;
 
-import com.hyunwns.demoweb.domain.Member;
-import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

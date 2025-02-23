@@ -1,8 +1,8 @@
 package com.hyunwns.demoweb.controller;
 
 import com.hyunwns.demoweb.domain.Member;
-import com.hyunwns.demoweb.domain.Post;
-import com.hyunwns.demoweb.dto.PostForm;
+import com.hyunwns.demoweb.domain.post.Post;
+import com.hyunwns.demoweb.dto.post.PostForm;
 import com.hyunwns.demoweb.service.MemberService;
 import com.hyunwns.demoweb.service.NoticeBoardService;
 import com.hyunwns.demoweb.util.SecurityUtils;

@@ -1,6 +1,6 @@
-package com.hyunwns.demoweb.domain;
+package com.hyunwns.demoweb.domain.post;
 
-import lombok.AccessLevel;
+import com.hyunwns.demoweb.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,8 +35,5 @@ public class Comment {
             children = new ArrayList<>();
         }
     }
-
-    // 답글인 경우 태그하고 있는 답글?
-    // Comment tagComment;
 
 }

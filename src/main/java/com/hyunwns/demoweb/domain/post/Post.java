@@ -1,5 +1,6 @@
-package com.hyunwns.demoweb.domain;
+package com.hyunwns.demoweb.domain.post;
 
+import com.hyunwns.demoweb.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 

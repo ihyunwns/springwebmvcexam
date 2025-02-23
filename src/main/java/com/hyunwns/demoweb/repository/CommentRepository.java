@@ -1,8 +1,8 @@
 package com.hyunwns.demoweb.repository;
 
-import com.hyunwns.demoweb.domain.Comment;
+import com.hyunwns.demoweb.domain.post.Comment;
 import com.hyunwns.demoweb.domain.Member;
-import com.hyunwns.demoweb.domain.Post;
+import com.hyunwns.demoweb.domain.post.Post;
 
 import java.util.List;
 

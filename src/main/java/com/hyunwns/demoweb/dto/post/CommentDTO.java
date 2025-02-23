@@ -1,4 +1,4 @@
-package com.hyunwns.demoweb.dto;
+package com.hyunwns.demoweb.dto.post;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -7,10 +7,10 @@ const uuid = document.getElementById("room-uuid").value;
 const ws = new WebSocket(`ws://localhost:8080/chats?uuid=${uuid}`);
 const id = document.getElementById("user-info").dataset.id;
 
-ws.onclose = () => {
-    alert("세션이 종료되었습니다. 다시 로그인해주세요.");
-    window.location.href = "/";
-}
+// ws.onclose = () => {
+//     alert("세션이 종료되었습니다. 다시 로그인해주세요.");
+//     window.location.href = "/";
+// }
 
 // 웹소켓으로 메시지 받았을 때
 ws.onmessage = (event) => {
@@ -33,20 +33,46 @@ ws.onmessage = (event) => {
 
 
 // 전송 버튼 눌렀을 때
-sendForm.addEventListener("submit", (event) => {
+sendForm.addEventListener("submit", async (event) => {
     event.preventDefault()
 
-    if (messageInput.value.trim()) {
-        ws.send(messageInput.value);
+    const message = messageInput.value.trim();
+    const images = await convertFilesToBase64(dataTransfer.files);
 
-        const box = createMessageBox(messageInput.value, "send");
-
-        messagesDiv.appendChild(box);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-        messageInput.value = "";
+    if (message === "" && !( Array.isArray(images) && images.length > 0) ) {
+        return;
     }
+    const messageForm = {
+        message: message,
+        image: images
+    }
+    ws.send(JSON.stringify(messageForm));
+
+    const box = createMessageBox(messageForm, "send");
+    messagesDiv.appendChild(box);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    messageInput.value = "";
+    previewContainer.innerHTML = "";
+    for (let i = dataTransfer.files.length - 1; i >= 0; i--) {
+        dataTransfer.items.remove(i);
+    }
+    addPreviewImage();
+
 });
+
+function convertFilesToBase64(files) {
+    return Promise.all( // 모든 파일이 변환될 때까지 기다림
+        Array.from(files).map(file =>  // 파일 목록을 순회하며 변환
+            new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+            })
+        )
+    );
+}
 
 function createMessageBox(data, type) {
     if (type === 'send') {
@@ -69,15 +95,29 @@ function createMessageBox(data, type) {
         user.appendChild(userIcon);
         user.appendChild(userId);
 
+        sendBox.appendChild(user);
         /* ------------ */
         /* 채팅 내용 */
-        const message = document.createElement("div");
-        message.className = "message";
-        message.textContent = data;
-        /* ------------ */
+        if (data.message !== "") {
+            const message = document.createElement("div");
+            message.className = "message";
+            message.textContent = data.message;
 
-        sendBox.appendChild(user);
-        sendBox.appendChild(message);
+            sendBox.appendChild(message);
+        }
+        /* ------------ */
+        if (Array.isArray(data.image) && data.image.length > 0) {
+            const imageContainer = document.createElement("div");
+            imageContainer.className = "imageContainer";
+
+            data.image.forEach(base64Data => {
+                const img = document.createElement("img");
+                img.src = base64Data;
+
+                imageContainer.appendChild(img);
+        })
+            sendBox.appendChild(imageContainer);
+        }
 
         return sendBox;
 
@@ -101,16 +141,30 @@ function createMessageBox(data, type) {
         user.appendChild(userIcon);
         user.appendChild(userId);
 
+        receivedBox.appendChild(user);
         /* ------------ */
         /* 채팅 내용 */
-        const message = document.createElement("div");
-        message.className = "message";
-        message.textContent = data.message;
+        if (data.message !== "") {
+            const message = document.createElement("div");
+            message.className = "message";
+            message.textContent = data.message;
+
+            receivedBox.appendChild(message);
+        }
+        if (Array.isArray(data.images) && data.images.length > 0) {
+            const imageContainer = document.createElement("div");
+            imageContainer.className = "imageContainer";
+
+            data.images.forEach(base64Data => {
+                const img = document.createElement("img");
+                img.src = base64Data;
+
+                imageContainer.appendChild(img);
+        })
+            receivedBox.appendChild(imageContainer);
+        }
+
         /* ------------ */
-
-        receivedBox.appendChild(user);
-        receivedBox.appendChild(message);
-
         return receivedBox;
 
     } else {

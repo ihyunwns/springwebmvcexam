@@ -140,7 +140,13 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
       <version>3.3.4</version>
-</dependency>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.15.2</version> <!-- LocalDateTime Json으로 변환하기 위함  -->
+    </dependency>
 
   </dependencies>
 

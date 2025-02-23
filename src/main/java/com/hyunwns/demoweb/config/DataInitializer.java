@@ -1,16 +1,13 @@
 package com.hyunwns.demoweb.config;
 
-import com.hyunwns.demoweb.domain.Comment;
+import com.hyunwns.demoweb.domain.post.Comment;
 import com.hyunwns.demoweb.domain.Member;
-import com.hyunwns.demoweb.domain.Post;
-import com.hyunwns.demoweb.repository.MemberRepository;
-import com.hyunwns.demoweb.repository.NoticeBoardRepository;
+import com.hyunwns.demoweb.domain.post.Post;
 import com.hyunwns.demoweb.service.CommentService;
 import com.hyunwns.demoweb.service.MemberService;
 import com.hyunwns.demoweb.service.NoticeBoardService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 

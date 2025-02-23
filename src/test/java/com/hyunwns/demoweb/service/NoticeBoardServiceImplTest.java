@@ -1,7 +1,7 @@
 package com.hyunwns.demoweb.service;
 
 import com.hyunwns.demoweb.domain.Member;
-import com.hyunwns.demoweb.domain.Post;
+import com.hyunwns.demoweb.domain.post.Post;
 import com.hyunwns.demoweb.repository.MemoryNoticeBoardRepository;
 import com.hyunwns.demoweb.repository.NoticeBoardRepository;
 import org.junit.jupiter.api.Assertions;
@@ -11,8 +11,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class NoticeBoardServiceImplTest {
 

@@ -22,6 +22,7 @@
     flex-direction: column;
     gap: 10px;
     border: 1px solid #dee2e6;
+    margin-bottom: 5px;
 }
 
 /* 스크롤바 스타일 */
@@ -114,45 +115,48 @@
 /* 받은 메시지 */
 .receivedBox {
     align-self: flex-start;
-    background: #e9ecef;
-    padding: 10px 15px;
-    border-radius: 10px;
     font-size: 14px;
     max-width: 60%;
-    word-wrap: break-word;
 }
 
 /* 보낸 메시지 */
 .sendBox {
     align-self: flex-end;
-    background: #2d554d;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 10px;
     font-size: 14px;
     max-width: 60%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.receivedBox .message {
+    justify-content: flex-start;
+    background-color: #ced4da;
+    border-radius: 10px;
+    padding: 10px 15px;
     word-wrap: break-word;
+    position: relative;
+    display: inline-block;
 }
 
-/* 말풍선 스타일 */
-.sendBox::after {
-    content: "";
-    position: absolute;
-    right: -10px;
-    top: 10px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent transparent transparent #2d554d;
+.sendBox .message {
+    justify-content: flex-end;
+    background-color: #405057;
+    color: white;
+    border-radius: 10px;
+    padding: 10px 15px;
+    word-wrap: break-word;
+    position: relative;
+    display: inline-block;
 }
 
-.receivedBox::after {
-    content: "";
-    position: absolute;
-    left: -10px;
-    top: 10px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent #e9ecef transparent transparent;
+.receivedBox .user-container {
+    justify-content: flex-start;
+}
+
+.sendBox .user-container {
+    justify-content: flex-end;
 }
 
 /* 받은 메시지 */
@@ -165,10 +169,44 @@
     text-align: center;
 }
 
+
+.imageContainer {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    flex-wrap: wrap; /* 이미지가 너무 많으면 다음 줄로 */
+    max-width: 100%; /* 부모 요소 너비를 넘지 않도록 설정 */
+    bottom: -100%;
+    left: 0;
+}
+
+.imageContainer img {
+    width: 120px;
+    max-height: 120px;
+
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+
 #room-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
     margin-bottom: 10px;
+}
+
+#image-btn {
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin-right: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+#image-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    opacity: 0.8;
 }

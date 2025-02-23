@@ -1,7 +1,7 @@
 package com.hyunwns.demoweb.controller;
 
 import com.hyunwns.demoweb.domain.Page;
-import com.hyunwns.demoweb.domain.PostSearch;
+import com.hyunwns.demoweb.dto.post.PostSearch;
 import com.hyunwns.demoweb.service.NoticeBoardService;
 import com.hyunwns.demoweb.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;

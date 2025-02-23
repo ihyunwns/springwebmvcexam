@@ -1,14 +1,13 @@
 package com.hyunwns.demoweb.controller;
 
-import com.hyunwns.demoweb.domain.Comment;
+import com.hyunwns.demoweb.domain.post.Comment;
 import com.hyunwns.demoweb.domain.Member;
-import com.hyunwns.demoweb.domain.Post;
-import com.hyunwns.demoweb.dto.CommentDTO;
+import com.hyunwns.demoweb.domain.post.Post;
+import com.hyunwns.demoweb.dto.post.CommentDTO;
 import com.hyunwns.demoweb.service.CommentService;
 import com.hyunwns.demoweb.service.MemberService;
 import com.hyunwns.demoweb.service.NoticeBoardService;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.tags.shaded.org.apache.regexp.RE;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ContentDisposition;
@@ -18,7 +17,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
@@ -26,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

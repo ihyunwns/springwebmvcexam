@@ -1,7 +1,7 @@
 package com.hyunwns.demoweb.repository;
 
 import com.hyunwns.demoweb.domain.Member;
-import com.hyunwns.demoweb.domain.Post;
+import com.hyunwns.demoweb.domain.post.Post;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class MemoryNoticeBoardRepositoryTest {
 

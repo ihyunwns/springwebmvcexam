@@ -11,15 +11,14 @@
 
 <body>
     <div th:replace="~{fragments/navigation :: bar}"></div>
-
     <div class="waiting-room">
         <!-- 채팅방 리스트 -->
         <div class="room-list">
             <h2>채팅방 리스트</h2>
-            <div th:each="room :${rooms}" class="room">
+            <div th:each="room :${pagedChatRooms.pagedList}" class="room">
                 <span style="font-size: 20px" th:text="${room.title}">방 제목</span>
                 <div class="room-info">
-                    <div class="room-owner" th:text="|${room.member.id}의 방|">소유자</div>
+                    <div class="room-owner" th:text="|${room.id}의 방|">소유자</div>
                     <div class="room-controller">
                         <div class="room-count" th:text="|${room.count} 명|">x 명</div>
                         <button class="join-btn" th:attr="data-uuid=${room.uuid}">입장</button>
@@ -27,6 +26,7 @@
                     </div>
                 </div>
             </div>
+            <div id="pagination"></div>
 
             <div id="roomModal" class="modal">
                 <div class="modal-content">
@@ -47,6 +47,10 @@
         <!-- 방 만들기 버튼 -->
         <button class="create-room-btn">방 만들기</button>
     </div>
+    <div th:attr="data-page=${pagedChatRooms.page}" id="page" hidden></div>
+    <div th:attr="data-size=${pagedChatRooms.size}" id="size" hidden></div>
+    <div th:attr="data-total-elements=${pagedChatRooms.totalElements}" id="totalElements" hidden></div>
+    <div th:attr="data-total-pages=${pagedChatRooms.totalPages}" id="totalPages" hidden></div>
 </body>
 <script src="../../../static/js/chat/waiting.js"></script>
 </html>

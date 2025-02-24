@@ -7,10 +7,10 @@ const uuid = document.getElementById("room-uuid").value;
 const ws = new WebSocket(`ws://localhost:8080/chats?uuid=${uuid}`);
 const id = document.getElementById("user-info").dataset.id;
 
-// ws.onclose = () => {
-//     alert("세션이 종료되었습니다. 다시 로그인해주세요.");
-//     window.location.href = "/";
-// }
+ws.onclose = () => {
+    alert("세션이 종료되었습니다. 다시 로그인해주세요.");
+    window.location.href = "/";
+}
 
 // 웹소켓으로 메시지 받았을 때
 ws.onmessage = (event) => {

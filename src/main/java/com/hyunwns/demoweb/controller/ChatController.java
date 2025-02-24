@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyunwns.demoweb.domain.Member;
+import com.hyunwns.demoweb.domain.Pages;
 import com.hyunwns.demoweb.domain.chat.ChatRoom;
 import com.hyunwns.demoweb.dto.ChatRoomDTO;
 import com.hyunwns.demoweb.service.ChatRoomManager;
@@ -20,10 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -38,25 +36,33 @@ public class ChatController {
     private static final int MAX_ROOMS_PER_USER = 1;
 
     @GetMapping("/waiting")
-    public String waiting(Model model) {
+    public String waiting(@RequestParam(name = "page", defaultValue = "1") int page,
+                          @RequestParam(name = "size", defaultValue = "5") int size,
+                          @RequestParam(name = "sort", required = false) String sort,
+                          Model model) {
+
         securityUtils.addAttributeUserInfo(model);
 
         List<ChatRoomDTO> roomList = new ArrayList<>();
-
         for (ChatRoom chatRoom : chatRoomManager.getRoomList().values()) {
-            ChatRoomDTO roomDTO = new ChatRoomDTO();
-
-            roomDTO.setCount(chatRoom.getCounts()); roomDTO.setUuid(chatRoom.getRoomId());
-            roomDTO.setTitle(chatRoom.getRoomTitle()); roomDTO.setMember(chatRoom.getOwner());
-            if (chatRoom.getOwner() == thisMember()) {
-                roomDTO.setOwner(true);
+            ChatRoomDTO chatRoomDTO = chatRoom.convertToDTO();
+            if (memberService.findMember(chatRoom.getId()) == thisMember()) {
+                chatRoomDTO.setOwner(true);
             }
-
-            roomList.add(roomDTO);
+            roomList.add(chatRoomDTO);
         }
 
+        Comparator<ChatRoomDTO> comparator = Comparator.comparing(ChatRoomDTO::getCreatedAt);
+        Pages<ChatRoomDTO> pagedChatRooms =
+                Pages
+                .setPagesConfigure(roomList)
+                .setPage(page)
+                .setSize(size)
+                .sortBy(comparator)
+                .build();
+
         model.addAttribute("chatRoomDTO", new ChatRoomDTO());
-        model.addAttribute("rooms", roomList);
+        model.addAttribute("pagedChatRooms", pagedChatRooms);
 
         return "chat/waiting";
     }
@@ -78,14 +84,39 @@ public class ChatController {
         return "redirect:/waiting";
     }
 
-    // TODO: 페이징 기능 구현
     @GetMapping("/chat/list")
-    public ResponseEntity<?> list() {
+    public ResponseEntity<Pages<ChatRoomDTO>> list(@RequestParam(name = "page", defaultValue = "1") int page,
+                                                   @RequestParam(name = "size", defaultValue = "9") int size,
+                                                   @RequestParam(name="sort", required = false) String sort) {
 
-        Map<UUID, ChatRoom> roomList = chatRoomManager.getRoomList();
+        List<ChatRoom> chatRooms = new ArrayList<>(chatRoomManager.getRoomList().values());
 
-        return ResponseEntity.ok().body(roomList);
+        List<ChatRoomDTO> roomDTOList = new ArrayList<>();
+        for(ChatRoom chatRoom : chatRooms) {
+            ChatRoomDTO chatRoomDTO = chatRoom.convertToDTO();
+            if (memberService.findMember(chatRoom.getId()) == thisMember()) {
+                chatRoomDTO.setOwner(true);
+            }
+            roomDTOList.add(chatRoomDTO);
+        }
 
+        /* Comparator<ChatRoomDTO> comparator = new Comparator<ChatRoomDTO>() {
+            @Override
+            public int compare(ChatRoomDTO o1, ChatRoomDTO o2) {
+                return o1.getCreatedAt().compareTo(o2.getCreatedAt());
+            }
+        }; */
+        Comparator<ChatRoomDTO> comparator = Comparator.comparing(ChatRoomDTO::getCreatedAt);
+
+        Pages<ChatRoomDTO> pagedChatRooms =
+                Pages
+                .setPagesConfigure(roomDTOList)
+                .setPage(page)
+                .setSize(size)
+                .sortBy(comparator)
+                .build();
+
+        return ResponseEntity.ok().body(pagedChatRooms);
     }
 
     @GetMapping("/chat/enter")
@@ -95,12 +126,9 @@ public class ChatController {
 
         ChatRoom room = chatRoomManager.getRoom(roomId);
 
-        ChatRoomDTO roomDTO = new ChatRoomDTO();
-        roomDTO.setTitle(room.getRoomTitle());
-        roomDTO.setUuid(roomId);
-        roomDTO.setMember(room.getOwner());
+        ChatRoomDTO chatRoomDTO = room.convertToDTO();
 
-        model.addAttribute("chatRoomDTO", roomDTO);
+        model.addAttribute("chatRoomDTO", chatRoomDTO);
 
         return "chat/chatRoom";
     }

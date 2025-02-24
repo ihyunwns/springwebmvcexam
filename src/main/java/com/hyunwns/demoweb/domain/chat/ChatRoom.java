@@ -1,10 +1,12 @@
 package com.hyunwns.demoweb.domain.chat;
 
-import com.hyunwns.demoweb.domain.Member;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hyunwns.demoweb.dto.ChatRoomDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,11 @@ public class ChatRoom {
 
     private final UUID roomId;
 
-    private final Member owner;
+    private final String id;
+    private final String nickname;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime creationTime;
 
     @Setter
     private String roomTitle;
@@ -27,10 +33,13 @@ public class ChatRoom {
     /* 채팅방 대화 내용 */
     private final List<ChatMessage> chatMessages = new ArrayList<>();
 
-    public ChatRoom(String roomTitle, Member owner) {
+    public ChatRoom(String roomTitle, String id, String nickname) {
         this.roomId = UUID.randomUUID();
         this.roomTitle = roomTitle;
-        this.owner = owner;
+        this.id = id;
+        this.nickname = nickname;
+
+        this.creationTime = LocalDateTime.now();
     }
 
     public void addUsers(String username, WebSocketSession session) {
@@ -44,5 +53,16 @@ public class ChatRoom {
     public int getCounts() {
         return joinUsers.size();
     }
+
+    public ChatRoomDTO convertToDTO(){
+        ChatRoomDTO roomDTO = new ChatRoomDTO();
+
+        roomDTO.setId(id); roomDTO.setNickname(nickname);
+        roomDTO.setTitle(roomTitle); roomDTO.setUuid(roomId);
+        roomDTO.setCount(getCounts()); roomDTO.setCreatedAt(getCreationTime());
+
+        return roomDTO;
+    }
+
 
 }

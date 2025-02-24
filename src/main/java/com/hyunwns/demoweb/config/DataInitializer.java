@@ -3,6 +3,7 @@ package com.hyunwns.demoweb.config;
 import com.hyunwns.demoweb.domain.post.Comment;
 import com.hyunwns.demoweb.domain.Member;
 import com.hyunwns.demoweb.domain.post.Post;
+import com.hyunwns.demoweb.service.ChatRoomManager;
 import com.hyunwns.demoweb.service.CommentService;
 import com.hyunwns.demoweb.service.MemberService;
 import com.hyunwns.demoweb.service.NoticeBoardService;
@@ -18,6 +19,7 @@ public class DataInitializer implements InitializingBean {
     @Autowired private NoticeBoardService noticeBoardService;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired private CommentService commentService;
+    @Autowired private ChatRoomManager chatRoomManager;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -30,15 +32,20 @@ public class DataInitializer implements InitializingBean {
         Member member2 = new Member("tester2", "tester2", encode, 25);
         memberService.join(member2);
 
-        Post post = new Post(member, "TEST", "HI");
+        /*Post post = new Post(member, "TEST", "HI");
         noticeBoardService.post(post);
-        commentService.write(new Comment(member, post, null, "HELLO"));
+        commentService.write(new Comment(member, post, null, "HELLO"));*/
 
-//        for (int i = 0; i < 1000; i++) {
-//            Post post = new Post(member, "TEST" + i, "HI");
-//            noticeBoardService.post(post);
-//            commentService.write(new Comment(member, post, null, "HELLO"));
-//        }
+        /*for (int i = 0; i < 999; i++) {
+            chatRoomManager.createRoom("TEST" + i, member);
+        }*/
+
+
+        /*for (int i = 0; i < 1000; i++) {
+            Post post = new Post(member, "TEST" + i, "HI");
+            noticeBoardService.post(post);
+            commentService.write(new Comment(member, post, null, "HELLO"));
+        }*/
 
     }
 }

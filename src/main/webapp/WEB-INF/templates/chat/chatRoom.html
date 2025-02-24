@@ -16,7 +16,7 @@
     <div id="chat-container">
         <div id="room-info">
             <div id="room-title" th:text="|방 제목:${chatRoomDTO.title}|">방 제목</div>
-            <div id="room-owner" th:text="|소유자:${chatRoomDTO.member.id}|">소유자</div>
+            <div id="room-owner" th:text="|소유자:${chatRoomDTO.nickname}|">소유자</div>
         </div>
         <div id="messages"></div>
         <div id="dragdrop-container"></div>
@@ -26,7 +26,7 @@
                 <label for="message-input"></label><input type="text" id="message-input" placeholder="메시지를 입력하세요">
 
                 <input type="file" id="image-input" accept="image/*" hidden multiple>
-                <button id="image-btn" type="button" onclick="document.getElementById('image-input').click()">
+                <button id="image-btn" type="button" title="이미지 첨부" onclick="document.getElementById('image-input').click()">
                     <i class="fa-solid fa-paperclip"></i>
                 </button>
 

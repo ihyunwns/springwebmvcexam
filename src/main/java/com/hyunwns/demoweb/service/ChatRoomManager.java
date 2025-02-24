@@ -15,16 +15,16 @@ public class ChatRoomManager {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    public void createRoom(String title, Member owner) {
-        ChatRoom chatRoom = new ChatRoom(title, owner);
-        chatRoomRepository.saveRoom(chatRoom, owner);
+    public void createRoom(String title, Member member) {
+        ChatRoom chatRoom = new ChatRoom(title, member.getId(), member.getNickname());
+        chatRoomRepository.saveRoom(chatRoom, member);
     }
 
     public void deleteRoom(UUID roomId, Member member) {
 
         ChatRoom room = chatRoomRepository.getRoom(roomId);
 
-        if (room.getOwner() == member) {
+        if (room.getId().equals(member.getId())) {
             chatRoomRepository.deleteRoom(roomId, member);
         } else {
             throw new IllegalArgumentException("Room does not belong to the member");

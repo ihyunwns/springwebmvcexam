@@ -1,5 +1,7 @@
 package com.hyunwns.demoweb.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hyunwns.demoweb.domain.chat.ChatRoom;
 import com.hyunwns.demoweb.domain.post.Comment;
 import com.hyunwns.demoweb.domain.post.Post;
@@ -17,8 +19,8 @@ public class Member {
     private final String password;
     private final int age;
 
-    private List<Post> posts;
-    private List<Comment> comments;
+    private final List<Post> posts;
+    private final List<Comment> comments;
 
     private String iconURL;
 

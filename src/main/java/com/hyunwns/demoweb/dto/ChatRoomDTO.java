@@ -1,11 +1,12 @@
 package com.hyunwns.demoweb.dto;
 
 
-import com.hyunwns.demoweb.domain.Member;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -17,7 +18,12 @@ public class ChatRoomDTO {
 
     private UUID uuid;
 
-    private Member member;
+    // 방 소유자 정보
+    private String id;
+    private String nickname;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
 
     private int count;
 

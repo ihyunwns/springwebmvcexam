@@ -7,8 +7,6 @@ import java.util.List;
 @Getter
 public class Page {
 
-    // TODO: 한 화면에 보여줄 Object에 따른 페이지 설정 추가하기
-
     private final List<?> objects;
     private final int current_page;
     private final int last_page;

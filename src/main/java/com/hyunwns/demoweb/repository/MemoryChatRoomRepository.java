@@ -1,11 +1,15 @@
 package com.hyunwns.demoweb.repository;
 
 import com.hyunwns.demoweb.domain.Member;
+import com.hyunwns.demoweb.domain.Pages;
 import com.hyunwns.demoweb.domain.chat.ChatRoom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;

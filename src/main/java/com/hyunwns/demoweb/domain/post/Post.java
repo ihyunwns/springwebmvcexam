@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.domain.post;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hyunwns.demoweb.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ public class Post {
 
     private Long id;
     private final Member author;
+
     private final LocalDateTime published;
 
     private String title;

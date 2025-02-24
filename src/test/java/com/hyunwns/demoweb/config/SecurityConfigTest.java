@@ -1,16 +1,11 @@
 package com.hyunwns.demoweb.config;
 
-import com.hyunwns.demoweb.dto.SignUpDTO;
-import com.hyunwns.demoweb.repository.MemberRepository;
-import com.hyunwns.demoweb.service.MemberServiceImpl;
+import com.hyunwns.demoweb.common.config.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SecurityConfigTest {
 

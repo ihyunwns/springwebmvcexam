@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head th:replace="~{fragments/header :: header}">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
+<link href="../../../static/css/main.css" rel="stylesheet"/>
+
 <body>
-    animals
+    <div th:replace="~{fragments/navigation :: bar}"></div>
+
+    지도 위치 기반 유기 동물 찾기 &nbsp
+
+    네이버 or 카카오 지도 불러오기
+
+    유기 동물 사이트, API 제공 여부 확인 or 크롤링
+
+    근처 동물 병원, 동물보호센터
+
+
+
 </body>
+
 </html>

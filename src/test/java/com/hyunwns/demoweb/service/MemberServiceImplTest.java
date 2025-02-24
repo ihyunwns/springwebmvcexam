@@ -1,14 +1,14 @@
 package com.hyunwns.demoweb.service;
 
-import com.hyunwns.demoweb.domain.Member;
+import com.hyunwns.demoweb.common.domain.Member;
+import com.hyunwns.demoweb.common.service.MemberService;
+import com.hyunwns.demoweb.common.service.MemberServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class MemberServiceImplTest {
 

@@ -1,9 +1,11 @@
 package com.hyunwns.demoweb.service;
 
-import com.hyunwns.demoweb.domain.Member;
-import com.hyunwns.demoweb.domain.post.Post;
-import com.hyunwns.demoweb.repository.MemoryNoticeBoardRepository;
-import com.hyunwns.demoweb.repository.NoticeBoardRepository;
+import com.hyunwns.demoweb.common.domain.Member;
+import com.hyunwns.demoweb.post.domain.Post;
+import com.hyunwns.demoweb.post.repository.MemoryNoticeBoardRepository;
+import com.hyunwns.demoweb.post.repository.NoticeBoardRepository;
+import com.hyunwns.demoweb.post.service.NoticeBoardService;
+import com.hyunwns.demoweb.post.service.NoticeBoardServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

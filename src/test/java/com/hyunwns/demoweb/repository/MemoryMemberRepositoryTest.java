@@ -1,9 +1,10 @@
 package com.hyunwns.demoweb.repository;
 
-import com.hyunwns.demoweb.domain.Member;
-import com.hyunwns.demoweb.dto.SignUpDTO;
-import com.hyunwns.demoweb.service.MemberService;
-import com.hyunwns.demoweb.service.MemberServiceImpl;
+import com.hyunwns.demoweb.common.domain.Member;
+import com.hyunwns.demoweb.common.dto.SignUpDTO;
+import com.hyunwns.demoweb.common.repository.MemberRepository;
+import com.hyunwns.demoweb.common.service.MemberService;
+import com.hyunwns.demoweb.common.service.MemberServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

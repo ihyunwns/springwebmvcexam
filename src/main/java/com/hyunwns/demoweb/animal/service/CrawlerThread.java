@@ -48,7 +48,7 @@ public class CrawlerThread implements Runnable {
                 logger.info("큐의 크기: {}", taskQueue.size());
                 logger.info("크롤링 동작 범위: {} ~ {}", pages[0], pages[1]);
 
-                for (int j = pages[0]; j < pages[1]; j++) {
+                for (int j = pages[0]; j <= pages[1]; j++) {
                     String page = "&page=" + j;
                     String url = BASE_CRAWLING_URL + keyword + page;
 
@@ -74,16 +74,15 @@ public class CrawlerThread implements Runnable {
                                                 post++;
                                                 continue;
                                             }
-
-                                            Thread.sleep(1000);
                                             logger.info("현재 작업중인 페이지: {}, 현재 작업중인 포스터: {}, 찾은 포스터 크기: {}", j, post++, table.size());
                                             we.click();
+
+                                            Thread.sleep(400);
+
                                             WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
                                             wait.until(ExpectedConditions.numberOfWindowsToBe(2));
-
                                             Set<String> windowHandles = webDriver.getWindowHandles(); //현재 열려있는 창
                                             windowHandles.remove(originalWindow);
-
                                             if (!windowHandles.isEmpty()) {
                                                 String newWindowHandle = windowHandles.iterator().next();
                                                 webDriver.switchTo().window(newWindowHandle);
@@ -97,9 +96,11 @@ public class CrawlerThread implements Runnable {
                                             webDriver.close();
                                             webDriver.switchTo().window(originalWindow);
 
+                                            Thread.sleep(400);
+
                                         } catch (CrawlingException e) {
                                             POST_RETRY_COUNT++;
-                                            logger.warn("게시물 {} 크롤링 실패 ( 재시도 {} / {} )", post, PAGE_RETRY_COUNT, MAX_POST_LOAD_RETRY);
+                                            logger.warn("게시물 {} 크롤링 실패 ( 재시도 {} / {} )", post, POST_RETRY_COUNT, MAX_POST_LOAD_RETRY);
                                             Thread.sleep(BASE_WAIT_TIME * POST_RETRY_COUNT);
                                         }
                                     }

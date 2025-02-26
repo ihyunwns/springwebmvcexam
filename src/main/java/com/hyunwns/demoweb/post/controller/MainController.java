@@ -34,9 +34,6 @@ public class MainController {
 
         model.addAttribute("page", page);
 
-        logger.info("current Page: {}, last page: {}", page.getCurrent_page(), page.getLast_page());
-        logger.info("page List: {}", page.getPageList().toString());
-
         return "main";
     }
 }

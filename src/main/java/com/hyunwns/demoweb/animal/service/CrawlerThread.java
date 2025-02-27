@@ -43,17 +43,10 @@ public class CrawlerThread implements Runnable {
             webDriver = new ChromeDriver(chromeOptions);
             while (!taskQueue.isEmpty()) {
 
-
-                /*CrawlerThread에서 while (!taskQueue.isEmpty()) 조건으로 작업을 가져오는데, taskQueue.poll()이 null을 반환하면 즉시 종료되지 않고 pages가 null인 상태로 진행될 수 있다. 또한, 모든 스레드가 동일한 큐를 체크하므로 스레드 간 작업 중복이나 누락이 발생할 수 있다.
-
-                증상:
-                NullPointerException이 발생하거나, 예상보다 적은 페이지가 처리된다.
-                로그에서 "큐의 크기"가 빠르게 0으로 떨어진다.*/
-
                 int[] pages = taskQueue.poll();
+                if (pages == null) break; // 큐가 비었으면 종료
 
-                logger.info("큐의 크기: {}", taskQueue.size());
-                logger.info("크롤링 동작 범위: {} ~ {}", pages[0], pages[1]);
+                logger.info("키워드: {}, 큐 크기: {}, 크롤링 범위: {} ~ {}", keyword, taskQueue.size(), pages[0], pages[1]);
 
                 for (int j = pages[0]; j <= pages[1]; j++) {
                     String page = "&page=" + j;
@@ -66,48 +59,43 @@ public class CrawlerThread implements Runnable {
                             WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
                             List<WebElement> table = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//table[@background='../images/board/main-search-img-frame-01.gif']//tr[2]/td//font[normalize-space(text())]")));
 //                            List<WebElement> table = webDriver.findElements(By.xpath("//table[@background=\"../images/board/main-search-img-frame-01.gif\"]//tr[2]/td//font[normalize-space(text())]"));
-
-
-
                             if (!table.isEmpty()) {
 
                                 String originalWindow = webDriver.getWindowHandle();
-                                logger.info("original window: {}", originalWindow);
-
                                 int post = 1;
                                 for (WebElement we : table) {
+
+                                    String text = we.getText().trim();
+                                    if (text.isEmpty() || we.getText().contains("찾았어요")) {
+                                        post++;
+                                        continue;
+                                    }
 
                                     int POST_RETRY_COUNT = 0;
                                     while(POST_RETRY_COUNT < MAX_POST_LOAD_RETRY) {
                                         try {
-                                            String text = we.getText().trim();
-                                            if (text.isEmpty() || we.getText().contains("찾았어요")) {
-                                                post++;
-                                                continue;
-                                            }
                                             logger.info("키워드: {}, 현재 작업중인 페이지: {}, 현재 작업중인 포스터: {}, 찾은 포스터 크기: {}",keyword, j, post++, table.size());
                                             we.click();
-
-                                            Thread.sleep(400);
 
                                             wait.until(ExpectedConditions.numberOfWindowsToBe(2));
                                             Set<String> windowHandles = webDriver.getWindowHandles(); //현재 열려있는 창
                                             windowHandles.remove(originalWindow);
-                                            if (!windowHandles.isEmpty()) {
-                                                String newWindowHandle = windowHandles.iterator().next();
-                                                webDriver.switchTo().window(newWindowHandle);
-                                            }
+
+                                            String newWindowHandle = windowHandles.iterator().next();
+                                            webDriver.switchTo().window(newWindowHandle);
 
                                             List<WebElement> imgElement = webDriver.findElements(By.xpath("//img[contains(@src, '/pet_care/photo/')]"));
                                             List<WebElement> infoElement = webDriver.findElements(By.xpath("//b"));
                                             Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
-                                            logger.info("crawlingData: {}", crawlingData);
+                                            logger.info("크롤링 한 데이터: {}", crawlingData);
 
                                             webDriver.close();
                                             webDriver.switchTo().window(originalWindow);
 
                                             Thread.sleep(400);
 
+                                            // 성공 시 재시도 루프 탈출
+                                            break;
                                         } catch (CrawlingException e) {
                                             POST_RETRY_COUNT++;
                                             logger.warn("게시물 {} 크롤링 실패 ( 재시도 {} / {} )", post, POST_RETRY_COUNT, MAX_POST_LOAD_RETRY);
@@ -115,6 +103,7 @@ public class CrawlerThread implements Runnable {
                                         }
                                     }
                                 }
+                                break;
                             } else {
                                 throw new CrawlingException("데이터 없음: 페이지 " + j);
                             }
@@ -133,11 +122,11 @@ public class CrawlerThread implements Runnable {
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("스레드 오류: {}", e.getMessage(), e);
         } finally {
             if(webDriver != null) {
                 webDriver.quit();
-                logger.info("WebDriver 종료");
+                logger.info("WebDriver 종료 - 키워드 : {}", keyword);
             }
 
         }

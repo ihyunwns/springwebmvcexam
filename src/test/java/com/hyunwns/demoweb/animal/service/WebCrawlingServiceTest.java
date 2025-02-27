@@ -24,7 +24,7 @@ import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLIN
 @Slf4j
 class WebCrawlingServiceTest {
     private final Logger logger = LoggerFactory.getLogger(WebCrawlingServiceTest.class);
-    private static final int MAX_THREAD_POOL = 1;
+    private static final int MAX_THREAD_POOL = 3;
 
     ChromeOptions options = new ChromeOptions();
 
@@ -333,9 +333,7 @@ class WebCrawlingServiceTest {
     @Test
     public void MultiThreadTest() throws Exception{
         int PAGE_GROUP_SIZE = 10;
-        BlockingQueue<int[]> taskQueue;
-
-        ExecutorService executor = Executors.newFixedThreadPool(MAX_THREAD_POOL);
+        BlockingQueue<int[]> taskQueue = new LinkedBlockingQueue<>();
 
         List<String> keywords = List.of(
                 "강아지", "고양이", "기타 반려동물"
@@ -345,6 +343,7 @@ class WebCrawlingServiceTest {
 
             WebDriver driver = new ChromeDriver(options);
             String beginUrl = BASE_CRAWLING_URL + keyword + "&page=1";
+            ExecutorService executor = Executors.newFixedThreadPool(MAX_THREAD_POOL);
 
             try{
                 driver.get(beginUrl);
@@ -352,6 +351,7 @@ class WebCrawlingServiceTest {
                 List<WebElement> elements = driver.findElements(By.xpath("//img[@src='../images/arrow-bb.gif']/.."));
                 int LAST_PAGE = getLastPage(elements);
 
+                taskQueue.clear();
                 taskQueue = createTaskQueue(LAST_PAGE, PAGE_GROUP_SIZE);
 
                 // 키워드별 taskQueue가 독립적으로 존재해야 서로 다른 키워드를 작업중인 스레드가 영향을 끼치지 않는다. 근데 나는 그걸 기대하고 만든 게 아닌데..
@@ -361,19 +361,22 @@ class WebCrawlingServiceTest {
                 }
 
                 executor.shutdown();
-                // 또한 해당 코드 때문에 쓰레드 실행 시간이 10초만에 종료가 되어버림.
-                executor.awaitTermination(10, TimeUnit.SECONDS);
+                // 모든 스레드가 끝날 때까지 기다리기
+                while (!executor.isTerminated()) {
+                    Thread.sleep(2000); // 2초마다 체크
+                    logger.info("키워드 '{}' 작업 진행 중... 남은 큐 크기: {}", keyword, taskQueue.size());
+                }
+                
+                logger.info("키워드 '{}' 크롤링 완료", keyword);
 
             }catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error("키워드 {} 처리 중 오류 발생: {}", keyword, e.getMessage());
             }finally {
                 driver.quit();
             }
         }
 
-
-
-
+        logger.info("모든 키워드 크롤링 완료");
     }
 
     private BlockingQueue<int[]> createTaskQueue(int LAST_PAGE, int PAGE_GROUP_SIZE) throws InterruptedException {

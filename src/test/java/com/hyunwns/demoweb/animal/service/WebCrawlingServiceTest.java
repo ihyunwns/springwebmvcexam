@@ -353,29 +353,27 @@ class WebCrawlingServiceTest {
                 int LAST_PAGE = getLastPage(elements);
 
                 taskQueue = createTaskQueue(LAST_PAGE, PAGE_GROUP_SIZE);
+
+                // 키워드별 taskQueue가 독립적으로 존재해야 서로 다른 키워드를 작업중인 스레드가 영향을 끼치지 않는다. 근데 나는 그걸 기대하고 만든 게 아닌데..
+                // 키워드별로 순차적으로 진행하되 이 키워드 별 크롤링을 스레드를 이용해서 여러 페이지를 동시에 크롤링 하고자 한것.
                 for(int i = 0; i < MAX_THREAD_POOL; i++) {
                     executor.submit(new CrawlerThread(options, taskQueue, keyword));
                 }
+
+                executor.shutdown();
+                // 또한 해당 코드 때문에 쓰레드 실행 시간이 10초만에 종료가 되어버림.
+                executor.awaitTermination(10, TimeUnit.SECONDS);
 
             }catch (Exception e) {
                 logger.error(e.getMessage());
             }finally {
                 driver.quit();
             }
-
         }
 
-        executor.shutdown();
-        try {
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) {
-                logger.warn("일부 작업이 완료되지 않음. 강제 종료 시도");
-                executor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            logger.error("쓰레드 인터럽트 발생");
-            executor.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
+
+
+
     }
 
     private BlockingQueue<int[]> createTaskQueue(int LAST_PAGE, int PAGE_GROUP_SIZE) throws InterruptedException {

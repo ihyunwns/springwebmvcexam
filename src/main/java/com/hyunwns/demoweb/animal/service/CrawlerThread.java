@@ -43,6 +43,13 @@ public class CrawlerThread implements Runnable {
             webDriver = new ChromeDriver(chromeOptions);
             while (!taskQueue.isEmpty()) {
 
+
+                /*CrawlerThread에서 while (!taskQueue.isEmpty()) 조건으로 작업을 가져오는데, taskQueue.poll()이 null을 반환하면 즉시 종료되지 않고 pages가 null인 상태로 진행될 수 있다. 또한, 모든 스레드가 동일한 큐를 체크하므로 스레드 간 작업 중복이나 누락이 발생할 수 있다.
+
+                증상:
+                NullPointerException이 발생하거나, 예상보다 적은 페이지가 처리된다.
+                로그에서 "큐의 크기"가 빠르게 0으로 떨어진다.*/
+
                 int[] pages = taskQueue.poll();
 
                 logger.info("큐의 크기: {}", taskQueue.size());
@@ -56,8 +63,12 @@ public class CrawlerThread implements Runnable {
                     while(PAGE_RETRY_COUNT < MAX_PAGE_LOAD_RETRY) {
                         try{
                             webDriver.get(url);
+                            WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
+                            List<WebElement> table = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//table[@background='../images/board/main-search-img-frame-01.gif']//tr[2]/td//font[normalize-space(text())]")));
+//                            List<WebElement> table = webDriver.findElements(By.xpath("//table[@background=\"../images/board/main-search-img-frame-01.gif\"]//tr[2]/td//font[normalize-space(text())]"));
 
-                            List<WebElement> table = webDriver.findElements(By.xpath("//table[@background=\"../images/board/main-search-img-frame-01.gif\"]//tr[2]/td//font[normalize-space(text())]"));
+
+
                             if (!table.isEmpty()) {
 
                                 String originalWindow = webDriver.getWindowHandle();
@@ -74,12 +85,11 @@ public class CrawlerThread implements Runnable {
                                                 post++;
                                                 continue;
                                             }
-                                            logger.info("현재 작업중인 페이지: {}, 현재 작업중인 포스터: {}, 찾은 포스터 크기: {}", j, post++, table.size());
+                                            logger.info("키워드: {}, 현재 작업중인 페이지: {}, 현재 작업중인 포스터: {}, 찾은 포스터 크기: {}",keyword, j, post++, table.size());
                                             we.click();
 
                                             Thread.sleep(400);
 
-                                            WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
                                             wait.until(ExpectedConditions.numberOfWindowsToBe(2));
                                             Set<String> windowHandles = webDriver.getWindowHandles(); //현재 열려있는 창
                                             windowHandles.remove(originalWindow);

@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,12 +19,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebCrawlingService {
 
-    private final WebDriver driver;
+    private final ChromeOptions chromeOptions;
     private final Logger logger = LoggerFactory.getLogger(WebCrawlingService.class);
     public static String BASE_CRAWLING_URL = "https://www.zooseyo.or.kr/Yu_board/petfind.html?area=&animal=";
 
     public List<String> crawlAbandonedAnimal(String keyword) {
+
         String url = "https://www.zooseyo.or.kr/Yu_board/petfind.html";
+        WebDriver driver = new ChromeDriver(chromeOptions);
+
         try {
             driver.get(url);
 

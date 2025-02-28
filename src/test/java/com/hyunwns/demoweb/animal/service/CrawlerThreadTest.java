@@ -1,7 +1,10 @@
 package com.hyunwns.demoweb.animal.service;
 
 import com.hyunwns.demoweb.animal.exception.CrawlingException;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -10,15 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import org.openqa.selenium.TimeoutException;
 
 import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLING_URL;
 
-public class CrawlerThread implements Runnable {
+public class CrawlerThreadTest implements Runnable {
 
     private final ChromeOptions chromeOptions;
     private final Logger logger = LoggerFactory.getLogger(CrawlerThread.class);
@@ -29,7 +30,7 @@ public class CrawlerThread implements Runnable {
     private static final int MAX_POST_LOAD_RETRY = 3;
     private static final long BASE_WAIT_TIME = 2000; /* 2000 ms */
 
-    public CrawlerThread(ChromeOptions options, BlockingQueue<int[]> taskQueue, String keyword) {
+    public CrawlerThreadTest(ChromeOptions options, BlockingQueue<int[]> taskQueue, String keyword) {
         this.chromeOptions = options;
         this.taskQueue = taskQueue;
         this.keyword = keyword;
@@ -38,11 +39,12 @@ public class CrawlerThread implements Runnable {
     @Override
     public void run() {
         WebDriver webDriver = null;
-        try {
+        try{
             webDriver = new ChromeDriver(chromeOptions);
             while (!taskQueue.isEmpty()) {
+
                 int[] pages = taskQueue.poll();
-                if (pages == null) break;
+                if (pages == null) break; // 큐가 비었으면 종료
 
                 logger.info("키워드: {}, 큐 크기: {}, 크롤링 범위: {} ~ {}", keyword, taskQueue.size(), pages[0], pages[1]);
 
@@ -51,33 +53,34 @@ public class CrawlerThread implements Runnable {
                     String url = BASE_CRAWLING_URL + keyword + page;
 
                     int PAGE_RETRY_COUNT = 0;
-                    while (PAGE_RETRY_COUNT < MAX_PAGE_LOAD_RETRY) {
-                        try {
+                    while(PAGE_RETRY_COUNT < MAX_PAGE_LOAD_RETRY) {
+                        try{
                             webDriver.get(url);
-
                             WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(20));
-                            List<WebElement> table = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//table[@background='../images/board/main-search-img-frame-01.gif']//tr[2]/td//font[normalize-space(text())]")));
+                            List<WebElement> table = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//table[@background='../images/board/main-search-img-frame-01.gif']//tr[2]/td//font[normalize-space(text())]")));
+//                            List<WebElement> table = webDriver.findElements(By.xpath("//table[@background=\"../images/board/main-search-img-frame-01.gif\"]//tr[2]/td//font[normalize-space(text())]"));
                             if (!table.isEmpty()) {
+
                                 String originalWindow = webDriver.getWindowHandle();
                                 int post = 1;
                                 for (WebElement we : table) {
                                     int POST_RETRY_COUNT = 0;
-                                    while (POST_RETRY_COUNT < MAX_POST_LOAD_RETRY) {
+                                    while(POST_RETRY_COUNT < MAX_POST_LOAD_RETRY) {
                                         try {
                                             String text = we.getText().trim();
-                                            if (text.isEmpty() || text.contains("찾았어요")) {
+                                            logger.info("포스터: {} 찾은 제목 이름: {}", post, text);
+                                            if (text.isEmpty() || we.getText().contains("찾았어요")) {
                                                 break;
                                             }
 
-                                            logger.info("키워드: {}, 페이지: {}, 포스터: {}, 제목: {}, 총 포스터: {}, 재시도 {}번 중 {}번",
-                                                        keyword, j, post, text, table.size(), MAX_POST_LOAD_RETRY, POST_RETRY_COUNT);
+                                            logger.info("키워드: {}, 현재 작업중인 페이지: {}, 현재 작업중인 포스터: {}, 찾은 포스터 크기: {}",keyword, j, post, table.size());
                                             Thread.sleep(200);
 
                                             if (POST_RETRY_COUNT == 0) {
-                                                wait.until(ExpectedConditions.elementToBeClickable(we));
                                                 we.click();
                                             } else {
-                                                List<WebElement> freshTable = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//table[@background='../images/board/main-search-img-frame-01.gif']//tr[2]/td//font[normalize-space(text())]")));
+                                                // 재시도: 요소를 새로 찾아 클릭
+                                                List<WebElement> freshTable = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//table[@background='../images/board/main-search-img-frame-01.gif']//tr[2]/td//font[normalize-space(text())]")));
                                                 if (freshTable.size() < post) {
                                                     logger.warn("재시도 중 게시물 부족 - 찾은 개수: {}, 필요 포스트: {}", freshTable.size(), post);
                                                     throw new CrawlingException("게시물 목록 불일치");
@@ -88,7 +91,7 @@ public class CrawlerThread implements Runnable {
                                             }
 
                                             wait.until(ExpectedConditions.numberOfWindowsToBe(2));
-                                            Set<String> windowHandles = webDriver.getWindowHandles();
+                                            Set<String> windowHandles = webDriver.getWindowHandles(); //현재 열려있는 창
                                             windowHandles.remove(originalWindow);
                                             if (!windowHandles.isEmpty()) {
                                                 String newWindowHandle = windowHandles.iterator().next();
@@ -98,18 +101,20 @@ public class CrawlerThread implements Runnable {
                                                 throw new CrawlingException();
                                             }
 
-                                            List<WebElement> imgElement = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//img[contains(@src, '/pet_care/photo/')]")));
-                                            List<WebElement> infoElement = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//b")));
+                                            List<WebElement> imgElement = webDriver.findElements(By.xpath("//img[contains(@src, '/pet_care/photo/')]"));
+                                            List<WebElement> infoElement = webDriver.findElements(By.xpath("//b"));
                                             Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
                                             logger.info("크롤링 한 데이터: {}", crawlingData);
 
                                             webDriver.close();
                                             webDriver.switchTo().window(originalWindow);
+
                                             Thread.sleep(400);
-                                            break; // 성공 시 재시도 루프 탈출
-                                        } catch (NoSuchElementException | TimeoutException | CrawlingException | IndexOutOfBoundsException e) {
+
+                                            break; // 포스트 크롤링 성공 시 재시도 루프 탈출
+                                        } catch (NoSuchElementException | TimeoutException | CrawlingException e) {
                                             POST_RETRY_COUNT++;
-                                            logger.warn("게시물 {} 크롤링 실패 (재시도 {}/{}) - {}", post, POST_RETRY_COUNT, MAX_POST_LOAD_RETRY, e.getMessage());
+                                            logger.warn("게시물 {} 크롤링 실패 ( 재시도 {} / {} )", post, POST_RETRY_COUNT, MAX_POST_LOAD_RETRY);
                                             Thread.sleep(BASE_WAIT_TIME * POST_RETRY_COUNT);
                                         }
                                     }
@@ -118,57 +123,59 @@ public class CrawlerThread implements Runnable {
                                     }
                                     post++;
                                 }
-                                break; // 페이지 성공 시 페이지 재시도 루프 탈출
+                                break; // 페이지 로드 성공 시 재시도 루프 탈출
                             } else {
                                 throw new CrawlingException("데이터 없음: 페이지 " + j);
                             }
-                        } catch (CrawlingException e) {
+                        }
+                        catch(CrawlingException e){
+
                             PAGE_RETRY_COUNT++;
-                            logger.warn("페이지 {} 크롤링 실패 (재시도 {}/{}) - {}", j, PAGE_RETRY_COUNT, MAX_PAGE_LOAD_RETRY, e.getMessage());
+                            logger.warn("페이지 {} 크롤링 실패 ( 재시도 {} / {} )", j, PAGE_RETRY_COUNT, MAX_PAGE_LOAD_RETRY);
+
                             Thread.sleep(BASE_WAIT_TIME * PAGE_RETRY_COUNT);
                         }
                     }
                     if (PAGE_RETRY_COUNT == MAX_PAGE_LOAD_RETRY) {
-                        logger.error("페이지 {} 로딩 실패", j);
+                        logger.error("페이지 {} 로딩 실패 ", j);
                     }
                 }
             }
-        }
-        catch (Exception e) {
-            logger.error("최상위 오류 발생: {}", e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("스레드 오류: {}", e.getMessage(), e);
         } finally {
-            if (webDriver != null) {
+            if(webDriver != null) {
                 webDriver.quit();
-                logger.info("웹드라이버 종료 - 키워드: {}", keyword);
+                logger.info("WebDriver 종료 - 키워드 : {}", keyword);
             }
         }
     }
 
-    private Map<String, String> getStringMap(List<WebElement> infoElement, List<WebElement> imgElement) {
+    private Map<String, String> getStringMap(List<WebElement> infoElement, List<WebElement> imgElement) throws CrawlingException{
         Map<String, String> crawlingData = new HashMap<>();
+        try{
 
-        if (!imgElement.isEmpty()) {
-            crawlingData.put("src", imgElement.get(0).getDomAttribute("src"));
-        } else {
-            crawlingData.put("src", "Not Found");
-        }
+            if (!imgElement.isEmpty()) {
+                crawlingData.put("src", imgElement.get(0).getDomAttribute("src"));
+            } else {
+                crawlingData.put("src", "Not Found");
+            }
 
-        if (infoElement.size() == 7) {
+            if (infoElement.size() < 7) {
+                logger.warn("정보 요소 부족 - 찾은 개수 : {} ", infoElement.size());
+                throw new CrawlingException();
+            }
+
             crawlingData.put("phone", infoElement.get(0).getText().substring(5).replace(" ", ""));
             crawlingData.put("address", infoElement.get(1).getText());
             crawlingData.put("date", infoElement.get(2).getText());
             crawlingData.put("title", infoElement.get(3).getText());
             crawlingData.put("gender", infoElement.get(5).getText());
             crawlingData.put("details", infoElement.get(6).getText());
-        } else {
-            crawlingData.put("phone", infoElement.get(0).getText().substring(5).replace(" ", ""));
-            crawlingData.put("gratuity", infoElement.get(1).getText());
-            crawlingData.put("address", infoElement.get(2).getText());
-            crawlingData.put("date", infoElement.get(3).getText());
-            crawlingData.put("title", infoElement.get(4).getText());
-            crawlingData.put("gender", infoElement.get(6).getText());
-            crawlingData.put("details", infoElement.get(7).getText());
+        }catch (IndexOutOfBoundsException e) {
+            throw new CrawlingException();
         }
+
         return crawlingData;
     }
 }

@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.animal.service;
 
+import com.hyunwns.demoweb.animal.exception.CrawlingException;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -35,7 +36,7 @@ class WebCrawlingServiceTest {
         options.addArguments("--start-maximized");
         options.addArguments("--disable-popup-blocking");
         options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-        //options.addArguments("--headless");
+        options.addArguments("--headless");
 
     }
 
@@ -348,7 +349,9 @@ class WebCrawlingServiceTest {
             try{
                 driver.get(beginUrl);
 
-                List<WebElement> elements = driver.findElements(By.xpath("//img[@src='../images/arrow-bb.gif']/.."));
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+                List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//img[@src='../images/arrow-bb.gif']/..")));
                 int LAST_PAGE = getLastPage(elements);
 
                 taskQueue.clear();
@@ -380,45 +383,49 @@ class WebCrawlingServiceTest {
     }
 
     @Test
-    public void 특정_페이지_포스터_요소_테스트() {
-        String url = BASE_CRAWLING_URL + "강아지" + "&page=17";
-        int post = 29; // 1 ~ 30
+    public void 특정_페이지_포스터_요소_테스트() throws InterruptedException, CrawlingException {
+        String url = BASE_CRAWLING_URL + "강아지" + "&page=30";
+        int post = 26; // 1 ~ 30
 
         WebDriver driver = new ChromeDriver(options);
-        try {
-            driver.get(url);
+        driver.get(url);
 
-            List<WebElement> table = driver.findElements(By.xpath("//table[@background=\"../images/board/main-search-img-frame-01.gif\"]//tr[2]/td//font[normalize-space(text())]"));
-            // normalize-space(text()) : 태그의 텍스트를 가져와 공백을 제거한 후 비어있지 않은 경우만 선택
+        List<WebElement> table = driver.findElements(By.xpath("//table[@background=\"../images/board/main-search-img-frame-01.gif\"]//tr[2]/td//font[normalize-space(text())]"));
+        // normalize-space(text()) : 태그의 텍스트를 가져와 공백을 제거한 후 비어있지 않은 경우만 선택
 
-            String originalWindow = driver.getWindowHandle();
+        String originalWindow = driver.getWindowHandle();
 
-            WebElement webElement = table.get(post-1);
+        WebElement webElement = table.get(post-1);
+        Thread.sleep(400);
 
-            webElement.click();
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+        webElement.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.numberOfWindowsToBe(2));
 
-            Thread.sleep(400);
-            Set<String> windowHandles = driver.getWindowHandles(); //현재 열려있는 창
-            windowHandles.remove(originalWindow);
+        Set<String> windowHandles = driver.getWindowHandles(); //현재 열려있는 창
+        windowHandles.remove(originalWindow);
 
-            if(!windowHandles.isEmpty()) {
-                String newWindowHandle = windowHandles.iterator().next();
-                driver.switchTo().window(newWindowHandle);
-            }
-
-            List<WebElement> imgElement = driver.findElements(By.xpath("//img[contains(@src, '/pet_care/photo/')]"));
-            List<WebElement> infoElement = driver.findElements(By.xpath("//b"));
-
-            Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
-            logger.info("crawlingData: {}", crawlingData);
-
-            driver.close();
-            driver.switchTo().window(originalWindow);
-            } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
+        if(!windowHandles.isEmpty()) {
+            String newWindowHandle = windowHandles.iterator().next();
+            driver.switchTo().window(newWindowHandle);
         }
+
+        List<WebElement> imgElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//img[contains(@src, '/pet_care/photo/')]")));
+        List<WebElement> infoElement = driver.findElements(By.xpath("//b"));
+
+        logger.info("b태그 크기: {}", infoElement.size());
+        for(WebElement we : infoElement) {
+            logger.info("b: {}", we.getText());
+        }
+
+
+        Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
+        logger.info("crawlingData: {}", crawlingData);
+
+        driver.close();
+        driver.switchTo().window(originalWindow);
+
+
         driver.quit();
     }
 
@@ -439,6 +446,7 @@ class WebCrawlingServiceTest {
 
     private Map<String, String> getStringMap(List<WebElement> infoElement, List<WebElement> imgElement) {
         Map<String, String> crawlingData = new HashMap<>();
+        System.out.println(imgElement.size());
 
         if (!imgElement.isEmpty()) {
             crawlingData.put("src", imgElement.get(0).getDomAttribute("src"));
@@ -446,13 +454,22 @@ class WebCrawlingServiceTest {
             crawlingData.put("src", "Not Found");
         }
 
-        crawlingData.put("phone", infoElement.get(0).getText().substring(5).replace(" ", ""));
-        crawlingData.put("address", infoElement.get(1).getText());
-        crawlingData.put("date", infoElement.get(2).getText());
-        crawlingData.put("title", infoElement.get(3).getText());
-        crawlingData.put("gender", infoElement.get(5).getText());
-        crawlingData.put("details", infoElement.get(6).getText());
-
+        if (infoElement.size() == 7) {
+            crawlingData.put("phone", infoElement.get(0).getText().substring(5).replace(" ", ""));
+            crawlingData.put("address", infoElement.get(1).getText());
+            crawlingData.put("date", infoElement.get(2).getText());
+            crawlingData.put("title", infoElement.get(3).getText());
+            crawlingData.put("gender", infoElement.get(5).getText());
+            crawlingData.put("details", infoElement.get(6).getText());
+        } else {
+            crawlingData.put("phone", infoElement.get(0).getText().substring(5).replace(" ", ""));
+            crawlingData.put("gratuity", infoElement.get(1).getText());
+            crawlingData.put("address", infoElement.get(2).getText());
+            crawlingData.put("date", infoElement.get(3).getText());
+            crawlingData.put("title", infoElement.get(4).getText());
+            crawlingData.put("gender", infoElement.get(6).getText());
+            crawlingData.put("details", infoElement.get(7).getText());
+        }
         return crawlingData;
     }
 

@@ -24,7 +24,7 @@ import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLIN
 @Slf4j
 class WebCrawlingServiceTest {
     private final Logger logger = LoggerFactory.getLogger(WebCrawlingServiceTest.class);
-    private static final int MAX_THREAD_POOL = 3;
+    private static final int MAX_THREAD_POOL = 5;
 
     ChromeOptions options = new ChromeOptions();
 
@@ -377,6 +377,49 @@ class WebCrawlingServiceTest {
         }
 
         logger.info("모든 키워드 크롤링 완료");
+    }
+
+    @Test
+    public void 특정_페이지_포스터_요소_테스트() {
+        String url = BASE_CRAWLING_URL + "강아지" + "&page=17";
+        int post = 29; // 1 ~ 30
+
+        WebDriver driver = new ChromeDriver(options);
+        try {
+            driver.get(url);
+
+            List<WebElement> table = driver.findElements(By.xpath("//table[@background=\"../images/board/main-search-img-frame-01.gif\"]//tr[2]/td//font[normalize-space(text())]"));
+            // normalize-space(text()) : 태그의 텍스트를 가져와 공백을 제거한 후 비어있지 않은 경우만 선택
+
+            String originalWindow = driver.getWindowHandle();
+
+            WebElement webElement = table.get(post-1);
+
+            webElement.click();
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+
+            Thread.sleep(400);
+            Set<String> windowHandles = driver.getWindowHandles(); //현재 열려있는 창
+            windowHandles.remove(originalWindow);
+
+            if(!windowHandles.isEmpty()) {
+                String newWindowHandle = windowHandles.iterator().next();
+                driver.switchTo().window(newWindowHandle);
+            }
+
+            List<WebElement> imgElement = driver.findElements(By.xpath("//img[contains(@src, '/pet_care/photo/')]"));
+            List<WebElement> infoElement = driver.findElements(By.xpath("//b"));
+
+            Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
+            logger.info("crawlingData: {}", crawlingData);
+
+            driver.close();
+            driver.switchTo().window(originalWindow);
+            } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+        driver.quit();
     }
 
     private BlockingQueue<int[]> createTaskQueue(int LAST_PAGE, int PAGE_GROUP_SIZE) throws InterruptedException {

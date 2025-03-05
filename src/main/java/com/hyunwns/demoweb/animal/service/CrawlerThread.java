@@ -2,6 +2,7 @@ package com.hyunwns.demoweb.animal.service;
 
 import com.hyunwns.demoweb.animal.exception.CrawlingException;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -10,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLING_URL;
@@ -98,8 +96,15 @@ public class CrawlerThread implements Runnable {
                                                 throw new CrawlingException();
                                             }
 
-                                            List<WebElement> imgElement = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//img[contains(@src, '/pet_care/photo/')]")));
-                                            List<WebElement> infoElement = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//b")));
+                                            //List<WebElement> imgElement = webDriver.findElements(By.xpath("//img[contains(@src, '/pet_care/photo/')]"));
+                                            List<WebElement> imgElement = new ArrayList<>();
+                                            try {
+                                                imgElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//img[contains(@src, '/pet_care/photo/')]")));
+                                            } catch (TimeoutException e) {
+                                                logger.info("게시물 {} 의 이미지는 존재 하지 않음", post);
+                                            }
+
+                                            List<WebElement> infoElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//b")));
                                             Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
                                             logger.info("크롤링 한 데이터: {}", crawlingData);
 
@@ -110,6 +115,10 @@ public class CrawlerThread implements Runnable {
                                         } catch (NoSuchElementException | TimeoutException | CrawlingException | IndexOutOfBoundsException e) {
                                             POST_RETRY_COUNT++;
                                             logger.warn("게시물 {} 크롤링 실패 (재시도 {}/{}) - {}", post, POST_RETRY_COUNT, MAX_POST_LOAD_RETRY, e.getMessage());
+                                            logger.warn("URL: {}, HTML: {}", webDriver.getCurrentUrl(), webDriver.getPageSource());
+
+                                            webDriver.close();
+                                            webDriver.switchTo().window(originalWindow);
                                             Thread.sleep(BASE_WAIT_TIME * POST_RETRY_COUNT);
                                         }
                                     }

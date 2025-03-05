@@ -25,7 +25,7 @@ import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLIN
 @Slf4j
 class WebCrawlingServiceTest {
     private final Logger logger = LoggerFactory.getLogger(WebCrawlingServiceTest.class);
-    private static final int MAX_THREAD_POOL = 5;
+    private static final int MAX_THREAD_POOL = 2;
 
     ChromeOptions options = new ChromeOptions();
 
@@ -37,6 +37,9 @@ class WebCrawlingServiceTest {
         options.addArguments("--disable-popup-blocking");
         options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
         options.addArguments("--headless");
+
+        options.setPageLoadTimeout(Duration.ofMinutes(5)); // 페이지 로드 타임아웃 5분
+        options.setScriptTimeout(Duration.ofSeconds(60));  // 스크립트 타임아웃 60초
 
     }
 
@@ -384,8 +387,8 @@ class WebCrawlingServiceTest {
 
     @Test
     public void 특정_페이지_포스터_요소_테스트() throws InterruptedException, CrawlingException {
-        String url = BASE_CRAWLING_URL + "강아지" + "&page=30";
-        int post = 26; // 1 ~ 30
+        String url = BASE_CRAWLING_URL + "강아지" + "&page=1";
+        int post = 2; // 1 ~ 30
 
         WebDriver driver = new ChromeDriver(options);
         driver.get(url);
@@ -410,14 +413,16 @@ class WebCrawlingServiceTest {
             driver.switchTo().window(newWindowHandle);
         }
 
-        List<WebElement> imgElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//img[contains(@src, '/pet_care/photo/')]")));
-        List<WebElement> infoElement = driver.findElements(By.xpath("//b"));
-
+        //List<WebElement> imgElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//img[contains(@src, '/pet_care/photo/')]")));
+        List<WebElement> imgElement = driver.findElements(By.xpath("//img[contains(@src, '/pet_care/photo/')]"));
+        if (imgElement.isEmpty()) {
+            logger.info("이미지를 찾지 못함, 게시물: {}, URL: {}", post, driver.getCurrentUrl());
+        }
+        List<WebElement> infoElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//b")));
         logger.info("b태그 크기: {}", infoElement.size());
         for(WebElement we : infoElement) {
             logger.info("b: {}", we.getText());
         }
-
 
         Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
         logger.info("crawlingData: {}", crawlingData);

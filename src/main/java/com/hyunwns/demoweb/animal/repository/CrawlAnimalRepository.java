@@ -7,4 +7,7 @@ import java.sql.SQLException;
 public interface CrawlAnimalRepository {
 
     CrawlAnimal findLatestAnimal(String keyword) throws SQLException;
+
+    void insertCrawlAnimal(String keyword, CrawlAnimal crawlAnimal) throws SQLException;
+
 }

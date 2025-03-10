@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Controller
@@ -18,12 +19,9 @@ public class AbandonedAnimalsController {
     private final WebCrawlingService webCrawlingService;
 
     @GetMapping("/animal")
-    public String animal(@RequestParam(name = "keyword", required = false) String keyword, Model model) {
+    public String animal(@RequestParam(name = "keyword", required = false) String keyword, Model model) throws SQLException {
         securityUtils.addAttributeUserInfo(model);
 
-        List<String> crawlData = webCrawlingService.crawlAbandonedAnimal(keyword);
-
-        model.addAttribute("crawlData", crawlData);
 
         return "animal/animals";
     }

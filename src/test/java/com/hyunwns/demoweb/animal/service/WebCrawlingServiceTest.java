@@ -1,11 +1,14 @@
 package com.hyunwns.demoweb.animal.service;
 
+import com.hyunwns.demoweb.animal.TestConfig;
 import com.hyunwns.demoweb.animal.exception.CrawlingException;
+import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -15,6 +18,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Duration;
 import java.util.*;
@@ -23,7 +29,13 @@ import java.util.concurrent.*;
 import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLING_URL;
 
 @Slf4j
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestConfig.class)
 class WebCrawlingServiceTest {
+
+    @Autowired
+    private CrawlAnimalRepository animalRepository;
+
     private final Logger logger = LoggerFactory.getLogger(WebCrawlingServiceTest.class);
     private static final int MAX_THREAD_POOL = 2;
 
@@ -363,7 +375,7 @@ class WebCrawlingServiceTest {
                 // 키워드별 taskQueue가 독립적으로 존재해야 서로 다른 키워드를 작업중인 스레드가 영향을 끼치지 않는다. 근데 나는 그걸 기대하고 만든 게 아닌데..
                 // 키워드별로 순차적으로 진행하되 이 키워드 별 크롤링을 스레드를 이용해서 여러 페이지를 동시에 크롤링 하고자 한것.
                 for(int i = 0; i < MAX_THREAD_POOL; i++) {
-                    executor.submit(new CrawlerThread(options, taskQueue, keyword));
+                    executor.submit(new CrawlerThread(animalRepository, options, taskQueue, keyword));
                 }
 
                 executor.shutdown();

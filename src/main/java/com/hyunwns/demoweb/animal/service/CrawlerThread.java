@@ -1,6 +1,9 @@
 package com.hyunwns.demoweb.animal.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.exception.CrawlingException;
+import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -9,6 +12,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.*;
@@ -19,20 +24,25 @@ import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLIN
 public class CrawlerThread implements Runnable {
 
     private final ChromeOptions chromeOptions;
+    private final CrawlAnimalRepository animalRepository;
     private final Logger logger = LoggerFactory.getLogger(CrawlerThread.class);
     private final BlockingQueue<int[]> taskQueue;
     private final String keyword;
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     private static final int MAX_PAGE_LOAD_RETRY = 3;
     private static final int MAX_POST_LOAD_RETRY = 3;
     private static final long BASE_WAIT_TIME = 2000; /* 2000 ms */
 
-    public CrawlerThread(ChromeOptions options, BlockingQueue<int[]> taskQueue, String keyword) {
+    public CrawlerThread(CrawlAnimalRepository repository, ChromeOptions options, BlockingQueue<int[]> taskQueue, String keyword) {
+        this.animalRepository = repository;
         this.chromeOptions = options;
         this.taskQueue = taskQueue;
         this.keyword = keyword;
     }
 
+    // 어떤 예외가 발생했을 때 트랜잭션을 롤백할지 지정, Exception.class 로 하면 체크 예외가 발생하더라도 롤백
     @Override
     public void run() {
         WebDriver webDriver = null;
@@ -106,7 +116,10 @@ public class CrawlerThread implements Runnable {
 
                                             List<WebElement> infoElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//b")));
                                             Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
-                                            logger.info("크롤링 한 데이터: {}", crawlingData);
+                                            CrawlAnimal crawlAnimal = mapper.convertValue(crawlingData, CrawlAnimal.class);
+
+                                            logger.info("크롤링 한 데이터: {}", crawlAnimal);
+                                            animalRepository.insertCrawlAnimal(keyword, crawlAnimal);
 
                                             webDriver.close();
                                             webDriver.switchTo().window(originalWindow);
@@ -115,7 +128,6 @@ public class CrawlerThread implements Runnable {
                                         } catch (NoSuchElementException | TimeoutException | CrawlingException | IndexOutOfBoundsException e) {
                                             POST_RETRY_COUNT++;
                                             logger.warn("게시물 {} 크롤링 실패 (재시도 {}/{}) - {}", post, POST_RETRY_COUNT, MAX_POST_LOAD_RETRY, e.getMessage());
-                                            logger.warn("URL: {}, HTML: {}", webDriver.getCurrentUrl(), webDriver.getPageSource());
 
                                             webDriver.close();
                                             webDriver.switchTo().window(originalWindow);
@@ -147,8 +159,8 @@ public class CrawlerThread implements Runnable {
             logger.error("최상위 오류 발생: {}", e.getMessage(), e);
         } finally {
             if (webDriver != null) {
+                logger.info("웹드라이버 {} 종료 - 키워드: {}", webDriver, keyword);
                 webDriver.quit();
-                logger.info("웹드라이버 종료 - 키워드: {}", keyword);
             }
         }
     }
@@ -157,20 +169,20 @@ public class CrawlerThread implements Runnable {
         Map<String, String> crawlingData = new HashMap<>();
 
         if (!imgElement.isEmpty()) {
-            crawlingData.put("src", imgElement.get(0).getDomAttribute("src"));
+            crawlingData.put("imgURL", imgElement.get(0).getDomAttribute("src"));
         } else {
-            crawlingData.put("src", "Not Found");
+            crawlingData.put("imgURL", "Not Found");
         }
 
         if (infoElement.size() == 7) {
-            crawlingData.put("phone", infoElement.get(0).getText().substring(5).replace(" ", ""));
+            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
             crawlingData.put("address", infoElement.get(1).getText());
             crawlingData.put("date", infoElement.get(2).getText());
             crawlingData.put("title", infoElement.get(3).getText());
             crawlingData.put("gender", infoElement.get(5).getText());
             crawlingData.put("details", infoElement.get(6).getText());
         } else {
-            crawlingData.put("phone", infoElement.get(0).getText().substring(5).replace(" ", ""));
+            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
             crawlingData.put("gratuity", infoElement.get(1).getText());
             crawlingData.put("address", infoElement.get(2).getText());
             crawlingData.put("date", infoElement.get(3).getText());

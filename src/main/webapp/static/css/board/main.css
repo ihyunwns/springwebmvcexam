@@ -1,7 +1,5 @@
 body {
     font-family: "Pretendard SemiBold", serif;
-    height: 100vh;
-    width: 100vw;
 }
 
 
@@ -15,7 +13,7 @@ body {
     align-items: center; /* 중앙 정렬 */
     height: 8vh;
     background-color: #333333;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .nav-item {

@@ -17,24 +17,30 @@
         <div id="abandoned-animal-list">
             <div class="animal-list">
                 <div class="animal-title dog">강아지</div>
-                <div class="animal">
-                    강아지 1
+                <div class="animal-preview" th:each="dog :${dog_preview}">
+                    <div class="animal" th:text="${dog.title}">강아지</div>
                 </div>
-                <button> 데이터 갱신 </button>
+
+                <div class="animal-more"> 더보기 </div>
+                <button class="animal-update"> 데이터 갱신 </button>
             </div>
             <div class="animal-list">
                 <div class="animal-title cat">고양이</div>
-                <div class="animal">
-                    고양이 1
+                <div class="animal-preview" th:each="cat : ${cat_preview}">
+                    <div class="animal" th:text="${cat.title}">고양이</div>
                 </div>
-                <button> 데이터 갱신 </button>
+
+                <div class="animal-more"> 더보기 </div>
+                <button class="animal-update"> 데이터 갱신 </button>
             </div>
             <div class="animal-list">
                 <div class="animal-title etc">기타 반려동물</div>
-                <div class="animal">
-                    반려동물 1
+                <div class="animal-preview" th:each="etc : ${etc_preview}">
+                    <div class="animal" th:text="${etc.title}">반려동물</div>
                 </div>
-                <button> 데이터 갱신 </button>
+
+                <div class="animal-more"> 더보기 </div>
+                <button class="animal-update"> 데이터 갱신 </button>
             </div>
         </div>
     </div>

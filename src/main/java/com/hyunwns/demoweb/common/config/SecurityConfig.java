@@ -90,6 +90,7 @@ public class SecurityConfig implements ApplicationContextAware {
                         .requestMatchers("/signup").permitAll()
                         .requestMatchers("/checkID").permitAll()
                         .requestMatchers("/info/**").permitAll()
+                        .requestMatchers("/animal/manage/**").hasRole("ADMIN")
                         //.requestMatchers("/static/**").permitAll() // 필터 체인을 거치지 않게 설정해줬음
                         .anyRequest().authenticated()
                 )

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head th:replace="~{fragments/header :: header}">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<link href="../../../static/css/board/main.css" rel="stylesheet"/>
+<link href="../../../static/css/animal/manage.css" rel="stylesheet"/>
+
+<body>
+    <div th:replace="~{fragments/navigation :: bar}"></div>
+
+    <div id="abandoned-animal-div">
+        <h1> 유기동물 목록 </h1>
+        <div id="abandoned-animal-list">
+            <div class="animal-list">
+                <div class="animal-title">강아지</div>
+                <div class="animal">
+                    강아지 1
+
+                </div>
+            </div>
+            <div class="animal-list">
+                <div class="animal-title">고양이</div>
+                <div class="animal">
+                    고양이 1
+
+                </div>
+            </div>
+            <div class="animal-list">
+                <div class="animal-title">기타 반려동물</div>
+                <div class="animal">
+                    반려동물 1
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

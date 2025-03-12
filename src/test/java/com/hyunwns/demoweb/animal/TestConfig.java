@@ -1,3 +1,4 @@
+/*
 package com.hyunwns.demoweb.animal;
 
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
@@ -46,3 +47,4 @@ public class TestConfig {
 
 
 }
+*/

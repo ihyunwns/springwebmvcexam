@@ -4,6 +4,7 @@ import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -23,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class WebCrawlingService {
@@ -32,25 +34,15 @@ public class WebCrawlingService {
     public static String BASE_CRAWLING_URL = "https://www.zooseyo.or.kr/Yu_board/petfind.html?area=&animal=";
 
     private static final int PAGE_GROUP_SIZE = 10;
-    private static final int MAX_THREAD_POOL = 2;
+    private static final int MAX_THREAD_POOL = 3;
 
-    private final CrawlAnimalRepository animalRepository;
+    //private final CrawlAnimalRepository animalRepository;
 
 
     // DB 데이터 최신화
     public void syncAnimalData(String keyword) throws SQLException {
 
-        WebDriver driver = new ChromeDriver(chromeOptions);
-
-        CrawlAnimal latestAnimal = animalRepository.findLatestAnimal(keyword);
-
-        // 가장 마지막 페이지 가져오기
-        String url = BASE_CRAWLING_URL + keyword + "&page=1";
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-        driver.get(url);
-        List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//img[@src='../images/arrow-bb.gif']/..")));
-        int LAST_PAGE = getLastPage(elements);
+        log.info("syncAnimalData");
 
     }
 

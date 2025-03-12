@@ -1,0 +1,40 @@
+
+#abandoned-animal-div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 10px;
+}
+
+#abandoned-animal-div h1 {
+    border-bottom: 3px solid lightslategray;
+    text-align: center;
+    width: 90%;
+    padding-bottom: 20px;
+}
+
+#abandoned-animal-list {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    justify-content: space-between; /* 자식 요소 사이에 균등한 간격 */
+}
+
+#abandoned-animal-list .animal-list {
+    flex: 1;
+}
+
+.animal-title {
+    text-align: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    box-sizing: border-box;
+    margin: 0 5px;
+}
+
+.animal{
+
+}

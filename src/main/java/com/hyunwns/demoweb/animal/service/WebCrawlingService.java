@@ -38,7 +38,6 @@ public class WebCrawlingService {
 
     //private final CrawlAnimalRepository animalRepository;
 
-
     // DB 데이터 최신화
     public void syncAnimalData(String keyword) throws SQLException {
 

@@ -1,5 +1,6 @@
 
 #abandoned-animal-div {
+    margin-top: 20px;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -10,7 +11,7 @@
 }
 
 #abandoned-animal-div h1 {
-    border-bottom: 3px solid lightslategray;
+    border-bottom: 2px solid #666666;
     text-align: center;
     width: 90%;
     padding-bottom: 20px;
@@ -25,16 +26,24 @@
 
 #abandoned-animal-list .animal-list {
     flex: 1;
+    margin: 0 5px;
 }
 
 .animal-title {
     text-align: center;
-    background-color: #f9f9f9;
-    padding: 10px;
+    padding: 20px;
     box-sizing: border-box;
-    margin: 0 5px;
+    border-radius: 5px;
 }
 
-.animal{
+.dog {
+    background-color: #fff3b4;
+}
 
+.cat {
+    background-color: #ffb7bd;
+}
+
+.etc {
+    background-color: #ceb7ff;
 }

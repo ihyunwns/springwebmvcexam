@@ -1,6 +1,7 @@
 package com.hyunwns.demoweb.animal.service;
 
 import com.hyunwns.demoweb.animal.TestConfig;
+import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.exception.CrawlingException;
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -374,8 +375,9 @@ class WebCrawlingServiceTest {
 
                 // 키워드별 taskQueue가 독립적으로 존재해야 서로 다른 키워드를 작업중인 스레드가 영향을 끼치지 않는다. 근데 나는 그걸 기대하고 만든 게 아닌데..
                 // 키워드별로 순차적으로 진행하되 이 키워드 별 크롤링을 스레드를 이용해서 여러 페이지를 동시에 크롤링 하고자 한것.
+
                 for(int i = 0; i < MAX_THREAD_POOL; i++) {
-                    executor.submit(new CrawlerThread(animalRepository, options, taskQueue, keyword));
+                    executor.submit(new CrawlerThread(options, taskQueue, keyword, null));
                 }
 
                 executor.shutdown();

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter @Setter @JsonIgnoreProperties(ignoreUnknown = true)
 public class CrawlAnimal {
 
@@ -39,5 +41,19 @@ public class CrawlAnimal {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", date='" + date + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CrawlAnimal that = (CrawlAnimal) o;
+        return Objects.equals(title, that.title) && Objects.equals(details, that.details) && Objects.equals(imgURL, that.imgURL) && Objects.equals(gender, that.gender) && Objects.equals(gratuity, that.gratuity) && Objects.equals(address, that.address) && Objects.equals(phoneNumber, that.phoneNumber) && Objects.equals(date, that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, details, imgURL, gender, gratuity, address, phoneNumber, date);
     }
 }

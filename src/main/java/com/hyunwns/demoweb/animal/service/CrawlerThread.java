@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.exception.CrawlingException;
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -18,16 +19,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLING_URL;
 
-public class CrawlerThread implements Runnable {
+public class CrawlerThread implements Callable<List<CrawlAnimal>> {
+
+    private final Logger logger = LoggerFactory.getLogger(CrawlerThread.class);
 
     private final ChromeOptions chromeOptions;
-    private final CrawlAnimalRepository animalRepository;
-    private final Logger logger = LoggerFactory.getLogger(CrawlerThread.class);
     private final BlockingQueue<int[]> taskQueue;
     private final String keyword;
+    private final CrawlAnimal latestAnimal;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -35,20 +39,27 @@ public class CrawlerThread implements Runnable {
     private static final int MAX_POST_LOAD_RETRY = 3;
     private static final long BASE_WAIT_TIME = 2000; /* 2000 ms */
 
-    public CrawlerThread(CrawlAnimalRepository repository, ChromeOptions options, BlockingQueue<int[]> taskQueue, String keyword) {
-        this.animalRepository = repository;
+    public CrawlerThread(ChromeOptions options, BlockingQueue<int[]> taskQueue, String keyword, CrawlAnimal latestAnimal) {
         this.chromeOptions = options;
         this.taskQueue = taskQueue;
         this.keyword = keyword;
+        this.latestAnimal = latestAnimal;
     }
 
-    // 어떤 예외가 발생했을 때 트랜잭션을 롤백할지 지정, Exception.class 로 하면 체크 예외가 발생하더라도 롤백
     @Override
-    public void run() {
+    public List<CrawlAnimal> call() throws Exception{
         WebDriver webDriver = null;
+        List<CrawlAnimal> animals = new ArrayList<>();
+
         try {
             webDriver = new ChromeDriver(chromeOptions);
             while (!taskQueue.isEmpty()) {
+                if(Thread.currentThread().isInterrupted()) {
+                    webDriver.quit();
+                    logger.info("다른 스레드의 작업 오류로 인한 작업 종료, {}", Thread.currentThread().getName());
+                    return Collections.emptyList();
+                }
+
                 int[] pages = taskQueue.poll();
                 if (pages == null) break;
 
@@ -117,15 +128,20 @@ public class CrawlerThread implements Runnable {
                                             List<WebElement> infoElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//b")));
                                             Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
                                             CrawlAnimal crawlAnimal = mapper.convertValue(crawlingData, CrawlAnimal.class);
+                                            if (crawlAnimal.equals(latestAnimal)) {
+                                                logger.info("기존 데이터와 일치하는 항목 발견, 크롤링 중단");
+                                                webDriver.quit();
+                                                return animals;
+                                            }
 
                                             logger.info("크롤링 한 데이터: {}", crawlAnimal);
-                                            animalRepository.insertCrawlAnimal(keyword, crawlAnimal);
+                                            animals.add(crawlAnimal);
 
                                             webDriver.close();
                                             webDriver.switchTo().window(originalWindow);
                                             Thread.sleep(400);
                                             break; // 성공 시 재시도 루프 탈출
-                                        } catch (NoSuchElementException | TimeoutException | CrawlingException | IndexOutOfBoundsException e) {
+                                        } catch (NoSuchElementException | TimeoutException | CrawlingException | IndexOutOfBoundsException | ElementClickInterceptedException e) {
                                             POST_RETRY_COUNT++;
                                             logger.warn("게시물 {} 크롤링 실패 (재시도 {}/{}) - {}", post, POST_RETRY_COUNT, MAX_POST_LOAD_RETRY, e.getMessage());
 
@@ -157,12 +173,15 @@ public class CrawlerThread implements Runnable {
         }
         catch (Exception e) {
             logger.error("최상위 오류 발생: {}", e.getMessage(), e);
+            throw new Exception(e.getMessage(), e); // 작업 실패 전파를 위함, TransactionTemplate에서 ExecutionException 으로 전달될 거임
         } finally {
             if (webDriver != null) {
                 logger.info("웹드라이버 {} 종료 - 키워드: {}", webDriver, keyword);
                 webDriver.quit();
             }
         }
+
+        return animals;
     }
 
     private Map<String, String> getStringMap(List<WebElement> infoElement, List<WebElement> imgElement) {

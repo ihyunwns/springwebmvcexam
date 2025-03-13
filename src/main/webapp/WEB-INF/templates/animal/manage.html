@@ -6,46 +6,52 @@
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
-<link href="../../../static/css/board/main.css" rel="stylesheet"/>
+<link href="../../../static/css/main.css" rel="stylesheet"/>
 <link href="../../../static/css/animal/manage.css" rel="stylesheet"/>
-
 <body>
     <div th:replace="~{fragments/navigation :: bar}"></div>
 
     <div id="abandoned-animal-div">
-        <h1> 유기동물 목록 </h1>
-        <div id="abandoned-animal-list">
-            <div class="animal-list">
+        <div id="animal-nav">
+            <h1> 유기동물 목록 </h1>
+            <div class="animal-update">
+                <button class="animal-syncBtn">데이터 갱신</button>
+                <!-- TODO: 갱신 버튼 클릭 시 Progress bar 로 변환 기능 추가 -->
+                <div class="last-update-time">마지막 업데이트: 2025-03-13 12:51:00</div>
+            </div>
+        </div>
+        <div class="divider"> </div>
+        <div id="abandoned-animal-container">
+            <div class="animal-box">
                 <div class="animal-title dog">강아지</div>
-                <div class="animal-preview" th:each="dog :${dog_preview}">
-                    <div class="animal" th:text="${dog.title}">강아지</div>
+                <div class="animal-list">
+                    <div class="animal-preview" th:each="dog :${dog_preview}">
+                        <div class="animal" th:text="${dog.title}">강아지</div>
+                    </div>
                 </div>
-
-                <div class="animal-more"> 더보기 </div>
-                <button class="animal-update"> 데이터 갱신 </button>
+                <button class="animal-more"> 더보기 </button>
             </div>
-            <div class="animal-list">
+            <div class="animal-box">
                 <div class="animal-title cat">고양이</div>
-                <div class="animal-preview" th:each="cat : ${cat_preview}">
-                    <div class="animal" th:text="${cat.title}">고양이</div>
+                <div class="animal-list">
+                    <div class="animal-preview" th:each="cat : ${cat_preview}">
+                        <div class="animal" th:text="${cat.title}">고양이</div>
+                    </div>
                 </div>
-
-                <div class="animal-more"> 더보기 </div>
-                <button class="animal-update"> 데이터 갱신 </button>
+                <button class="animal-more"> 더보기 </button>
             </div>
-            <div class="animal-list">
+            <div class="animal-box">
                 <div class="animal-title etc">기타 반려동물</div>
-                <div class="animal-preview" th:each="etc : ${etc_preview}">
-                    <div class="animal" th:text="${etc.title}">반려동물</div>
+                <div class="animal-list">
+                    <div class="animal-preview" th:each="etc : ${etc_preview}">
+                        <div class="animal" th:text="${etc.title}">반려동물</div>
+                    </div>
                 </div>
-
-                <div class="animal-more"> 더보기 </div>
-                <button class="animal-update"> 데이터 갱신 </button>
+                <button class="animal-more"> 더보기 </button>
             </div>
         </div>
     </div>
-
-
 </body>
+<script src="../../../static/js/animal/manage.js"></script>
 
 </html>

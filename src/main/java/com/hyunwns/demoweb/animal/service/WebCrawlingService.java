@@ -14,6 +14,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -36,12 +37,36 @@ public class WebCrawlingService {
     private static final int PAGE_GROUP_SIZE = 10;
     private static final int MAX_THREAD_POOL = 3;
 
-    //private final CrawlAnimalRepository animalRepository;
+    private final CrawlAnimalRepository animalRepository;
 
-    // DB 데이터 최신화
-    public void syncAnimalData(String keyword) throws SQLException {
+    public void syncAnimalData() throws SQLException {
 
-        log.info("syncAnimalData");
+        String[] keywords = { "강아지", "고양이", "기타 반려동물" };
+
+        // main 스레드가 아닌 새로운 스레드로 크롤링 서비스 실행 > 그 안에서 다시 크롤링을 위한 스레드가 생성 되는 것
+
+        int i = 0;
+        try {
+            while (true) {
+                if (i == 20) {
+                    break;
+                }
+
+                log.info(Arrays.toString(keywords));
+                Thread.sleep(1000);
+                i++;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        /*new Thread(() -> {
+            log.info(Arrays.toString(keywords));
+        }).start();*/
+
+        // 문제점은 갱신 시도마다 스레드가 새롭게 생성됨, 오버헤드 발생 가능성 있음
+
+        // 1. 스프링의 Async 어노테이션 활용
+        // 2. ExecutorService를 활용해서 스레드 풀 관리
 
     }
 

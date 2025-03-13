@@ -6,11 +6,11 @@
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
-<link href="../../../static/css/board/main.css" rel="stylesheet"/>
+<link href="../../../static/css/main.css" rel="stylesheet"/>
 
 <body>
     <div th:replace="~{fragments/navigation :: bar}"></div>
-
+    <a th:if="${role.equals('ROLE_ADMIN')}" href="/animal/manage"> manage로 이동하기</a>
     지도 위치 기반 유기 동물 찾기 &nbsp
 
     네이버 or 카카오 지도 불러오기

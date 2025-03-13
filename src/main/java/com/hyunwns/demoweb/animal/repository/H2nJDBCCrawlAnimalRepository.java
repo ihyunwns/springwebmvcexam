@@ -1,4 +1,3 @@
-/*
 package com.hyunwns.demoweb.animal.repository;
 
 import com.hyunwns.demoweb.animal.domain.AnimalType;
@@ -20,7 +19,7 @@ import java.util.Optional;
 @Slf4j
 public class H2nJDBCCrawlAnimalRepository implements CrawlAnimalRepository {
 
-    //private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public CrawlAnimal findLatestAnimal(String keyword) throws SQLException {
@@ -74,4 +73,3 @@ public class H2nJDBCCrawlAnimalRepository implements CrawlAnimalRepository {
         }
     }
 }
-*/

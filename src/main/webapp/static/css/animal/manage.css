@@ -2,37 +2,100 @@
     margin-top: 20px;
     width: 100%;
     display: flex;
-    justify-content: center;
     flex-direction: column;
     align-items: center;
     box-sizing: border-box;
     padding: 0 10px;
 }
 
-#abandoned-animal-div h1 {
-    border-bottom: 2px solid #666666;
-    text-align: center;
+#animal-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    position: relative;
     width: 90%;
-    padding-bottom: 20px;
 }
 
-#abandoned-animal-list {
+#animal-nav h1 {
+    position: absolute; /* 화면 중앙으로 이동 */
+    left: 50%;
+    transform: translateX(-50%); /* 정확히 중앙 정렬 */
+    margin: 0;
+}
+
+#animal-nav .animal-update {
+    margin-left: auto; /* 오른쪽으로 밀기 */
+}
+
+#animal-nav .animal-syncBtn {
+    padding: 1em 2em;
+    border: none;
+    background: #7986cb;
+    width: 100%;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    -webkit-transition: background-color 0.3s;
+    transition: background-color 0.3s;
+}
+
+#animal-nav .animal-syncBtn:hover {
+    background: #3f51b5; /* 호버 시 색상 변경 */
+}
+
+#animal-nav .last-update-time {
+    font-size: 10px;
+}
+
+/* 강아지 구분선 */
+.divider {
+    display: flex;
+    align-items: center;
+    width: 90%; /* animal-box 내부에서 95% 너비 */
+    margin: 20px auto; /* 상하 여백 20px, 좌우 중앙 정렬 */
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1; /* 양쪽 선이 균등하게 늘어남 */
+    border-bottom: 2px dashed #7986cb; /* 점선 스타일, 프로젝트 색상 활용 */
+}
+
+/* 기존 스타일 조정 */
+.animal-box {
+    flex: 1;
+    margin: 0 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 구분선 중앙 정렬 */
+}
+
+#abandoned-animal-container {
     display: flex;
     flex-direction: row;
     width: 90%;
-    justify-content: space-between; /* 자식 요소 사이에 균등한 간격 */
 }
 
-#abandoned-animal-list .animal-list {
+#abandoned-animal-container .animal-box {
     flex: 1;
     margin: 0 5px;
 }
 
+.animal-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .animal-title {
     text-align: center;
+    width: 100%;
     padding: 20px;
     box-sizing: border-box;
     border-radius: 5px;
+    margin-bottom: 2px;
 }
 
 .dog {
@@ -45,4 +108,125 @@
 
 .etc {
     background-color: #ceb7ff;
+}
+
+.animal-list {
+    border: 1px solid #f1f3f5;
+    border-radius: 5px;
+    height: 65vh; /* 고정된 높이 */
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0;
+}
+
+.animal-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+}
+
+.animal {
+    width: 95%;
+    border: 2px solid #f0f0f0;
+    border-radius: 3px;
+    height: calc(65vh / 11);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.animal-more {
+    width: 95%;
+    margin-top: 5px;
+    border: none;
+    padding: 1em 2em;
+    border-radius: 20px;
+    background: #7986cb;
+    color: #fff;
+    -webkit-transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s;
+    text-align: center;
+    cursor: pointer;
+    position: relative; /* ::before 위치를 위해 */
+    display: inline-block; /* 버튼 크기 조정 */
+}
+
+.animal-more.animal-more--inverted {
+    background: #ECEFF1;
+    color: #37474f;
+}
+
+.animal-more::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    bottom: -20px;
+    right: -20px;
+    background: inherit;
+    border-radius: 20px;
+    z-index: -1;
+    opacity: 0.4;
+    transform: scale3d(0.8, 0.5, 1);
+}
+
+.animal-more:hover {
+    -webkit-transition: background-color 0.1s 0.3s, color 0.1s 0.3s;
+    transition: background-color 0.1s 0.3s, color 0.1s 0.3s;
+    color: #ECEFF1;
+    background-color: #3f51b5;
+    -webkit-animation: anim-moema-1 0.3s forwards;
+    animation: anim-moema-1 0.3s forwards;
+}
+
+.animal-more.animal-more--inverted:hover {
+    color: #ECEFF1;
+    background-color: #7986cb;
+}
+
+.animal-more:hover::before {
+    -webkit-animation: anim-moema-2 0.3s 0.3s forwards;
+    animation: anim-moema-2 0.3s 0.3s forwards;
+}
+
+/* 애니메이션 키프레임 */
+@-webkit-keyframes anim-moema-1 {
+    60% {
+        transform: scale3d(0.8, 0.8, 1);
+    }
+    85% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+    100% {
+        transform: scale3d(1, 1, 1);
+    }
+}
+@keyframes anim-moema-1 {
+    60% {
+        transform: scale3d(0.8, 0.8, 1);
+    }
+    85% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+    100% {
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+@-webkit-keyframes anim-moema-2 {
+    to {
+        opacity: 0;
+        transform: scale3d(1, 1, 1);
+    }
+}
+@keyframes anim-moema-2 {
+    to {
+        opacity: 0;
+        transform: scale3d(1, 1, 1);
+    }
 }

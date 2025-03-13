@@ -29,7 +29,6 @@ public class WebSocketConfig implements WebSocketConfigurer{
         registry.addHandler(chatHandler, "/chats")
                 .addInterceptors(new SocketInterceptor())
                 .setAllowedOrigins("*");
-
     }
 
     // 버퍼 사이즈 제한 해제

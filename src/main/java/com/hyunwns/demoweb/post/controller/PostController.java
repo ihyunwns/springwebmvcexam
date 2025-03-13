@@ -40,7 +40,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostController {
 
-    private static final String uploadDIR = "C:\\Users\\user\\IdeaProjects\\springwebmvcexam-master\\src\\main\\resources\\thumbnail";
+    private static final String uploadDIR = "C:\\Users\\ihyun\\Desktop\\springmvcwebexam\\src\\main\\resources\\thumbnail\\";
 
     private final SecurityUtils securityUtils;
     private final NoticeBoardService noticeBoardService;

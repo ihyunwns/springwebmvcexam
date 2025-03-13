@@ -1,4 +1,3 @@
-/*
 package com.hyunwns.demoweb.animal;
 
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
@@ -8,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -25,7 +23,6 @@ public class TestConfig {
         dataSource.setUrl("jdbc:h2:tcp://localhost/~/animal");
         dataSource.setUsername("sa");
         dataSource.setPassword("a");
-
 
         return dataSource;
     }
@@ -47,4 +44,3 @@ public class TestConfig {
 
 
 }
-*/

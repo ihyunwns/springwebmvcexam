@@ -22,7 +22,7 @@ body {
     font-family: "Pretendard SemiBold", serif;
     height: 100vh;
     width: 100vw;
-    background-image: url("../image/background.jpeg");
+    background-image: url("../../image/background.jpeg");
     background-repeat: no-repeat;
     background-size: cover;
 }

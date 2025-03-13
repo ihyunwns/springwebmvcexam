@@ -4,11 +4,10 @@ import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.service.WebCrawlingService;
 import com.hyunwns.demoweb.common.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -55,4 +54,13 @@ public class AbandonedAnimalsController {
 
         return "animal/manage";
     }
+
+    @PostMapping("/syncData")
+    public ResponseEntity<String> requestCrawling(@RequestBody String crawlData) throws SQLException {
+
+        webCrawlingService.syncAnimalData();
+
+        return ResponseEntity.ok().build();
+    }
+
 }

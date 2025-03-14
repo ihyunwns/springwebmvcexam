@@ -42,15 +42,24 @@
     box-sizing: border-box;
 }
 
+.progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    display: none; /* 기본적으로 숨김 */
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0;
+    background-color: #007bff;
+    transition: width 0.5s;
+}
+
 #animal-nav .animal-syncBtn:hover {
     background: #3f51b5
 }
 
-#animal-nav .animal-syncBtn:disabled {
-    cursor: not-allowed;
-    pointer-events: none;
-    background-color: #3f51b5;
-}
 
 #animal-nav .last-update-time {
     font-size: 10px;

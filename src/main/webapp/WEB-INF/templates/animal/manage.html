@@ -8,6 +8,9 @@
 </head>
 <link href="../../../static/css/main.css" rel="stylesheet"/>
 <link href="../../../static/css/animal/manage.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
 <body>
     <div th:replace="~{fragments/navigation :: bar}"></div>
 
@@ -16,8 +19,13 @@
             <h1> 유기동물 목록 </h1>
             <div class="animal-update">
                 <button class="animal-syncBtn">데이터 갱신</button>
-                <!-- TODO: 갱신 버튼 클릭 시 Progress bar 로 변환 기능 추가 -->
-                <div class="last-update-time">마지막 업데이트: 2025-03-13 12:51:00</div>
+                <div class="progress-bar" hidden>
+                    <div class="progress-bar-fill"></div>
+                </div>
+                <!-- 누르면 뾰로롱 하면서 애니메이션 효과 후, 데이터 갱신 글씨가 키워드로 바뀌고 버튼 크기 그대로 프로그레스바가 되어야함 -->
+                <!-- 또한 작업 완료 시 다시 버튼으로 돌아와야 하고 접속 시 크롤링 진행중이라면 버튼이 아닌 프로그레스 바가 보여져야함 -->
+                <!-- 프로그레스바 또한 애니메이션으로 물결 치는 효과 -->
+                <div class="last-update-time" th:text="|마지막 업데이트: ${updated_at}|">마지막 업데이트: 2025-03-13 12:51:00</div>
             </div>
         </div>
         <div class="divider"> </div>

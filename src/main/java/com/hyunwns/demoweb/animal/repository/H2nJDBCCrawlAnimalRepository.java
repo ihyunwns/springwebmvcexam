@@ -22,9 +22,9 @@ public class H2nJDBCCrawlAnimalRepository implements CrawlAnimalRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public CrawlAnimal findLatestAnimal(String keyword) throws SQLException {
+    public CrawlAnimal findLatestAnimal(String category) throws SQLException {
 
-        String sql = "SELECT * FROM " + AnimalType.fromKeyword(keyword) + " ORDER BY id DESC LIMIT 1";
+        String sql = "SELECT * FROM " + category + " ORDER BY id DESC LIMIT 1";
 
         try{
             return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(CrawlAnimal.class));
@@ -34,10 +34,10 @@ public class H2nJDBCCrawlAnimalRepository implements CrawlAnimalRepository {
     }
 
     @Override
-    public void insertCrawlAnimal(String keyword, CrawlAnimal crawlAnimal) throws SQLException {
+    public void insertCrawlAnimal(String category, CrawlAnimal crawlAnimal) throws SQLException {
 
-         String sql = "INSERT INTO " + AnimalType.fromKeyword(keyword) +
-                 "(title, details, imgurl, gender, gratuity, address, phonenumber, date)" +
+         String sql = "INSERT INTO " + category +
+                 " (title, details, imgurl, gender, gratuity, address, phonenumber, date)" +
                  " VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
@@ -71,5 +71,12 @@ public class H2nJDBCCrawlAnimalRepository implements CrawlAnimalRepository {
             String insertSql = "INSERT INTO crawl_status (CATEGORY, LAST_PAGE) VALUES (?, ?)";
             jdbcTemplate.update(insertSql, category, last_page);
         }
+    }
+
+    @Override
+    public String getLastUpdatedDate() throws SQLException {
+        String sql = "SELECT updated_at FROM dog ORDER BY updated_at DESC LIMIT 1";
+
+        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(String.class));
     }
 }

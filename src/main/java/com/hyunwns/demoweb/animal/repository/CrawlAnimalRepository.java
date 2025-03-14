@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface CrawlAnimalRepository {
 
-    CrawlAnimal findLatestAnimal(String keyword) throws SQLException;
+    CrawlAnimal findLatestAnimal(String category) throws SQLException;
 
     void insertCrawlAnimal(String keyword, CrawlAnimal crawlAnimal) throws SQLException;
 
@@ -16,4 +16,5 @@ public interface CrawlAnimalRepository {
 
     void updateCrawlStatus(String category, int last_page) throws SQLException;
 
+    String getLastUpdatedDate() throws SQLException;
 }

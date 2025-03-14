@@ -91,6 +91,7 @@ public class SecurityConfig implements ApplicationContextAware {
                         .requestMatchers("/checkID").permitAll()
                         .requestMatchers("/info/**").permitAll()
                         .requestMatchers("/animal/manage/**").hasRole("ADMIN")
+                        .requestMatchers("/ws-progress/**").permitAll()
                         //.requestMatchers("/static/**").permitAll() // 필터 체인을 거치지 않게 설정해줬음
                         .anyRequest().authenticated()
                 )
@@ -107,7 +108,8 @@ public class SecurityConfig implements ApplicationContextAware {
                         .maximumSessions(1) //CustomUserDetails 를 만든 경우 hashcode, equals 메서드를 구현해줘야 한다.
                         .maxSessionsPreventsLogin(false)
                         .expiredSessionStrategy(customSessionExpiredStrategy())
-                );
+                )
+                ;
 
         http.sessionManagement(auth -> auth.sessionFixation().changeSessionId()); // 로그인 시 동일한 세션에 대한 id 변경
 
@@ -120,8 +122,9 @@ public class SecurityConfig implements ApplicationContextAware {
 
         // csrf 토큰을 브라우저 쿠키에 저장하는 방법
         // 자바스크립트로도 csrf 토큰에 접근 가능하도록 하는 기능
-        http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
-
+        http.csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers("/ws-progress/**"));
 
                 // 기본은 withDefault(), 스프링이 제공하는 로그인 페이지
                 // 초기화 시 인증 방식 2개가 있음

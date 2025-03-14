@@ -4,6 +4,12 @@ import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.service.WebCrawlingService;
 import com.hyunwns.demoweb.common.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +21,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/animal")
 public class AbandonedAnimalsController {
 
@@ -32,25 +39,19 @@ public class AbandonedAnimalsController {
     public String manage(Model model) throws SQLException {
         securityUtils.addAttributeUserInfo(model);
 
-        List<CrawlAnimal> dogs = new ArrayList<>();
-        List<CrawlAnimal> cats = new ArrayList<>();
-        List<CrawlAnimal> etcs = new ArrayList<>();
+        try {
+            String updated_at = webCrawlingService.getLastUpdatedDate();
+            model.addAttribute("updated_at", updated_at);
+        }catch (EmptyResultDataAccessException e){
+            model.addAttribute("updated_at", "데이터 갱신 필요");
+        }
 
-        CrawlAnimal dog = new CrawlAnimal();
-        dog.setTitle("DOG TEST");
-        dogs.add(dog);
 
-        CrawlAnimal cat = new CrawlAnimal();
-        cat.setTitle("CAT TEST");
-        cats.add(cat);
+        List<CrawlAnimal> animalData = webCrawlingService.getAnimalData();
 
-        CrawlAnimal etc = new CrawlAnimal();
-        etc.setTitle("ETC TEST");
-        etcs.add(etc);
-
-        model.addAttribute("dog_preview", dogs);
-        model.addAttribute("cat_preview", cats);
-        model.addAttribute("etc_preview", etcs);
+        model.addAttribute("dog_preview", animalData);
+        model.addAttribute("cat_preview", animalData);
+        model.addAttribute("etc_preview", animalData);
 
         return "animal/manage";
     }
@@ -58,9 +59,16 @@ public class AbandonedAnimalsController {
     @PostMapping("/syncData")
     public ResponseEntity<String> requestCrawling(@RequestBody String crawlData) throws SQLException {
 
-        webCrawlingService.syncAnimalData();
+        try {
+            if (webCrawlingService.syncAnimalData()) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
-        return ResponseEntity.ok().build();
     }
 
 }

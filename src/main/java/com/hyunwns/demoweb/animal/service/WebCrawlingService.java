@@ -80,6 +80,8 @@ public class WebCrawlingService {
                             }
 
                             BlockingQueue<int[]> taskQueue = createTaskQueue(diff_page);
+                            taskQueue.clear();
+                            taskQueue.add(new int[]{1, 2});
                             double size = taskQueue.size();
 
                             log.info("size: {}", size);
@@ -112,6 +114,7 @@ public class WebCrawlingService {
                                 Map<String, Object> progressData = new HashMap<>();
                                 progressData.put("keyword", keyword);
                                 progressData.put("progress", progress);
+                                progressData.put("isCompleted", false);
                                 String progressMessage = objectMapper.writeValueAsString(progressData);
 
                                 messagingTemplate.convertAndSend("/topic/progress", progressMessage);
@@ -124,6 +127,13 @@ public class WebCrawlingService {
                                 animalRepository.insertCrawlAnimal(category, animal);
                             }
 
+                            Map<String, Object> progressData = new HashMap<>();
+                            progressData.put("keyword", null);
+                            progressData.put("progress", null);
+                            progressData.put("isCompleted", true);
+                            String progressMessage = objectMapper.writeValueAsString(progressData);
+
+                            messagingTemplate.convertAndSend("/topic/progress", progressMessage);
                             log.info("키워드 {} 동기화 완료", keyword);
 
                         }

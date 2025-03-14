@@ -16,8 +16,8 @@
         <div id="animal-nav">
             <h1> 유기동물 목록 </h1>
             <div class="animal-update">
-                <button class="animal-syncBtn" th:style="${running} ? 'display: none;' : 'display: block;'">데이터 갱신</button>
-                <div class="progress-bar" th:style="${running} ? 'display: block;' : 'display: none;'">
+                <button class="animal-syncBtn" th:attr="data-running=${running}">데이터 갱신</button>
+                <div class="progress-bar">
                     <div class="progress-bar-fill"></div>
                     <div class="progress-bar-keyword"></div>
                 </div>

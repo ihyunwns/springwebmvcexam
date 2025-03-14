@@ -40,6 +40,8 @@ public class AbandonedAnimalsController {
         securityUtils.addAttributeUserInfo(model);
 
         boolean running = webCrawlingService.getRunningState();
+        log.info("running: {}", running);
+
         model.addAttribute("running", running);
 
         try {

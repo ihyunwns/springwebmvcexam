@@ -15,12 +15,31 @@ syncBtn.style.height = `${syncBtn.offsetHeight}px`;
 progressBar.style.width = `${syncBtn.offsetWidth}px`;
 progressBar.style.height = `${syncBtn.offsetHeight}px`;
 
+window.addEventListener("DOMContentLoaded", () => {
+    const isRunning = syncBtn.getAttribute("data-running") === "true";
+
+    if (isRunning) {
+        syncBtn.style.display = "none";
+        progressBar.style.display = "block";
+    } else {
+        syncBtn.style.display = "block";
+        progressBar.style.display = "none";
+    }
+
+});
+
 stompClient.connect({}, function() {
 
     stompClient.subscribe('/topic/progress', function (message) {
 
         const data = JSON.parse(message.body);
-        const { keyword, progress } = data;
+        const { keyword, progress, isCompleted } = data;
+
+        if (isCompleted === 'true') {
+            syncBtn.style.display = "block";
+            progressBar.style.display = "none";
+            return;
+        }
 
         syncBtn.style.display = "none";
         progressBar.style.display = "block";
@@ -44,12 +63,12 @@ syncBtn.addEventListener("click", () => {
                 [csrfHeader]: csrfToken // CSRF 헤더 추가
             },
         body: {}
-        }).then( response => {
-            if( response.ok ){
-                progressBar.style.display = "none";
-                syncBtn.style.display = "block";
-
-                console.log(" 동기화 작업 완료 ");
-            }
+        }).then(response => {
+        if (!response.ok) {
+            throw new Error(`서버 오류: ${response.status}`);
+        }
         })
+        .catch(error => {
+            console.error("동기화 중 오류 발생:", error);
+        });
 })

@@ -8,19 +8,18 @@
 </head>
 <link href="../../../static/css/main.css" rel="stylesheet"/>
 <link href="../../../static/css/animal/manage.css" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
 <body>
     <div th:replace="~{fragments/navigation :: bar}"></div>
-
     <div id="abandoned-animal-div">
         <div id="animal-nav">
             <h1> 유기동물 목록 </h1>
             <div class="animal-update">
-                <button class="animal-syncBtn">데이터 갱신</button>
-                <div class="progress-bar">
+                <button class="animal-syncBtn" th:style="${running} ? 'display: none;' : 'display: block;'">데이터 갱신</button>
+                <div class="progress-bar" th:style="${running} ? 'display: block;' : 'display: none;'">
                     <div class="progress-bar-fill"></div>
+                    <div class="progress-bar-keyword"></div>
                 </div>
                 <!-- 누르면 뾰로롱 하면서 애니메이션 효과 후, 데이터 갱신 글씨가 키워드로 바뀌고 버튼 크기 그대로 프로그레스바가 되어야함 -->
                 <!-- 또한 작업 완료 시 다시 버튼으로 돌아와야 하고 접속 시 크롤링 진행중이라면 버튼이 아닌 프로그레스 바가 보여져야함 -->

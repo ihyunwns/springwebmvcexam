@@ -217,4 +217,8 @@ public class WebCrawlingService {
 
         return LAST_PAGE;
     }
+
+    public boolean getRunningState() {
+        return running.get();
+    }
 }

@@ -8,6 +8,7 @@ const stompClient = Stomp.over(socket);
 
 const progressBar = document.querySelector(".progress-bar");
 const progressFill = document.querySelector(".progress-bar-fill");
+const progressKeyword = document.querySelector(".progress-bar-keyword");
 
 syncBtn.style.width = `${syncBtn.offsetWidth}px`;
 syncBtn.style.height = `${syncBtn.offsetHeight}px`;
@@ -23,8 +24,8 @@ stompClient.connect({}, function() {
 
         syncBtn.style.display = "none";
         progressBar.style.display = "block";
-        progressBar.textContent = keyword;
 
+        progressKeyword.textContent = keyword;
         progressFill.style.width = `${progress * 100}%`
 
         console.log("진행 상황:", message.body);
@@ -34,6 +35,7 @@ stompClient.connect({}, function() {
 syncBtn.addEventListener("click", () => {
 
     syncBtn.innerHTML = `<span class="loading-spinner"></span>`;
+
     fetch('/animal/syncData', {
         method: "POST",
         headers:

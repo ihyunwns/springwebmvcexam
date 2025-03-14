@@ -39,6 +39,9 @@ public class AbandonedAnimalsController {
     public String manage(Model model) throws SQLException {
         securityUtils.addAttributeUserInfo(model);
 
+        boolean running = webCrawlingService.getRunningState();
+        model.addAttribute("running", running);
+
         try {
             String updated_at = webCrawlingService.getLastUpdatedDate();
             model.addAttribute("updated_at", updated_at);

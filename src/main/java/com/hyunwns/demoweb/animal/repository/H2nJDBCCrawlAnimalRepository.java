@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Primary
@@ -74,9 +76,21 @@ public class H2nJDBCCrawlAnimalRepository implements CrawlAnimalRepository {
     }
 
     @Override
-    public String getLastUpdatedDate() throws SQLException {
-        String sql = "SELECT updated_at FROM dog ORDER BY updated_at DESC LIMIT 1";
+    public LocalDateTime getLastUpdatedDate() throws SQLException {
+        String sql = "SELECT UPDATED_AT from CRAWL_STATUS ORDER BY UPDATED_AT DESC LIMIT 1";
 
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(String.class));
+        return jdbcTemplate.queryForObject(sql, LocalDateTime.class);
+    }
+
+    @Override
+    public List<CrawlAnimal> getCrawlAnimals(String category, int count) throws SQLException {
+
+        String sql;
+        if (count == 0) {
+            sql = "SELECT * FROM " + category + " ORDER BY id";
+        } else {
+            sql = "SELECT * FROM " + category + " ORDER BY id DESC LIMIT " + count;
+        }
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(CrawlAnimal.class));
     }
 }

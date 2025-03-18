@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.animal.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyunwns.demoweb.animal.domain.AnimalType;
 import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
@@ -20,6 +21,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.SQLException;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,7 +52,7 @@ public class WebCrawlingService {
         if (running.compareAndSet(false, true)) {
             WebDriver driver = new ChromeDriver(chromeOptions);
             ExecutorService executor = Executors.newFixedThreadPool(MAX_THREAD_POOL);
-            List<Future<List<CrawlAnimal>>> futures = new ArrayList<>();
+            List<Future<Map<Integer, List<CrawlAnimal>>>> futures = new ArrayList<>();
             try {
 
                 transactionTemplate.execute(status -> {
@@ -70,6 +73,7 @@ public class WebCrawlingService {
                             int last_page;
                             int diff_page;
                             Optional<CrawlStatus> crawlStatus = animalRepository.getCrawlStatus(keyword);
+                            // TODO: 마지막 업데이트 최신화, 동기화 완료 후 버튼 CSS 수정 (비동기로 할까?),
                             if (crawlStatus.isPresent()) {
                                 last_page = crawlStatus.get().getLast_page();
                                 diff_page = LAST_PAGE - last_page;
@@ -80,8 +84,6 @@ public class WebCrawlingService {
                             }
 
                             BlockingQueue<int[]> taskQueue = createTaskQueue(diff_page);
-                            taskQueue.clear();
-                            taskQueue.add(new int[]{1, 2});
                             double size = taskQueue.size();
 
                             log.info("size: {}", size);
@@ -91,14 +93,14 @@ public class WebCrawlingService {
                             }
 
                             // 실시간 모니터링 및 결과 수집
-                            List<CrawlAnimal> crawledAnimals = new ArrayList<>();
+                            Map<Integer, List<CrawlAnimal>> crawledAnimals = new TreeMap<>(Comparator.reverseOrder());
                             while (!futures.isEmpty()) {
-                                Iterator<Future<List<CrawlAnimal>>> iterator = futures.iterator();
+                                Iterator<Future<Map<Integer, List<CrawlAnimal>>>> iterator = futures.iterator();
                                 while (iterator.hasNext()) {
-                                    Future<List<CrawlAnimal>> future = iterator.next();
+                                    Future<Map<Integer, List<CrawlAnimal>>> future = iterator.next();
                                     if (future.isDone()) {
                                         try {
-                                            crawledAnimals.addAll(future.get());
+                                            crawledAnimals.putAll(future.get());
                                             iterator.remove(); // 완료된 작업 제거
                                         } catch (InterruptedException | ExecutionException e) {
                                             log.error("크롤링 작업 중 오류 발생: {}", e.getMessage());
@@ -121,19 +123,19 @@ public class WebCrawlingService {
                             }
 
                             // DB 저장
-                            log.info("크롤링된 데이터 개수: {}", crawledAnimals.size());
-                            Collections.reverse(crawledAnimals);
-                            for (CrawlAnimal animal : crawledAnimals) {
-                                animalRepository.insertCrawlAnimal(category, animal);
+                            int crawledSize = 0;
+                            for (List<CrawlAnimal> animals : crawledAnimals.values()) {
+                                crawledSize += animals.size();
+                            }
+                            log.info("크롤링된 데이터 개수: {}", crawledSize);
+
+                            for (List<CrawlAnimal> animals : crawledAnimals.values()) {
+                                Collections.reverse(animals);
+                                for(CrawlAnimal animal : animals) {
+                                    animalRepository.insertCrawlAnimal(category, animal);
+                                }
                             }
 
-                            Map<String, Object> progressData = new HashMap<>();
-                            progressData.put("keyword", null);
-                            progressData.put("progress", null);
-                            progressData.put("isCompleted", true);
-                            String progressMessage = objectMapper.writeValueAsString(progressData);
-
-                            messagingTemplate.convertAndSend("/topic/progress", progressMessage);
                             log.info("키워드 {} 동기화 완료", keyword);
 
                         }
@@ -146,9 +148,20 @@ public class WebCrawlingService {
                     return null;
                 });
 
+                Map<String, Object> progressData = new HashMap<>();
+
+                progressData.put("keyword", null);
+                progressData.put("progress", null);
+                progressData.put("isCompleted", true);
+
+                String progressMessage = objectMapper.writeValueAsString(progressData);
+                messagingTemplate.convertAndSend("/topic/progress", progressMessage);
+
                 log.info("모든 키워드 동기화 완료");
                 return true;
 
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             } finally {
                 driver.quit();
                 executor.shutdown();
@@ -167,24 +180,13 @@ public class WebCrawlingService {
 
     }
 
-    public List<CrawlAnimal> getAnimalData() throws SQLException{
-
-        List<CrawlAnimal> animals = new ArrayList<>(10);
-
-        CrawlAnimal dog = animalRepository.findLatestAnimal(AnimalType.fromKeyword("강아지").name());
-        CrawlAnimal cat = animalRepository.findLatestAnimal(AnimalType.fromKeyword("고양이").name());
-        CrawlAnimal etc = animalRepository.findLatestAnimal(AnimalType.fromKeyword("기타 반려동물").name());
-
-
-        animals.add(dog == null ? new CrawlAnimal() : dog);
-        animals.add(cat == null ? new CrawlAnimal() : cat);
-        animals.add(etc == null ? new CrawlAnimal() : etc);
-
-        return animals;
+    public List<CrawlAnimal> getAnimalData(String category, int count) throws SQLException{
+        return animalRepository.getCrawlAnimals(category, count);
     }
 
     public String getLastUpdatedDate() throws SQLException {
-        return animalRepository.getLastUpdatedDate();
+
+        return animalRepository.getLastUpdatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     private BlockingQueue<int[]> createTaskQueue(int diff_page) throws InterruptedException {
@@ -196,7 +198,7 @@ public class WebCrawlingService {
             int startPage = i * PAGE_GROUP_SIZE + 1;
             int endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, diff_page + 1);
 
-            int[] task = new int[]{startPage, endPage};
+            int[] task = {startPage, endPage};
 
             taskQueue.put(task);
         }

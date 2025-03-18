@@ -4,6 +4,8 @@ import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.domain.CrawlStatus;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface CrawlAnimalRepository {
@@ -16,5 +18,7 @@ public interface CrawlAnimalRepository {
 
     void updateCrawlStatus(String category, int last_page) throws SQLException;
 
-    String getLastUpdatedDate() throws SQLException;
+    LocalDateTime getLastUpdatedDate() throws SQLException;
+
+    List<CrawlAnimal> getCrawlAnimals(String category, int count) throws SQLException;
 }

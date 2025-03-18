@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 
 import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLING_URL;
 
-public class CrawlerThread implements Callable<List<CrawlAnimal>> {
+public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> {
 
     private final Logger logger = LoggerFactory.getLogger(CrawlerThread.class);
 
@@ -47,9 +47,9 @@ public class CrawlerThread implements Callable<List<CrawlAnimal>> {
     }
 
     @Override
-    public List<CrawlAnimal> call() throws Exception{
+    public Map<Integer, List<CrawlAnimal>> call() throws Exception{
         WebDriver webDriver = null;
-        List<CrawlAnimal> animals = new ArrayList<>();
+        Map<Integer, List<CrawlAnimal>> animals = new TreeMap<>();
 
         try {
             webDriver = new ChromeDriver(chromeOptions);
@@ -57,7 +57,7 @@ public class CrawlerThread implements Callable<List<CrawlAnimal>> {
                 if(Thread.currentThread().isInterrupted()) {
                     webDriver.quit();
                     logger.info("다른 스레드의 작업 오류로 인한 작업 종료, {}", Thread.currentThread().getName());
-                    return Collections.emptyList();
+                    return Collections.emptyMap();
                 }
 
                 int[] pages = taskQueue.poll();
@@ -66,6 +66,7 @@ public class CrawlerThread implements Callable<List<CrawlAnimal>> {
                 logger.info("키워드: {}, 큐 크기: {}, 크롤링 범위: {} ~ {}", keyword, taskQueue.size(), pages[0], pages[1]);
 
                 for (int j = pages[0]; j <= pages[1]; j++) {
+                    animals.put(j, new ArrayList<>());
                     String page = "&page=" + j;
                     String url = BASE_CRAWLING_URL + keyword + page;
 
@@ -135,7 +136,7 @@ public class CrawlerThread implements Callable<List<CrawlAnimal>> {
                                             }
 
                                             logger.info("크롤링 한 데이터: {}", crawlAnimal);
-                                            animals.add(crawlAnimal);
+                                            animals.get(j).add(crawlAnimal);
 
                                             webDriver.close();
                                             webDriver.switchTo().window(originalWindow);

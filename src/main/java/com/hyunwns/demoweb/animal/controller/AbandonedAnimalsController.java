@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,12 +52,9 @@ public class AbandonedAnimalsController {
             model.addAttribute("updated_at", "데이터 갱신 필요");
         }
 
-
-        List<CrawlAnimal> animalData = webCrawlingService.getAnimalData();
-
-        model.addAttribute("dog_preview", animalData);
-        model.addAttribute("cat_preview", animalData);
-        model.addAttribute("etc_preview", animalData);
+        model.addAttribute("dog_preview", webCrawlingService.getAnimalData("dog", 10));
+        model.addAttribute("cat_preview", webCrawlingService.getAnimalData("cat", 10));
+        model.addAttribute("etc_preview", webCrawlingService.getAnimalData("etc", 10));
 
         return "animal/manage";
     }

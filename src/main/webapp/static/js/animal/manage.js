@@ -9,24 +9,25 @@ const stompClient = Stomp.over(socket);
 const progressBar = document.querySelector(".progress-bar");
 const progressFill = document.querySelector(".progress-bar-fill");
 const progressKeyword = document.querySelector(".progress-bar-keyword");
+const progressSpinner = document.querySelector(".loading-spinner");
+const progressContent = document.querySelector(".progress-bar-content");
 
 syncBtn.style.width = `${syncBtn.offsetWidth}px`;
 syncBtn.style.height = `${syncBtn.offsetHeight}px`;
 progressBar.style.width = `${syncBtn.offsetWidth}px`;
 progressBar.style.height = `${syncBtn.offsetHeight}px`;
 
-window.addEventListener("DOMContentLoaded", () => {
-    const isRunning = syncBtn.getAttribute("data-running") === "true";
+const isRunning = syncBtn.getAttribute("data-running") === "true";
+if (isRunning) {
+    syncBtn.classList.add("hidden");
+    progressBar.style.display = "block";
+    progressSpinner.style.display = "block";
+    progressContent.classList.add("hidden");
+} else {
+    syncBtn.classList.remove("hidden");
+    progressBar.style.display = "none";
+}
 
-    if (isRunning) {
-        syncBtn.style.display = "none";
-        progressBar.style.display = "block";
-    } else {
-        syncBtn.style.display = "block";
-        progressBar.style.display = "none";
-    }
-
-});
 
 stompClient.connect({}, function() {
 
@@ -35,25 +36,26 @@ stompClient.connect({}, function() {
         const data = JSON.parse(message.body);
         const { keyword, progress, isCompleted } = data;
 
-        if (isCompleted === 'true') {
-            syncBtn.style.display = "block";
-            progressBar.style.display = "none";
-            return;
-        }
-
-        syncBtn.style.display = "none";
+        syncBtn.classList.add("hidden");
         progressBar.style.display = "block";
 
-        progressKeyword.textContent = keyword;
-        progressFill.style.width = `${progress * 100}%`
+        progressSpinner.style.display = "none";
+        progressContent.classList.remove("hidden");
 
-        console.log("진행 상황:", message.body);
+        progressKeyword.textContent = keyword;
+        progressFill.style.width = `${progress * 100}%`;
+
+        if (isCompleted) {
+            setTimeout( () =>  location.reload(), 500);
+        }
     });
 })
 
 syncBtn.addEventListener("click", () => {
-
-    syncBtn.innerHTML = `<span class="loading-spinner"></span>`;
+    syncBtn.classList.add("hidden");
+    progressBar.style.display = "block";
+    progressSpinner.style.display = "block";
+    progressContent.classList.add("hidden");
 
     fetch('/animal/syncData', {
         method: "POST",

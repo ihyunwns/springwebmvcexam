@@ -63,7 +63,7 @@ class WebCrawlingServiceTests {
 
         WebDriver driver = new ChromeDriver(chromeOptions);
         ExecutorService executor = Executors.newFixedThreadPool(MAX_THREAD_POOL);
-        List<Future<List<CrawlAnimal>>> futures = new ArrayList<>();
+        List<Future<Map<Integer, List<CrawlAnimal>>>> futures = new ArrayList<>();
 
         Optional<CrawlAnimal> latestAnimal = Optional.ofNullable(animalRepository.findLatestAnimal(keyword));
         log.info("카테고리 {}의 최신 데이터: {}", category, latestAnimal);
@@ -95,14 +95,14 @@ class WebCrawlingServiceTests {
                 }
 
                 // 실시간 모니터링 및 결과 수집
-                List<CrawlAnimal> allCrawledAnimals = new ArrayList<>();
+                Map<Integer, List<CrawlAnimal>> allCrawledAnimals = new TreeMap<>(Comparator.reverseOrder());
                 while (!futures.isEmpty()) {
-                    Iterator<Future<List<CrawlAnimal>>> iterator = futures.iterator();
+                    Iterator<Future<Map<Integer, List<CrawlAnimal>>>> iterator = futures.iterator();
                     while (iterator.hasNext()) {
-                        Future<List<CrawlAnimal>> future = iterator.next();
+                        Future<Map<Integer, List<CrawlAnimal>>> future = iterator.next();
                         if (future.isDone()) {
                             try {
-                                allCrawledAnimals.addAll(future.get());
+                                allCrawledAnimals.putAll(future.get());
                                 iterator.remove(); // 완료된 작업 제거
                             } catch (InterruptedException | ExecutionException e) {
                                 log.error("크롤링 작업 중 오류 발생: {}", e.getMessage());
@@ -116,9 +116,16 @@ class WebCrawlingServiceTests {
                 }
 
                 // DB 저장
-                log.info("크롤링된 데이터 개수: {}", allCrawledAnimals.size());
-                for (CrawlAnimal animal : allCrawledAnimals) {
-                    animalRepository.insertCrawlAnimal(keyword, animal);
+                int crawledSize = 0;
+                for (List<CrawlAnimal> animals : allCrawledAnimals.values()) {
+                    crawledSize += animals.size();
+                }
+                log.info("크롤링된 데이터 개수: {}", crawledSize);
+
+                for (List<CrawlAnimal> animals : allCrawledAnimals.values()) {
+                    for(CrawlAnimal animal : animals) {
+                        animalRepository.insertCrawlAnimal(category, animal);
+                    }
                 }
 
                 executor.shutdown();
@@ -162,7 +169,6 @@ class WebCrawlingServiceTests {
         //given
         BlockingQueue<int[]> taskQueue = createTaskQueue(11);
 
-        log.info(Arrays.deepToString(taskQueue.toArray()));
         int i = 0;
         while(!taskQueue.isEmpty()) {
             int[] task = taskQueue.poll();
@@ -175,97 +181,6 @@ class WebCrawlingServiceTests {
 
     }
 
-    @Test
-    public void stopCrawlTest() throws Exception{
-        List<CrawlAnimal> data = new ArrayList<>();
-
-        // 테스트 데이터 생성 (11페이지, 각 페이지당 30개 데이터)
-        for (int i = 0; i < 11; i++) {
-            for (int j = 0; j < 30; j++) {
-                CrawlAnimal animal = new CrawlAnimal();
-                animal.setPhoneNumber("PHONE_NUMBER"); animal.setTitle("TITLE" + i + " " + j); animal.setGratuity("GRATUITY");
-                animal.setDetails("DETAILS"); animal.setGender("GENDER"); animal.setAddress("ADDRESS");
-                animal.setDate("DATE"); animal.setImgURL("URL");
-                data.add(animal);
-            }
-        }
-        // 최신 데이터 추가 (중지 조건 테스트)
-        CrawlAnimal crawlAnimal = new CrawlAnimal();
-        crawlAnimal.setPhoneNumber("PHONE_NUMBER"); crawlAnimal.setTitle("TITLE"); crawlAnimal.setGratuity("GRATUITY");
-        crawlAnimal.setDetails("DETAILS"); crawlAnimal.setGender("GENDER"); crawlAnimal.setAddress("ADDRESS");
-        crawlAnimal.setDate("DATE"); crawlAnimal.setImgURL("URL");
-        data.add(crawlAnimal);
-
-        // 중지 조건 이후로 이 값이 추가 안됐는지 체크용
-        CrawlAnimal failAnimal = new CrawlAnimal();
-        failAnimal.setPhoneNumber("PHONE_NUMBER"); failAnimal.setTitle("FAIL"); failAnimal.setGratuity("GRATUITY");
-        failAnimal.setDetails("DETAILS"); failAnimal.setGender("GENDER"); failAnimal.setAddress("ADDRESS");
-        failAnimal.setDate("DATE"); failAnimal.setImgURL("URL");
-        data.add(failAnimal);
-
-        ExecutorService executor = Executors.newFixedThreadPool(MAX_THREAD_POOL);
-        List<Future<List<CrawlAnimal>>> futures = new ArrayList<>();
-
-        CrawlAnimal latestAnimal = new CrawlAnimal();
-        latestAnimal.setPhoneNumber("PHONE_NUMBER"); latestAnimal.setTitle("TITLE"); latestAnimal.setGratuity("GRATUITY");
-        latestAnimal.setDetails("DETAILS"); latestAnimal.setGender("GENDER"); latestAnimal.setAddress("ADDRESS");
-        latestAnimal.setDate("DATE"); latestAnimal.setImgURL("URL");
-
-        if(crawlAnimal != latestAnimal) {
-            log.info("다른 인스턴스임");
-        }
-        if( crawlAnimal.equals(latestAnimal)) {
-            log.info("값이 같음");
-        }
-
-        int diff_page = 11;
-        transactionTemplate.execute(status -> {
-            try {
-                BlockingQueue<int[]> taskQueue = createTaskQueue(diff_page);
-                log.info("Task Queue: {}", Arrays.deepToString(taskQueue.toArray()));
-                for (int i = 0; i < MAX_THREAD_POOL; i++) {
-                    futures.add(executor.submit(new CrawlerThreadTest(taskQueue, latestAnimal, data)));
-                }
-
-                // 실시간 모니터링 및 결과 수집
-                List<CrawlAnimal> allCrawledAnimals = new ArrayList<>();
-                while (!futures.isEmpty()) {
-                    Iterator<Future<List<CrawlAnimal>>> iterator = futures.iterator();
-                    while (iterator.hasNext()) {
-                        Future<List<CrawlAnimal>> future = iterator.next();
-                        if (future.isDone()) {
-                            try {
-                                allCrawledAnimals.addAll(future.get());
-                                iterator.remove(); // 완료된 작업 제거
-                            } catch (InterruptedException | ExecutionException e) {
-                                log.error("크롤링 작업 중 오류 발생: {}", e.getMessage());
-                                executor.shutdownNow(); // 즉시 중단
-                                throw new RuntimeException("크롤링 실패로 작업 중단", e);
-                            }
-                        }
-                    }
-                    Thread.sleep(2000); // 1초마다 체크
-                    log.info("진행 중... 남은 작업: {}, 큐 크기: {}", futures.size(), taskQueue.size());
-                }
-
-                // DB 저장
-                log.info("크롤링된 데이터 개수: {}", allCrawledAnimals.size());
-                for (CrawlAnimal animal : allCrawledAnimals) {
-                    log.info(animal.toString());
-                }
-
-                executor.shutdown();
-                executor.awaitTermination(1, TimeUnit.MINUTES); // 정리 대기
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            return null;
-        });
-
-
-
-    }
 
     private int getLastPage(List<WebElement> elements) {
         int LAST_PAGE = 0;
@@ -296,11 +211,12 @@ class WebCrawlingServiceTests {
         int PAGE_GROUP_SIZE = 10;
         int tasks = diff_page / PAGE_GROUP_SIZE + 1;
 
+        log.info("tasks: {}", tasks);
         for(int i = 0; i < tasks; i++) {
             int startPage = i * PAGE_GROUP_SIZE + 1;
             int endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, diff_page + 1);
 
-            int[] task = new int[]{startPage, endPage};
+            int[] task = {startPage, endPage};
 
             taskQueue.put(task);
         }

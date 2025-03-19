@@ -58,9 +58,12 @@
 .progress-bar {
     background-color: #e0e0e0;
     border-radius: 5px;
-    display: none; /* 기본적으로 숨김 */
     position: relative;
     overflow: hidden;
+
+    display: none; /* 기본적으로 숨김 */
+    justify-content: center;
+    align-items: center;
 }
 
 .progress-bar-content {
@@ -69,9 +72,9 @@
     position: absolute;
     top: 0;
     left: 0;
+
     display: flex;
-    align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .progress-bar-fill {
@@ -103,11 +106,6 @@
     border-top: 3px solid #ffffff;
     border-radius: 50%;
     animation: spin 1s ease-in infinite;
-
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 @keyframes wave {
@@ -301,4 +299,8 @@
         opacity: 0;
         transform: scale3d(1, 1, 1);
     }
+}
+
+.animal {
+    cursor: pointer;
 }

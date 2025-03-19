@@ -20,7 +20,7 @@ progressBar.style.height = `${syncBtn.offsetHeight}px`;
 const isRunning = syncBtn.getAttribute("data-running") === "true";
 if (isRunning) {
     syncBtn.classList.add("hidden");
-    progressBar.style.display = "block";
+    progressBar.style.display = "flex";
     progressSpinner.style.display = "block";
     progressContent.classList.add("hidden");
 } else {
@@ -36,9 +36,6 @@ stompClient.connect({}, function() {
         const data = JSON.parse(message.body);
         const { keyword, progress, isCompleted } = data;
 
-        syncBtn.classList.add("hidden");
-        progressBar.style.display = "block";
-
         progressSpinner.style.display = "none";
         progressContent.classList.remove("hidden");
 
@@ -53,7 +50,7 @@ stompClient.connect({}, function() {
 
 syncBtn.addEventListener("click", () => {
     syncBtn.classList.add("hidden");
-    progressBar.style.display = "block";
+    progressBar.style.display = "flex";
     progressSpinner.style.display = "block";
     progressContent.classList.add("hidden");
 

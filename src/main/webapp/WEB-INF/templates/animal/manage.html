@@ -17,7 +17,6 @@
             <h1> 실종동물 목록 </h1>
             <div class="animal-update">
                 <button class="animal-syncBtn" th:attr="data-running=${running}">데이터 갱신</button>
-                <!-- 크롤링 중에서는 spinner가 있는 것을 여기다가 백그라운드로 넣는 느낌? 으로 구현하면 될 듯 -->
                 <div class="progress-bar">
                     <div class="loading-spinner"></div>
                     <div class="progress-bar-content hidden">
@@ -34,28 +33,28 @@
                 <div class="animal-title dog">강아지</div>
                 <div class="animal-list">
                     <div class="animal-preview" th:each="dog :${dog_preview}">
-                        <div class="animal" th:text="${dog.title}">강아지</div>
+                        <div class="animal" th:text="${dog.title}" th:onclick="|location.href='@{/animal/details?category=dog&id={id}(id=${dog.id})}'|">강아지</div>
                     </div>
                 </div>
-                <button class="animal-more"> 더보기 </button>
+                <button class="animal-more" th:onclick="|location.href='@{/animal/more?category=dog}'|"> 더보기 </button>
             </div>
             <div class="animal-box">
                 <div class="animal-title cat">고양이</div>
                 <div class="animal-list">
                     <div class="animal-preview" th:each="cat : ${cat_preview}">
-                        <div class="animal" th:text="${cat.title}">고양이</div>
+                        <div class="animal" th:text="${cat.title}" th:onclick="|location.href='@{/animal/details?category=cat&id={id}(id=${cat.id})}'|">고양이</div>
                     </div>
                 </div>
-                <button class="animal-more"> 더보기 </button>
+                <button class="animal-more" th:onclick="|location.href='@{/animal/more?category=cat}'|"> 더보기 </button>
             </div>
             <div class="animal-box">
                 <div class="animal-title etc">기타 반려동물</div>
                 <div class="animal-list">
                     <div class="animal-preview" th:each="etc : ${etc_preview}">
-                        <div class="animal" th:text="${etc.title}">반려동물</div>
+                        <div class="animal" th:text="${etc.title}" th:onclick="|location.href='@{/animal/details?category=etc&id={id}(id=${etc.id})}'|">반려동물</div>
                     </div>
                 </div>
-                <button class="animal-more"> 더보기 </button>
+                <button class="animal-more" th:onclick="|location.href='@{/animal/more?category=etc}'|"> 더보기 </button>
             </div>
         </div>
     </div>

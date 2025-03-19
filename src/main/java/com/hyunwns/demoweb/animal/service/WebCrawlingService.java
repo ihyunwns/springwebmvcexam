@@ -73,7 +73,6 @@ public class WebCrawlingService {
                             int last_page;
                             int diff_page;
                             Optional<CrawlStatus> crawlStatus = animalRepository.getCrawlStatus(keyword);
-                            // TODO: 마지막 업데이트 최신화, 동기화 완료 후 버튼 CSS 수정 (비동기로 할까?),
                             if (crawlStatus.isPresent()) {
                                 last_page = crawlStatus.get().getLast_page();
                                 diff_page = LAST_PAGE - last_page;
@@ -136,6 +135,7 @@ public class WebCrawlingService {
                                 }
                             }
 
+                            animalRepository.updateCrawlStatus(category, LAST_PAGE);
                             log.info("키워드 {} 동기화 완료", keyword);
 
                         }

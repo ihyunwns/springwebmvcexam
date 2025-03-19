@@ -59,6 +59,18 @@ public class AbandonedAnimalsController {
         return "animal/manage";
     }
 
+    @GetMapping("/details")
+    public void detailsCrawledAnimal(@RequestParam("category") String category, @RequestParam("id") int id, Model model) throws SQLException {
+
+        log.info("details 클릭, {}", id);
+    }
+
+    @GetMapping("/more")
+    public String moreAnimals(@RequestParam("category") String category, Model model) throws SQLException {
+
+        return "animal/more";
+    }
+
     @PostMapping("/syncData")
     public ResponseEntity<String> requestCrawling(@RequestBody String crawlData) throws SQLException {
 

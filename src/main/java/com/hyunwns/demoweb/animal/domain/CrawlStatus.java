@@ -14,10 +14,6 @@ public class CrawlStatus {
     // PRIMARY KEY
     private String category;
 
-    private int last_processed_page;
-
-    private int last_processed_post;
-
     private int last_page;
 
     private LocalDateTime updated_at;

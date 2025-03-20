@@ -7,10 +7,15 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <link href="../../../static/css/main.css" rel="stylesheet"/>
+<script th:src="'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${apiKey} + '&libraries=services,clusterer,drawing'"></script>
 
 <body>
     <div th:replace="~{fragments/navigation :: bar}"></div>
     <a th:if="${role.equals('ROLE_ADMIN')}" href="/animal/manage"> manage로 이동하기</a>
+
+    <div id="map" style="width: 500px; height: 400px"></div>
+
+    <button id="move_current_position"> 마커 표시 </button>
 
     지도 위치 기반 유기 동물 찾기 &nbsp
 
@@ -21,5 +26,6 @@
     근처 동물 병원, 동물보호센터
 
 </body>
+<script src="../../../static/js/animal/home.js"></script>
 
 </html>

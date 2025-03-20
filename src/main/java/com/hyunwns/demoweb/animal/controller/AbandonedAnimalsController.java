@@ -1,5 +1,6 @@
 package com.hyunwns.demoweb.animal.controller;
 
+import com.hyunwns.demoweb.animal.config.KakaoMapConfig;
 import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.service.WebCrawlingService;
 import com.hyunwns.demoweb.common.util.SecurityUtils;
@@ -32,6 +33,8 @@ public class AbandonedAnimalsController {
     @GetMapping("/home")
     public String animal(@RequestParam(name = "keyword", required = false) String keyword, Model model) throws SQLException {
         securityUtils.addAttributeUserInfo(model);
+
+        model.addAttribute("apiKey", KakaoMapConfig.getKakaoApiKey());
 
         return "animal/home";
     }

@@ -67,7 +67,8 @@ public class H2nJDBCCrawlAnimalRepository implements CrawlAnimalRepository {
         Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, category);
 
         if (count != null && count > 0) {
-            String updateSql = "UPDATE crawl_status SET LAST_PAGE = ? WHERE CATEGORY = ?";
+            String updateSql = "UPDATE crawl_status SET LAST_PAGE = ?, UPDATED_AT = CURRENT_TIMESTAMP WHERE CATEGORY = ?";
+
             jdbcTemplate.update(updateSql, last_page, category);
         } else {
             String insertSql = "INSERT INTO crawl_status (CATEGORY, LAST_PAGE) VALUES (?, ?)";

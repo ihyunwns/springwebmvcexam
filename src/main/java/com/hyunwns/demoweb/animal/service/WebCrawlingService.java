@@ -72,7 +72,7 @@ public class WebCrawlingService {
 
                             int last_page;
                             int diff_page;
-                            Optional<CrawlStatus> crawlStatus = animalRepository.getCrawlStatus(keyword);
+                            Optional<CrawlStatus> crawlStatus = animalRepository.getCrawlStatus(category);
                             if (crawlStatus.isPresent()) {
                                 last_page = crawlStatus.get().getLast_page();
                                 diff_page = LAST_PAGE - last_page;

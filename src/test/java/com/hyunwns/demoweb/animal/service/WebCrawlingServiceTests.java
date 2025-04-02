@@ -4,6 +4,7 @@ import com.hyunwns.demoweb.animal.TestConfig;
 import com.hyunwns.demoweb.animal.domain.AnimalType;
 import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.domain.CrawlStatus;
+import com.hyunwns.demoweb.animal.exception.CrawlingException;
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -181,6 +183,50 @@ class WebCrawlingServiceTests {
 
     }
 
+    //43page 5번째와 같은 경우 어떻게 가져올 지 사진이 없는 경우 b 태그가 밀리는 것 같음
+    @Test
+    public void 특정_게시물_크롤링_테스트() throws Exception{
+        String page = "&page=43";
+        int post = 20;
+        String keyword = "강아지";
+
+        //given
+        WebDriver driver = new ChromeDriver(chromeOptions);
+
+        String url = BASE_CRAWLING_URL + keyword + page;
+        driver.get(url);
+        String originalWindow = driver.getWindowHandle();
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        List<WebElement> table = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//table[@background='../images/board/main-search-img-frame-01.gif']//tr[2]/td//font[normalize-space(text())]")));
+
+        table.get(post - 1).click();
+
+        wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+        Set<String> windowHandles = driver.getWindowHandles();
+        windowHandles.remove(originalWindow);
+        if (!windowHandles.isEmpty()) {
+            String newWindowHandle = windowHandles.iterator().next();
+            driver.switchTo().window(newWindowHandle);
+        } else {
+            throw new CrawlingException();
+        }
+
+        //List<WebElement> imgElement = webDriver.findElements(By.xpath("//img[contains(@src, '/pet_care/photo/')]"));
+        List<WebElement> imgElement = new ArrayList<>();
+        try {
+            imgElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//img[contains(@src, '/pet_care/photo/')]")));
+        } catch (TimeoutException e) {
+            e.getMessage();
+        }
+
+        List<WebElement> infoElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//b")));
+        Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
+
+        for(String key : crawlingData.keySet()) {
+            System.out.println(key + ": " + crawlingData.get(key));
+        }
+    }
 
     private int getLastPage(List<WebElement> elements) {
         int LAST_PAGE = 0;
@@ -221,6 +267,42 @@ class WebCrawlingServiceTests {
             taskQueue.put(task);
         }
         return taskQueue;
+    }
+
+    private Map<String, String> getStringMap(List<WebElement> infoElement, List<WebElement> imgElement) {
+        Map<String, String> crawlingData = new HashMap<>();
+
+        if (!imgElement.isEmpty()) {
+            crawlingData.put("imgURL", imgElement.get(0).getDomAttribute("src"));
+        } else {
+            crawlingData.put("imgURL", "Not Found");
+        }
+
+        if (infoElement.size() == 7) {
+            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+            crawlingData.put("address", infoElement.get(1).getText());
+            crawlingData.put("date", infoElement.get(2).getText());
+            crawlingData.put("title", infoElement.get(3).getText());
+            crawlingData.put("gender", infoElement.get(5).getText());
+            crawlingData.put("details", infoElement.get(6).getText());
+        } else if (infoElement.size() == 8) {
+            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+            crawlingData.put("gratuity", infoElement.get(1).getText().split(":")[1].trim());
+            crawlingData.put("address", infoElement.get(2).getText());
+            crawlingData.put("date", infoElement.get(3).getText());
+            crawlingData.put("title", infoElement.get(4).getText());
+            crawlingData.put("gender", infoElement.get(6).getText());
+            crawlingData.put("details", infoElement.get(7).getText());
+        } else if (infoElement.size() == 9) {
+            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+            crawlingData.put("gratuity", infoElement.get(2).getText().split(":")[1].trim());
+            crawlingData.put("address", infoElement.get(3).getText());
+            crawlingData.put("date", infoElement.get(4).getText());
+            crawlingData.put("title", infoElement.get(5).getText());
+            crawlingData.put("gender", infoElement.get(7).getText());
+            crawlingData.put("details", infoElement.get(8).getText());
+        }
+        return crawlingData;
     }
 
 }

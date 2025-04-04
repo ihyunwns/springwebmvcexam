@@ -23,8 +23,15 @@ async function initMap() {
 		var map = new kakao.maps.Map(mapContainer, mapOption);
 		var ps = new kakao.maps.services.Places();
 
-		ps.keywordSearch('파담로 113', (data, status, pagination) => placesSearchCB(data, status, pagination, map));
+		ps.keywordSearch('롯데월드', (data, status, pagination) => placesSearchCB(data, status, pagination, map));
 
+        // 우선 home 경로 접속 시, 접속자의 위도, 경도를 바탕으로 1km 이내에 있는 실종 동물 위치를 가져와야 하는데 이떄 실종동물들의 위치는 주소로 등록되어 있기 때문에 바로 조회가 불가능
+        // 그렇기 떄문에 주소를 위도 경도롤 바꾸어주는 geocoding API 필요, 전부 다 순회하지 않고 도별로 카테고리 구분해서 가져오는게 좋을 듯
+        // 그럼 미리 테이블을 나눠놔야 겠네
+
+        // 경기, 서울, 경북, 경남, 등 이런식으로 테이블을 나누어서 저장해두고
+        // 현재 위도 경도를 바탕으로 주소 변환 후 주소에 해당하는 테이블에서 하나씩 위도 경도 변환 후 가져온다? 혹은 저장할 때 위도 경도를 저장한다..?
+        // 후자가 나은 것 같기는 한데 우선 테이블을 따로 뺴서
 
 	} catch (error){
 		console.error("위치 정보를 가져올 수 없습니다", error);

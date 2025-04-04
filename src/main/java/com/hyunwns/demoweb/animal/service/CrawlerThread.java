@@ -75,7 +75,7 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
                         try {
                             webDriver.get(url);
 
-                            WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(20));
+                            WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
                             List<WebElement> table = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//table[@background='../images/board/main-search-img-frame-01.gif']//tr[2]/td//font[normalize-space(text())]")));
                             if (!table.isEmpty()) {
                                 String originalWindow = webDriver.getWindowHandle();
@@ -190,26 +190,42 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
 
         if (!imgElement.isEmpty()) {
             crawlingData.put("imgURL", imgElement.get(0).getDomAttribute("src"));
+            if (infoElement.size() == 7) {
+                crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+                crawlingData.put("address", infoElement.get(1).getText());
+                crawlingData.put("date", infoElement.get(2).getText());
+                crawlingData.put("title", infoElement.get(3).getText());
+                crawlingData.put("gender", infoElement.get(5).getText());
+                crawlingData.put("details", infoElement.get(6).getText());
+            } else if (infoElement.size() == 8) {
+                crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+                crawlingData.put("gratuity", infoElement.get(1).getText().split(":")[1].trim());
+                crawlingData.put("address", infoElement.get(2).getText());
+                crawlingData.put("date", infoElement.get(3).getText());
+                crawlingData.put("title", infoElement.get(4).getText());
+                crawlingData.put("gender", infoElement.get(6).getText());
+                crawlingData.put("details", infoElement.get(7).getText());
+            }
         } else {
             crawlingData.put("imgURL", "Not Found");
+            if (infoElement.size() == 8) {
+                crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+                crawlingData.put("address", infoElement.get(2).getText());
+                crawlingData.put("date", infoElement.get(3).getText());
+                crawlingData.put("title", infoElement.get(4).getText());
+                crawlingData.put("gender", infoElement.get(6).getText());
+                crawlingData.put("details", infoElement.get(7).getText());
+            } else if (infoElement.size() == 9) {
+                crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+                crawlingData.put("gratuity", infoElement.get(2).getText().split(":")[1].trim());
+                crawlingData.put("address", infoElement.get(3).getText());
+                crawlingData.put("date", infoElement.get(4).getText());
+                crawlingData.put("title", infoElement.get(5).getText());
+                crawlingData.put("gender", infoElement.get(7).getText());
+                crawlingData.put("details", infoElement.get(8).getText());
+            }
         }
-
-        if (infoElement.size() == 7) {
-            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
-            crawlingData.put("address", infoElement.get(1).getText());
-            crawlingData.put("date", infoElement.get(2).getText());
-            crawlingData.put("title", infoElement.get(3).getText());
-            crawlingData.put("gender", infoElement.get(5).getText());
-            crawlingData.put("details", infoElement.get(6).getText());
-        } else {
-            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
-            crawlingData.put("gratuity", infoElement.get(1).getText());
-            crawlingData.put("address", infoElement.get(2).getText());
-            crawlingData.put("date", infoElement.get(3).getText());
-            crawlingData.put("title", infoElement.get(4).getText());
-            crawlingData.put("gender", infoElement.get(6).getText());
-            crawlingData.put("details", infoElement.get(7).getText());
-        }
+        
         return crawlingData;
     }
 }

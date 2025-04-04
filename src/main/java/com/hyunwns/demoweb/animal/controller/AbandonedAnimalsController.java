@@ -1,25 +1,18 @@
 package com.hyunwns.demoweb.animal.controller;
 
 import com.hyunwns.demoweb.animal.config.KakaoMapConfig;
-import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.service.WebCrawlingService;
 import com.hyunwns.demoweb.common.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,7 +27,7 @@ public class AbandonedAnimalsController {
     public String animal(@RequestParam(name = "keyword", required = false) String keyword, Model model) throws SQLException {
         securityUtils.addAttributeUserInfo(model);
 
-        model.addAttribute("apiKey", KakaoMapConfig.getKakaoApiKey());
+        model.addAttribute("apiKey", KakaoMapConfig.getKakaoJsApiKey());
 
         return "animal/home";
     }

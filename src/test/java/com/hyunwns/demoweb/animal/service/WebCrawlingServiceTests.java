@@ -1,9 +1,12 @@
 package com.hyunwns.demoweb.animal.service;
 
+import com.google.gson.*;
 import com.hyunwns.demoweb.animal.TestConfig;
+import com.hyunwns.demoweb.animal.config.KakaoMapConfig;
 import com.hyunwns.demoweb.animal.domain.AnimalType;
 import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.domain.CrawlStatus;
+import com.hyunwns.demoweb.animal.domain.LocationInfo;
 import com.hyunwns.demoweb.animal.exception.CrawlingException;
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -24,6 +27,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
@@ -43,6 +52,9 @@ class WebCrawlingServiceTests {
     private CrawlAnimalRepository animalRepository;
     @Autowired
     private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private KakaoMapService kakaoMapService;
 
     @BeforeEach
     void setupClass() {
@@ -183,7 +195,6 @@ class WebCrawlingServiceTests {
 
     }
 
-    //43page 5번째와 같은 경우 어떻게 가져올 지 사진이 없는 경우 b 태그가 밀리는 것 같음
     @Test
     public void 특정_게시물_크롤링_테스트() throws Exception{
         String page = "&page=43";
@@ -213,6 +224,7 @@ class WebCrawlingServiceTests {
         }
 
         //List<WebElement> imgElement = webDriver.findElements(By.xpath("//img[contains(@src, '/pet_care/photo/')]"));
+
         List<WebElement> imgElement = new ArrayList<>();
         try {
             imgElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//img[contains(@src, '/pet_care/photo/')]")));
@@ -223,9 +235,22 @@ class WebCrawlingServiceTests {
         List<WebElement> infoElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//b")));
         Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
 
+        System.out.println(infoElement.size());
         for(String key : crawlingData.keySet()) {
             System.out.println(key + ": " + crawlingData.get(key));
         }
+    }
+
+    @Test
+    public void kakao_map_api_test() throws Exception{
+        //given
+        String address = "파담로 113";
+
+        LocationInfo locationInfo = kakaoMapService.getLocationInfo(address);
+
+        System.out.println(locationInfo);
+
+
     }
 
     private int getLastPage(List<WebElement> elements) {
@@ -274,35 +299,43 @@ class WebCrawlingServiceTests {
 
         if (!imgElement.isEmpty()) {
             crawlingData.put("imgURL", imgElement.get(0).getDomAttribute("src"));
+            if (infoElement.size() == 7) {
+                crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+                crawlingData.put("address", infoElement.get(1).getText());
+                crawlingData.put("date", infoElement.get(2).getText());
+                crawlingData.put("title", infoElement.get(3).getText());
+                crawlingData.put("gender", infoElement.get(5).getText());
+                crawlingData.put("details", infoElement.get(6).getText());
+            } else if (infoElement.size() == 8) {
+                crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+                crawlingData.put("gratuity", infoElement.get(1).getText().split(":")[1].trim());
+                crawlingData.put("address", infoElement.get(2).getText());
+                crawlingData.put("date", infoElement.get(3).getText());
+                crawlingData.put("title", infoElement.get(4).getText());
+                crawlingData.put("gender", infoElement.get(6).getText());
+                crawlingData.put("details", infoElement.get(7).getText());
+            }
         } else {
             crawlingData.put("imgURL", "Not Found");
+            if (infoElement.size() == 8) {
+                crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+                crawlingData.put("address", infoElement.get(2).getText());
+                crawlingData.put("date", infoElement.get(3).getText());
+                crawlingData.put("title", infoElement.get(4).getText());
+                crawlingData.put("gender", infoElement.get(6).getText());
+                crawlingData.put("details", infoElement.get(7).getText());
+            } else if (infoElement.size() == 9) {
+                crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
+                crawlingData.put("gratuity", infoElement.get(2).getText().split(":")[1].trim());
+                crawlingData.put("address", infoElement.get(3).getText());
+                crawlingData.put("date", infoElement.get(4).getText());
+                crawlingData.put("title", infoElement.get(5).getText());
+                crawlingData.put("gender", infoElement.get(7).getText());
+                crawlingData.put("details", infoElement.get(8).getText());
+            }
         }
 
-        if (infoElement.size() == 7) {
-            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
-            crawlingData.put("address", infoElement.get(1).getText());
-            crawlingData.put("date", infoElement.get(2).getText());
-            crawlingData.put("title", infoElement.get(3).getText());
-            crawlingData.put("gender", infoElement.get(5).getText());
-            crawlingData.put("details", infoElement.get(6).getText());
-        } else if (infoElement.size() == 8) {
-            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
-            crawlingData.put("gratuity", infoElement.get(1).getText().split(":")[1].trim());
-            crawlingData.put("address", infoElement.get(2).getText());
-            crawlingData.put("date", infoElement.get(3).getText());
-            crawlingData.put("title", infoElement.get(4).getText());
-            crawlingData.put("gender", infoElement.get(6).getText());
-            crawlingData.put("details", infoElement.get(7).getText());
-        } else if (infoElement.size() == 9) {
-            crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
-            crawlingData.put("gratuity", infoElement.get(2).getText().split(":")[1].trim());
-            crawlingData.put("address", infoElement.get(3).getText());
-            crawlingData.put("date", infoElement.get(4).getText());
-            crawlingData.put("title", infoElement.get(5).getText());
-            crawlingData.put("gender", infoElement.get(7).getText());
-            crawlingData.put("details", infoElement.get(8).getText());
-        }
         return crawlingData;
-    }
 
+        }
 }

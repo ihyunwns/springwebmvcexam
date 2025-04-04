@@ -22,7 +22,19 @@ public class KakaoMapConfig {
         }
     }
 
-    public static String getKakaoApiKey() {
-        return properties.getProperty("kakao.api.key");
+    public static String getKakaoJsApiKey() {
+        return properties.getProperty("kakao.js.api.key");
+    }
+
+    public static String getKakaoRestApi() {
+        return properties.getProperty("kakao.rest.api.key");
+    }
+
+    public static String getKakaoApiAddress() {
+        return properties.getProperty("kakao.api.address");
+    }
+
+    public static String getKakaoApiKeyword() {
+        return properties.getProperty("kakao.api.keyword");
     }
 }

@@ -2,6 +2,7 @@ package com.hyunwns.demoweb.animal;
 
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import com.hyunwns.demoweb.animal.repository.H2nJDBCCrawlAnimalRepository;
+import com.hyunwns.demoweb.animal.service.KakaoMapService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,6 +41,11 @@ public class TestConfig {
     @Bean
     public TransactionTemplate transactionTemplate(DataSource dataSource) {
         return new TransactionTemplate(new DataSourceTransactionManager(dataSource));
+    }
+
+    @Bean
+    public KakaoMapService kakaoMapService() {
+        return new KakaoMapService();
     }
 
 

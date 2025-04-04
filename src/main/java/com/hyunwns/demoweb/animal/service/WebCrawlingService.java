@@ -128,6 +128,10 @@ public class WebCrawlingService {
                             }
                             log.info("크롤링된 데이터 개수: {}", crawledSize);
 
+                            // TODO: KakaoMapService로 주소 기반 위도 경도 반환해서 DB에 반영
+                            // 테이블을 Animal 테이블로 나누고 type으로 dog, cat, etc로 나누자
+                            // 그 후 haversine formula 사용
+
                             for (List<CrawlAnimal> animals : crawledAnimals.values()) {
                                 Collections.reverse(animals);
                                 for(CrawlAnimal animal : animals) {

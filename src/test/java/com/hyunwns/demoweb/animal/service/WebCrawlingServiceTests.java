@@ -23,22 +23,20 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+
+import org.springframework.http.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import static com.hyunwns.demoweb.animal.service.WebCrawlingService.BASE_CRAWLING_URL;
-import static org.springframework.util.ClassUtils.isPresent;
+
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
@@ -55,6 +53,8 @@ class WebCrawlingServiceTests {
 
     @Autowired
     private KakaoMapService kakaoMapService;
+    @Autowired
+    private CrawlAnimalRepository crawlAnimalRepository;
 
     @BeforeEach
     void setupClass() {
@@ -68,93 +68,6 @@ class WebCrawlingServiceTests {
         chromeOptions.setPageLoadTimeout(Duration.ofMinutes(5)); // 페이지 로드 타임아웃 5분
         chromeOptions.setScriptTimeout(Duration.ofSeconds(60));  // 스크립트 타임아웃 60초
 
-    }
-
-    @Test
-    void syncAnimalData() throws SQLException {
-        String keyword = "강아지";
-        String category = AnimalType.fromKeyword(keyword).name();
-
-        WebDriver driver = new ChromeDriver(chromeOptions);
-        ExecutorService executor = Executors.newFixedThreadPool(MAX_THREAD_POOL);
-        List<Future<Map<Integer, List<CrawlAnimal>>>> futures = new ArrayList<>();
-
-        Optional<CrawlAnimal> latestAnimal = Optional.ofNullable(animalRepository.findLatestAnimal(keyword));
-        log.info("카테고리 {}의 최신 데이터: {}", category, latestAnimal);
-
-        transactionTemplate.execute(status -> {
-            try {
-                String url = BASE_CRAWLING_URL + keyword + "&page=1";
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-                driver.get(url);
-                List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//img[@src='../images/arrow-bb.gif']/..")));
-                int LAST_PAGE = getLastPage(elements);
-
-                int last_page;
-                int diff_page;
-                Optional<CrawlStatus> crawlStatus = animalRepository.getCrawlStatus(keyword);
-                if (crawlStatus.isPresent()) {
-                    last_page = crawlStatus.get().getLast_page();
-                    diff_page = LAST_PAGE - last_page;
-                } else {
-                    log.info("INSERT 시도: category={}, last_page={}", category, LAST_PAGE);
-                    animalRepository.updateCrawlStatus(keyword, LAST_PAGE);
-                    diff_page = LAST_PAGE - 1;
-                }
-
-                BlockingQueue<int[]> taskQueue = createTaskQueue(diff_page);
-                log.info("Task Queue: {}", Arrays.deepToString(taskQueue.toArray()));
-                for (int i = 0; i < MAX_THREAD_POOL; i++) {
-                    futures.add(executor.submit(new CrawlerThread(chromeOptions, taskQueue, keyword, latestAnimal.orElse(null))));
-                }
-
-                // 실시간 모니터링 및 결과 수집
-                Map<Integer, List<CrawlAnimal>> allCrawledAnimals = new TreeMap<>(Comparator.reverseOrder());
-                while (!futures.isEmpty()) {
-                    Iterator<Future<Map<Integer, List<CrawlAnimal>>>> iterator = futures.iterator();
-                    while (iterator.hasNext()) {
-                        Future<Map<Integer, List<CrawlAnimal>>> future = iterator.next();
-                        if (future.isDone()) {
-                            try {
-                                allCrawledAnimals.putAll(future.get());
-                                iterator.remove(); // 완료된 작업 제거
-                            } catch (InterruptedException | ExecutionException e) {
-                                log.error("크롤링 작업 중 오류 발생: {}", e.getMessage());
-                                executor.shutdownNow(); // 즉시 중단
-                                throw new RuntimeException("크롤링 실패로 작업 중단", e);
-                            }
-                        }
-                    }
-                    Thread.sleep(2000); // 2초마다 체크
-                    log.info("진행 중... 남은 작업: {}, 큐 크기: {}", futures.size(), taskQueue.size());
-                }
-
-                // DB 저장
-                int crawledSize = 0;
-                for (List<CrawlAnimal> animals : allCrawledAnimals.values()) {
-                    crawledSize += animals.size();
-                }
-                log.info("크롤링된 데이터 개수: {}", crawledSize);
-
-                for (List<CrawlAnimal> animals : allCrawledAnimals.values()) {
-                    for(CrawlAnimal animal : animals) {
-                        animalRepository.insertCrawlAnimal(category, animal);
-                    }
-                }
-
-                executor.shutdown();
-                executor.awaitTermination(1, TimeUnit.MINUTES); // 정리 대기
-            } catch (Exception e) {
-                log.error("트랜잭션 내 오류 발생: {}", e.getMessage());
-                executor.shutdownNow();
-                throw new RuntimeException("크롤링 중단 및 롤백", e);
-            } finally {
-                driver.quit();
-            }
-            return null;
-        });
-
-        log.info("키워드 {} 동기화 완료", keyword);
     }
 
     @Test
@@ -243,13 +156,23 @@ class WebCrawlingServiceTests {
 
     @Test
     public void kakao_map_api_test() throws Exception{
-        //given
-        String address = "파담로 113";
 
-        LocationInfo locationInfo = kakaoMapService.getLocationInfo(address);
+        List<CrawlAnimal> dogs = crawlAnimalRepository.getCrawlAnimals("dog", 5);
+
+        for(CrawlAnimal animal : dogs) {
+            LocationInfo locationInfo = kakaoMapService.getLocationInfo(animal.getAddress());
+
+            System.out.println(locationInfo);
+        }
+
+    }
+
+    @Test
+    public void kakao_map_api_test2() throws Exception{
+
+        LocationInfo locationInfo = kakaoMapService.getLocationInfo("롯데월드");
 
         System.out.println(locationInfo);
-
 
     }
 

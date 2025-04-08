@@ -10,15 +10,15 @@ import java.util.Optional;
 
 public interface CrawlAnimalRepository {
 
-    CrawlAnimal findLatestAnimal(String category) throws SQLException;
+    void insertCrawlAnimal(String type, CrawlAnimal crawlAnimal) throws SQLException;
 
-    void insertCrawlAnimal(String keyword, CrawlAnimal crawlAnimal) throws SQLException;
+    Optional<CrawlStatus> getCrawlStatus(String type) throws SQLException;
 
-    Optional<CrawlStatus> getCrawlStatus(String category) throws SQLException;
+    void updateCrawlStatus(String type, int last_page) throws SQLException;
 
-    void updateCrawlStatus(String category, int last_page) throws SQLException;
+    void updateLastUpdatedDate() throws SQLException;
 
     LocalDateTime getLastUpdatedDate() throws SQLException;
 
-    List<CrawlAnimal> getCrawlAnimals(String category, int count) throws SQLException;
+    List<CrawlAnimal> getCrawlAnimals(String type, int count) throws SQLException;
 }

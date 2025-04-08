@@ -4,6 +4,7 @@ import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import com.hyunwns.demoweb.animal.repository.H2nJDBCCrawlAnimalRepository;
 import com.hyunwns.demoweb.animal.service.KakaoMapService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -15,6 +16,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
+@ComponentScan(basePackages = "com.hyunwns.demoweb.animal.repository")
 public class TestConfig {
 
     @Bean
@@ -31,11 +33,6 @@ public class TestConfig {
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
-    }
-
-    @Bean
-    public CrawlAnimalRepository crawlAnimalRepository(JdbcTemplate jdbcTemplate) {
-        return new H2nJDBCCrawlAnimalRepository(jdbcTemplate);
     }
 
     @Bean

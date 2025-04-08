@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
-
 @Getter @Setter @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
 public class CrawlStatus {
@@ -15,7 +13,5 @@ public class CrawlStatus {
     private String category;
 
     private int last_page;
-
-    private LocalDateTime updated_at;
 
 }

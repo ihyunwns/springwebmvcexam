@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyunwns.demoweb.animal.domain.AnimalType;
 import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.domain.CrawlStatus;
+import com.hyunwns.demoweb.animal.domain.LocationInfo;
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ public class WebCrawlingService {
     private final TransactionTemplate transactionTemplate;
     private final ChromeOptions chromeOptions;
     private final SimpMessagingTemplate messagingTemplate;
+    private final KakaoMapService kakaoMapService;
 
     private final String[] keywords = { "강아지", "고양이", "기타 반려동물" };
     private final ObjectMapper objectMapper;
@@ -59,10 +61,11 @@ public class WebCrawlingService {
 
                     try {
                         for (String keyword : keywords) {
-                            String category = AnimalType.fromKeyword(keyword).name();
+                            String type = AnimalType.fromKeyword(keyword).name();
 
-                            Optional<CrawlAnimal> latestAnimal = Optional.ofNullable(animalRepository.findLatestAnimal(category));
-                            log.info("카테고리 {}의 최신 데이터: {}", category, latestAnimal);
+                            List<CrawlAnimal> lastAnimal = animalRepository.getCrawlAnimals(type, 1);
+                            Optional<CrawlAnimal> latestAnimal = lastAnimal.isEmpty() ? Optional.empty() : Optional.of(lastAnimal.get(0));
+                            log.info("카테고리 {}의 최신 데이터: {}", type, latestAnimal);
 
                             String url = BASE_CRAWLING_URL + keyword + "&page=1";
                             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -72,12 +75,12 @@ public class WebCrawlingService {
 
                             int last_page;
                             int diff_page;
-                            Optional<CrawlStatus> crawlStatus = animalRepository.getCrawlStatus(category);
+                            Optional<CrawlStatus> crawlStatus = animalRepository.getCrawlStatus(type);
                             if (crawlStatus.isPresent()) {
                                 last_page = crawlStatus.get().getLast_page();
                                 diff_page = LAST_PAGE - last_page;
                             } else {
-                                log.info("INSERT 시도: category={}, last_page={}", category, LAST_PAGE);
+                                log.info("INSERT 시도: type={}, last_page={}", type, LAST_PAGE);
                                 animalRepository.updateCrawlStatus(keyword, LAST_PAGE);
                                 diff_page = LAST_PAGE - 1;
                             }
@@ -129,17 +132,21 @@ public class WebCrawlingService {
                             log.info("크롤링된 데이터 개수: {}", crawledSize);
 
                             // TODO: KakaoMapService로 주소 기반 위도 경도 반환해서 DB에 반영
-                            // 테이블을 Animal 테이블로 나누고 type으로 dog, cat, etc로 나누자
+
                             // 그 후 haversine formula 사용
 
                             for (List<CrawlAnimal> animals : crawledAnimals.values()) {
                                 Collections.reverse(animals);
                                 for(CrawlAnimal animal : animals) {
-                                    animalRepository.insertCrawlAnimal(category, animal);
+                                    LocationInfo locationInfo = kakaoMapService.getLocationInfo(animal.getLost_place());
+
+                                    animal.setAddress(locationInfo.getAddress_name()); animal.setLongitude(locationInfo.getX()); animal.setLatitude(locationInfo.getY());
+
+                                    animalRepository.insertCrawlAnimal(type, animal);
                                 }
                             }
 
-                            animalRepository.updateCrawlStatus(category, LAST_PAGE);
+                            animalRepository.updateCrawlStatus(type, LAST_PAGE);
                             log.info("키워드 {} 동기화 완료", keyword);
 
                         }
@@ -161,6 +168,7 @@ public class WebCrawlingService {
                 String progressMessage = objectMapper.writeValueAsString(progressData);
                 messagingTemplate.convertAndSend("/topic/progress", progressMessage);
 
+                animalRepository.updateLastUpdatedDate();
                 log.info("모든 키워드 동기화 완료");
                 return true;
 
@@ -184,8 +192,8 @@ public class WebCrawlingService {
 
     }
 
-    public List<CrawlAnimal> getAnimalData(String category, int count) throws SQLException{
-        return animalRepository.getCrawlAnimals(category, count);
+    public List<CrawlAnimal> getAnimalData(String type, int count) throws SQLException{
+        return animalRepository.getCrawlAnimals(type, count);
     }
 
     public String getLastUpdatedDate() throws SQLException {

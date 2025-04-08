@@ -168,12 +168,21 @@ class WebCrawlingServiceTests {
     }
 
     @Test
-    public void kakao_map_api_test2() throws Exception{
+    public void crawlingTest() throws Exception{
+        //given
+        CrawlAnimal crawlAnimal = new CrawlAnimal();
 
-        LocationInfo locationInfo = kakaoMapService.getLocationInfo("롯데월드");
+        crawlAnimal.setTitle("Test"); crawlAnimal.setGender("Test"); crawlAnimal.setLost_place("제주 본인 집"); crawlAnimal.setGratuity("TEST"); crawlAnimal.setImgURL("TEST");
+        crawlAnimal.setLost_date("TEST"); crawlAnimal.setDetails("TEST"); crawlAnimal.setPhoneNumber("TEST");
 
-        System.out.println(locationInfo);
+        LocationInfo locationInfo = kakaoMapService.getLocationInfo(crawlAnimal.getLost_place());
+        crawlAnimal.setLatitude(locationInfo.getX());
+        crawlAnimal.setLongitude(locationInfo.getY());
+        crawlAnimal.setAddress(locationInfo.getAddress_name());
 
+        crawlAnimalRepository.insertCrawlAnimal("dog", crawlAnimal);
+
+        //then
     }
 
     private int getLastPage(List<WebElement> elements) {

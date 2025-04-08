@@ -129,6 +129,7 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
                                             List<WebElement> infoElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//b")));
                                             Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
                                             CrawlAnimal crawlAnimal = mapper.convertValue(crawlingData, CrawlAnimal.class);
+
                                             if (crawlAnimal.equals(latestAnimal)) {
                                                 logger.info("기존 데이터와 일치하는 항목 발견, 크롤링 중단");
                                                 webDriver.quit();
@@ -192,16 +193,16 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
             crawlingData.put("imgURL", imgElement.get(0).getDomAttribute("src"));
             if (infoElement.size() == 7) {
                 crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
-                crawlingData.put("address", infoElement.get(1).getText());
-                crawlingData.put("date", infoElement.get(2).getText());
+                crawlingData.put("lost_place", infoElement.get(1).getText());
+                crawlingData.put("lost_date", infoElement.get(2).getText());
                 crawlingData.put("title", infoElement.get(3).getText());
                 crawlingData.put("gender", infoElement.get(5).getText());
                 crawlingData.put("details", infoElement.get(6).getText());
             } else if (infoElement.size() == 8) {
                 crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
                 crawlingData.put("gratuity", infoElement.get(1).getText().split(":")[1].trim());
-                crawlingData.put("address", infoElement.get(2).getText());
-                crawlingData.put("date", infoElement.get(3).getText());
+                crawlingData.put("lost_place", infoElement.get(2).getText());
+                crawlingData.put("lost_date", infoElement.get(3).getText());
                 crawlingData.put("title", infoElement.get(4).getText());
                 crawlingData.put("gender", infoElement.get(6).getText());
                 crawlingData.put("details", infoElement.get(7).getText());
@@ -210,16 +211,16 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
             crawlingData.put("imgURL", "Not Found");
             if (infoElement.size() == 8) {
                 crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
-                crawlingData.put("address", infoElement.get(2).getText());
-                crawlingData.put("date", infoElement.get(3).getText());
+                crawlingData.put("lost_place", infoElement.get(2).getText());
+                crawlingData.put("lost_date", infoElement.get(3).getText());
                 crawlingData.put("title", infoElement.get(4).getText());
                 crawlingData.put("gender", infoElement.get(6).getText());
                 crawlingData.put("details", infoElement.get(7).getText());
             } else if (infoElement.size() == 9) {
                 crawlingData.put("phoneNumber", infoElement.get(0).getText().substring(5).replace(" ", ""));
                 crawlingData.put("gratuity", infoElement.get(2).getText().split(":")[1].trim());
-                crawlingData.put("address", infoElement.get(3).getText());
-                crawlingData.put("date", infoElement.get(4).getText());
+                crawlingData.put("lost_place", infoElement.get(3).getText());
+                crawlingData.put("lost_date", infoElement.get(4).getText());
                 crawlingData.put("title", infoElement.get(5).getText());
                 crawlingData.put("gender", infoElement.get(7).getText());
                 crawlingData.put("details", infoElement.get(8).getText());

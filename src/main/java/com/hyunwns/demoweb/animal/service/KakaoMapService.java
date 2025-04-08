@@ -26,6 +26,9 @@ public class KakaoMapService {
         if (location == null) {
             List<String> str = new ArrayList<>(List.of(address.split("")));
 
+            // TODO: 검색이 안되는 주소를 입력하는 사람이 있는 것 같음 그래서 MalformedURL 에러가 잡힘
+            // 이때 에러 처리 고민 해봐야 함
+            // 이때는 address_name 속성을 비워두고 매니징 사이트에서 관리 가능하도록 시스템 추가 하면 될 듯?
             while (!str.isEmpty()) {
                 try {
                     String keyword = String.join("", str);

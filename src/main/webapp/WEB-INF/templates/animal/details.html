@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head th:replace="~{fragments/header :: header}">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
+<link href="../../../static/css/main.css" rel="stylesheet"/>
+<link href="../../../static/css/animal/details.css" rel="stylesheet"/>
 <body>
-    특정 게시글 눌렀을 때 보여질 내용
+    <div th:replace="~{fragments/navigation :: bar}"></div>
+    <div th:text="${animal}"></div>
+
+
 </body>
+<script src="../../../static/js/animal/details.js"></script>
+
 </html>

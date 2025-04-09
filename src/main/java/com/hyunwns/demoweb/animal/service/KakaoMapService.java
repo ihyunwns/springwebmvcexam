@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.hyunwns.demoweb.animal.config.KakaoMapConfig;
 import com.hyunwns.demoweb.animal.domain.LocationInfo;
 import com.hyunwns.demoweb.animal.exception.KakaoException;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.json.Json;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -17,21 +18,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class KakaoMapService {
 
-    public LocationInfo getLocationInfo(String address) throws MalformedURLException {
+    public LocationInfo getLocationInfo(String address) throws KakaoException {
 
         LocationInfo location = searchByAddress(address);
         if (location == null) {
             List<String> str = new ArrayList<>(List.of(address.split("")));
 
-            // TODO: 검색이 안되는 주소를 입력하는 사람이 있는 것 같음 그래서 MalformedURL 에러가 잡힘
-            // 이때 에러 처리 고민 해봐야 함
-            // 이때는 address_name 속성을 비워두고 매니징 사이트에서 관리 가능하도록 시스템 추가 하면 될 듯?
             while (!str.isEmpty()) {
                 try {
                     String keyword = String.join("", str);
+                    log.info("{}", keyword);
 
                     location = searchByKeyword(keyword);
                 } catch (KakaoException e) {
@@ -45,11 +45,12 @@ public class KakaoMapService {
         return location;
     }
 
-    private LocationInfo searchByAddress(String address) throws MalformedURLException {
-        String query = UriComponentsBuilder.fromHttpUrl(KakaoMapConfig.getKakaoApiAddress()).queryParam("query", address).toUriString();
-        URL url = new URL(query);
+    private LocationInfo searchByAddress(String address) throws KakaoException {
 
         try {
+            String query = UriComponentsBuilder.fromHttpUrl(KakaoMapConfig.getKakaoApiAddress()).queryParam("query", address).toUriString();
+            URL url = new URL(query);
+
             JsonObject json = connectAPI(url);
 
             if (getTotalCount(json) > 0) {
@@ -64,16 +65,15 @@ public class KakaoMapService {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new KakaoException("Kakao API 연결 오류", e);
         }
     }
 
-    private LocationInfo searchByKeyword(String keyword) throws MalformedURLException, KakaoException {
-
-        String query = UriComponentsBuilder.fromHttpUrl(KakaoMapConfig.getKakaoApiKeyword()).queryParam("query", keyword).toUriString();
-        URL url = new URL(query);
-
+    private LocationInfo searchByKeyword(String keyword) throws KakaoException {
         try {
+            String query = UriComponentsBuilder.fromHttpUrl(KakaoMapConfig.getKakaoApiKeyword()).queryParam("query", keyword).toUriString();
+            URL url = new URL(query);
+
             JsonObject json = connectAPI(url);
 
             if (getTotalCount(json) > 0) {
@@ -88,7 +88,7 @@ public class KakaoMapService {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new KakaoException("Kakao API 연결 오류", e);
         }
 
     }

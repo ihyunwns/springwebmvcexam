@@ -33,28 +33,28 @@
                 <div class="animal-title dog">강아지</div>
                 <div class="animal-list">
                     <div class="animal-preview" th:each="dog :${dog_preview}">
-                        <div class="animal" th:text="${dog.title}" th:onclick="|location.href='@{/animal/details?category=dog&id={id}(id=${dog.id})}'|">강아지</div>
+                        <div class="animal" th:text="${dog.title}" th:onclick="|location.href='@{/animal/details?id={id}(id=${dog.id})}'|">강아지</div>
                     </div>
                 </div>
-                <button class="animal-more" th:onclick="|location.href='@{/animal/more?category=dog}'|"> 더보기 </button>
+                <button class="animal-more" th:onclick="|location.href='@{/animal/more?category=DOG}'|"> 더보기 </button>
             </div>
             <div class="animal-box">
                 <div class="animal-title cat">고양이</div>
                 <div class="animal-list">
                     <div class="animal-preview" th:each="cat : ${cat_preview}">
-                        <div class="animal" th:text="${cat.title}" th:onclick="|location.href='@{/animal/details?category=cat&id={id}(id=${cat.id})}'|">고양이</div>
+                        <div class="animal" th:text="${cat.title}" th:onclick="|location.href='@{/animal/details?id={id}(id=${cat.id})}'|">고양이</div>
                     </div>
                 </div>
-                <button class="animal-more" th:onclick="|location.href='@{/animal/more?category=cat}'|"> 더보기 </button>
+                <button class="animal-more" th:onclick="|location.href='@{/animal/more?category=CAT}'|"> 더보기 </button>
             </div>
             <div class="animal-box">
                 <div class="animal-title etc">기타 반려동물</div>
                 <div class="animal-list">
                     <div class="animal-preview" th:each="etc : ${etc_preview}">
-                        <div class="animal" th:text="${etc.title}" th:onclick="|location.href='@{/animal/details?category=etc&id={id}(id=${etc.id})}'|">반려동물</div>
+                        <div class="animal" th:text="${etc.title}" th:onclick="|location.href='@{/animal/details?id={id}(id=${etc.id})}'|">반려동물</div>
                     </div>
                 </div>
-                <button class="animal-more" th:onclick="|location.href='@{/animal/more?category=etc}'|"> 더보기 </button>
+                <button class="animal-more" th:onclick="|location.href='@{/animal/more?category=ETC}'|"> 더보기 </button>
             </div>
         </div>
     </div>

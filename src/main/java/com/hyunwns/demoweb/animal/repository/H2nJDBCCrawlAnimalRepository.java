@@ -96,4 +96,11 @@ public class H2nJDBCCrawlAnimalRepository implements CrawlAnimalRepository {
         }
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(CrawlAnimal.class));
     }
+
+    @Override
+    public CrawlAnimal getCrawlAnimal(int id) throws SQLException {
+        String sql = "SELECT * FROM MISSING_ANIMAL WHERE ID = " + id;
+
+        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(CrawlAnimal.class));
+    }
 }

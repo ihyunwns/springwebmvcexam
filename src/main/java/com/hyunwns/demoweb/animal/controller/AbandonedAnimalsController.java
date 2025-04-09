@@ -1,7 +1,9 @@
 package com.hyunwns.demoweb.animal.controller;
 
 import com.hyunwns.demoweb.animal.config.KakaoMapConfig;
+import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
 import com.hyunwns.demoweb.animal.service.WebCrawlingService;
+import com.hyunwns.demoweb.common.domain.Pages;
 import com.hyunwns.demoweb.common.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -48,21 +51,33 @@ public class AbandonedAnimalsController {
             model.addAttribute("updated_at", "데이터 갱신 필요");
         }
 
-        model.addAttribute("dog_preview", webCrawlingService.getAnimalData("dog", 10));
-        model.addAttribute("cat_preview", webCrawlingService.getAnimalData("cat", 10));
-        model.addAttribute("etc_preview", webCrawlingService.getAnimalData("etc", 10));
+        model.addAttribute("dog_preview", webCrawlingService.getAnimalData("DOG", 10));
+        model.addAttribute("cat_preview", webCrawlingService.getAnimalData("CAT", 10));
+        model.addAttribute("etc_preview", webCrawlingService.getAnimalData("ETC", 10));
 
         return "animal/manage";
     }
 
     @GetMapping("/details")
-    public void detailsCrawledAnimal(@RequestParam("category") String category, @RequestParam("id") int id, Model model) throws SQLException {
+    public void detailsCrawledAnimal(@RequestParam("id") int id, Model model) throws SQLException {
 
-        log.info("details 클릭, {}", id);
+        CrawlAnimal animalDataById = webCrawlingService.getAnimalDataById(id);
+
+        model.addAttribute("animal", animalDataById);
+
     }
 
     @GetMapping("/more")
-    public String moreAnimals(@RequestParam("category") String category, Model model) throws SQLException {
+    public String moreAnimals(@RequestParam("category") String type, Model model) throws SQLException {
+
+        List<CrawlAnimal> animals = webCrawlingService.getAnimalData(type, 0);
+
+        Pages<CrawlAnimal> pages = Pages.setPagesConfigure(animals)
+                .setPage(1)
+                .setSize(10)
+                .build();
+
+        model.addAttribute("animals", pages);
 
         return "animal/more";
     }

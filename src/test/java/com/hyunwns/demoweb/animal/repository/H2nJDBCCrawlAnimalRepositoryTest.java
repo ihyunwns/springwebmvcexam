@@ -28,12 +28,14 @@ class H2nJDBCCrawlAnimalRepositoryTest {
 
     @Test
     void findAnimal() throws SQLException {
-        List<CrawlAnimal> latestDog = crawlAnimalRepository.getCrawlAnimals("dog", 1);
+        List<CrawlAnimal> latestDog = crawlAnimalRepository.getCrawlAnimals("DOG", 1);
 
         log.info("{}", latestDog.get(0));
 
-        List<CrawlAnimal> dog = crawlAnimalRepository.getCrawlAnimals("dog", 0);
-        log.info("{}", dog);
+        List<CrawlAnimal> dogs = crawlAnimalRepository.getCrawlAnimals("DOG", 10);
+        for(CrawlAnimal dog : dogs) {
+            log.info("{}", dog);
+        }
 
     }
 

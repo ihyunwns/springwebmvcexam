@@ -2,7 +2,9 @@ package com.hyunwns.demoweb.animal.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyunwns.demoweb.animal.domain.CrawlAnimal;
+import com.hyunwns.demoweb.animal.domain.LocationInfo;
 import com.hyunwns.demoweb.animal.exception.CrawlingException;
+import com.hyunwns.demoweb.animal.exception.KakaoException;
 import com.hyunwns.demoweb.animal.repository.CrawlAnimalRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
@@ -13,9 +15,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.MalformedURLException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -32,6 +36,7 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
     private final BlockingQueue<int[]> taskQueue;
     private final String keyword;
     private final CrawlAnimal latestAnimal;
+    private final KakaoMapService kakaoMapService;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -39,11 +44,12 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
     private static final int MAX_POST_LOAD_RETRY = 3;
     private static final long BASE_WAIT_TIME = 2000; /* 2000 ms */
 
-    public CrawlerThread(ChromeOptions options, BlockingQueue<int[]> taskQueue, String keyword, CrawlAnimal latestAnimal) {
+    public CrawlerThread(ChromeOptions options, BlockingQueue<int[]> taskQueue, String keyword, CrawlAnimal latestAnimal, KakaoMapService kakaoMapService) {
         this.chromeOptions = options;
         this.taskQueue = taskQueue;
         this.keyword = keyword;
         this.latestAnimal = latestAnimal;
+        this.kakaoMapService = kakaoMapService;
     }
 
     @Override
@@ -127,7 +133,7 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
                                             }
 
                                             List<WebElement> infoElement = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//b")));
-                                            Map<String, String> crawlingData = getStringMap(infoElement, imgElement);
+                                            Map<String, Object> crawlingData = getStringMap(infoElement, imgElement);
                                             CrawlAnimal crawlAnimal = mapper.convertValue(crawlingData, CrawlAnimal.class);
 
                                             if (crawlAnimal.equals(latestAnimal)) {
@@ -186,8 +192,8 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
         return animals;
     }
 
-    private Map<String, String> getStringMap(List<WebElement> infoElement, List<WebElement> imgElement) {
-        Map<String, String> crawlingData = new HashMap<>();
+    private Map<String, Object> getStringMap(List<WebElement> infoElement, List<WebElement> imgElement) {
+        Map<String, Object> crawlingData = new HashMap<>();
 
         if (!imgElement.isEmpty()) {
             crawlingData.put("imgURL", imgElement.get(0).getDomAttribute("src"));
@@ -226,7 +232,20 @@ public class CrawlerThread implements Callable<Map<Integer, List<CrawlAnimal>>> 
                 crawlingData.put("details", infoElement.get(8).getText());
             }
         }
-        
+
+        try {
+            LocationInfo locationInfo = kakaoMapService.getLocationInfo((String) crawlingData.get("lost_place"));
+
+            crawlingData.put("address", locationInfo.getAddress_name());
+            crawlingData.put("latitude", locationInfo.getY());
+            crawlingData.put("longitude", locationInfo.getX());
+        } catch (KakaoException e) {
+            crawlingData.put("address", null);
+            crawlingData.put("latitude", null);
+            crawlingData.put("longitude", null);
+        }
+
+
         return crawlingData;
     }
 }

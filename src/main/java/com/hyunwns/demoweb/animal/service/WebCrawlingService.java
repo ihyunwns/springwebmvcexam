@@ -20,6 +20,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -91,7 +92,7 @@ public class WebCrawlingService {
                             log.info("size: {}", size);
                             log.info("Task Queue: {}", Arrays.deepToString(taskQueue.toArray()));
                             for (int i = 0; i < MAX_THREAD_POOL; i++) {
-                                futures.add(executor.submit(new CrawlerThread(chromeOptions, taskQueue, keyword, latestAnimal.orElse(null))));
+                                futures.add(executor.submit(new CrawlerThread(chromeOptions, taskQueue, keyword, latestAnimal.orElse(null), kakaoMapService)));
                             }
 
                             // 실시간 모니터링 및 결과 수집
@@ -138,10 +139,6 @@ public class WebCrawlingService {
                             for (List<CrawlAnimal> animals : crawledAnimals.values()) {
                                 Collections.reverse(animals);
                                 for(CrawlAnimal animal : animals) {
-                                    LocationInfo locationInfo = kakaoMapService.getLocationInfo(animal.getLost_place());
-
-                                    animal.setAddress(locationInfo.getAddress_name()); animal.setLongitude(locationInfo.getX()); animal.setLatitude(locationInfo.getY());
-
                                     animalRepository.insertCrawlAnimal(type, animal);
                                 }
                             }
@@ -194,6 +191,10 @@ public class WebCrawlingService {
 
     public List<CrawlAnimal> getAnimalData(String type, int count) throws SQLException{
         return animalRepository.getCrawlAnimals(type, count);
+    }
+
+    public CrawlAnimal getAnimalDataById(int id) throws SQLException {
+        return animalRepository.getCrawlAnimal(id);
     }
 
     public String getLastUpdatedDate() throws SQLException {

@@ -157,14 +157,12 @@ class WebCrawlingServiceTests {
     @Test
     public void kakao_map_api_test() throws Exception{
 
-        List<CrawlAnimal> dogs = crawlAnimalRepository.getCrawlAnimals("dog", 5);
+        
+        LocationInfo locationInfo = kakaoMapService.getLocationInfo("더");
 
-        for(CrawlAnimal animal : dogs) {
-            LocationInfo locationInfo = kakaoMapService.getLocationInfo(animal.getAddress());
-
-            System.out.println(locationInfo);
-        }
-
+        System.out.println(locationInfo);
+        
+        
     }
 
     @Test

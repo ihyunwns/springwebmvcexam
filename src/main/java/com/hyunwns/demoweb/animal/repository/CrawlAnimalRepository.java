@@ -21,4 +21,7 @@ public interface CrawlAnimalRepository {
     LocalDateTime getLastUpdatedDate() throws SQLException;
 
     List<CrawlAnimal> getCrawlAnimals(String type, int count) throws SQLException;
+
+    CrawlAnimal getCrawlAnimal(int id) throws SQLException;
+
 }
